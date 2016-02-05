@@ -56,6 +56,10 @@ The class provides a taxonomy_registration() method.  If used, it provides the a
 #### Template
 A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.
 
+#### Term Deletion
+If you want to prevent specific terms from being deleted, then when creating the taxonomies in the child class, append an array of the term name to the tax_keep property array, like so:
+`$this->tax_keep['taxonomy_slug'] = array(__('Term Name','text-domain'))`
+
 #### Text domain
 A unique string placeholder 'text-domain' is currently used.  If you are familiar with the linux sed command you can use this command:  `sed -i 's/text-domain/your-domain-name-here/' path-to/custom-post.php`  Alternately, override the method translated_text(), but be sure to duplicate the array structure and __all__ the strings it contains.
 
