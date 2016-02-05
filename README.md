@@ -10,8 +10,8 @@ The basis for a lot of the code originated from different places on the web.  I 
 
 This really consists of only three files:
 
-  classes/custom-post.php
-  js/slug_noedit.js
+  classes/custom-post.php<br>
+  js/slug_noedit.js<br>
   js/tax_nodelete.js
 
 Simply copy these to their respective location.  That's it.
