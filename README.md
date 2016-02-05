@@ -6,24 +6,24 @@ I have seen quite a few different ways of how people handle custom post types in
 
 The basis for a lot of the code originated from different places on the web.  I have tried to give credit where I can.  My coding style can not be considered 'orthodox' in any way, shape, form, or fashion.
 
-# Install
+## Install
 
 Requires PHP 5.3+
 
 This really consists of only three files:
-
-  classes/custom-post.php<br>
-  js/slug_noedit.js<br>
+```
+  classes/custom-post.php
+  js/slug_noedit.js
   js/tax_nodelete.js
-
+```
 Simply copy these to their respective location.  That's it.
 
-# Usage
+## Usage
 
 Create your own class extending this one.  Look in the examples/ directory for ideas.  um, there is only one there right now.  more coming though...  I would be must grateful if anyone could contribute an example or two...
 
 The construction method in your child class might look like this:
-
+```
 public function __construct() {
     $data = array('type'       => 'property',
                   'label'      => _x('Property','singular form','text-domain'),
@@ -40,25 +40,29 @@ public function __construct() {
     add_action('add_meta_boxes_'.$this->type, array($this,'add_meta_boxes'));
     add_action('save_post_'.$this->type,      array($this,'save_meta_boxes'));
   }
-
+```
 The method that registers the CPT uses only a subset of arguments available for the WordPress register_post_type() function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the $args array.
 
-# Notes
+## Notes
 
 After the post type has been created, an action hook is run called 'tcc_custom_post_{post slug}'.  Hook there to run any needed code, such as registering a taxonomy.
 
-Capabilities:  Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles.
+#### Capabilities
+Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles.
 
-Taxonomies:  The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.
+#### Taxonomies
+The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.
 
-Template:  A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.
+#### Template
+A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.
 
-Text domain:  a unique string placeholder 'text-domain' is currently used.  If you are familiar with the linux sed command you can use this command:  sed -i 's/text-domain/your-domain-name-here/' path-to/custom-post.php<br>
-Alternately, override the method translated_text(), but be sure to duplicate the array structure and all the strings it contains.
+#### Text domain
+A unique string placeholder 'text-domain' is currently used.  If you are familiar with the linux sed command you can use this command:  `sed -i 's/text-domain/your-domain-name-here/' path-to/custom-post.php`  Alternately, override the method translated_text(), but be sure to duplicate the array structure and __all__ the strings it contains.
 
-Text strings:  The class uses a method called translated_text to provide default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels() and taxonomy_labels().  There is also a method called post_type_messages() containing type-specific messages which are displayed in place of the standard WordPress messages when a post is changed.
+#### Text strings
+The class uses a method called translated_text to provide default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels() and taxonomy_labels().  There is also a method called post_type_messages() containing type-specific messages which are displayed in place of the standard WordPress messages when a post is changed.
 
-# Taxonomies
+## Taxonomies
 
 $this->taxonomy_registration($args)
 
