@@ -2,7 +2,7 @@
 
 require_once(WP_PLUGIN_DIR.'/tcc-theme-options/classes/custom-post.php');
 
-class Real_Estate_Property extends TCC_Custom_Post_Type {
+class Real_Estate_Property extends Custom_Post_Type {
 
   private $error = array();
   private $layout;
@@ -194,6 +194,10 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
     $this->show_prop_type_field($post,__('Property Status','tcc-real-estate'),'status');
   }
 
+  public function meta_box_amenities($post) {
+#    $amens = $this->layout['right']
+  }
+
   private function show_prop_item($post,$name,$layout) {
     $value = get_post_meta($post->ID,$name,true); ?>
     <th><?php
@@ -332,7 +336,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
   private function create_cities_tax() {
     $single = _x('City',  'Taxonomy singular name for an urban population center','tcc-real-estate');
     $plural = _x('Cities','Taxonomy plural name for urban population centers', 'tcc-real-estate');
-    $this->register_taxonomy("tax=prop_city&single=$single&plural=$plural&rewrite=city&nodelete=true");
+    $this->taxonomy_registration("tax=prop_city&single=$single&plural=$plural&rewrite=city&nodelete=true");
     $this->tax_keep['prop_city'] = $this->default_prop_city();
   }
 
@@ -343,7 +347,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
   private function create_states_tax() {
     $single = _x('State', 'Taxonomy singular name for a geographical state/province','tcc-real-estate');
     $plural = _x('States','Taxonomy plural name for geographical states/provinces', 'tcc-real-estate');
-    $this->register_taxonomy("tax=prop_state&single=$single&plural=$plural&rewrite=state&nodelete=true");
+    $this->taxonomy_registration("tax=prop_state&single=$single&plural=$plural&rewrite=state&nodelete=true");
     $this->tax_keep['prop_state'] = $this->default_prop_state();
   }
 
@@ -354,7 +358,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
   private function create_areas_tax() {
     $single = _x('Area', 'Taxonomy singular name for land area/neighberhood','tcc-real-estate');
     $plural = _x('Areas','Taxonomy plural name for land areas/neighberhoods', 'tcc-real-estate');
-    $this->register_taxonomy("tax=prop_area&single=$single&plural=$plural&rewrite=area&nodelete=true");
+    $this->taxonomy_registration("tax=prop_area&single=$single&plural=$plural&rewrite=area&nodelete=true");
     $this->tax_keep['prop_area'] = $this->default_prop_area();
   }
 
@@ -368,7 +372,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
                   'plural'   => _x('Property Types','Taxonomy plural name for plots of land', 'tcc-real-estate'),
                   'rewrite'  => 'type',
                   'nodelete' => true);
-    $this->register_taxonomy($args);
+    $this->taxonomy_registration($args);
   }
 
   protected function default_prop_categ() {
@@ -398,7 +402,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
                   'admin'    =>  true,
 #                  'submenu'  => 'prop_action_submenu',
                   'nodelete' => true);
-    $this->register_taxonomy($args);
+    $this->taxonomy_registration($args);
   }
 
 /*  public function prop_action_submenu($nav_items) {
@@ -421,7 +425,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
                   'plural'   => _x('Property Statuses','Taxonomy plural name', 'tcc-real-estate'),
                   'rewrite'  => 'status',
                   'nodelete' => true);
-    $this->register_taxonomy($args);
+    $this->taxonomy_registration($args);
   }
 
   protected function default_prop_status() {
@@ -440,7 +444,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
                   'plural'   => _x('Amenities','Taxonomy plural name', 'tcc-real-estate'),
                   'rewrite'  => 'amenities',
                   'nodelete' => true);
-    $this->register_taxonomy($args);
+    $this->taxonomy_registration($args);
   }
 
   protected function default_prop_list() {
@@ -464,7 +468,7 @@ class Real_Estate_Property extends TCC_Custom_Post_Type {
                       'plural'  => _x('Closest','Taxonomy plural name', 'tcc-real-estate'),
                       'admin'   =>  false,
                       'rewrite' => 'closest');
-    $this->register_taxonomy($settings);
+    $this->taxonomy_registration($settings);
   }
 
   protected function default_prop_close() {

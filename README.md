@@ -26,8 +26,8 @@ The construction method in your child class might look like this:
 ```
 public function __construct() {
     $data = array('type'       => 'property',
-                  'label'      => _x('Property','singular form','text-domain'),
-                  'plural'     => _x('Properties','plural form','text-domain'),
+                  'label'      => _x('Property','owned plot of land - singular form','text-domain'),
+                  'plural'     => _x('Properties','owned plots of land - plural form','text-domain'),
                   'descrip'    => __('Real Estate Property','text-domain'),
                   'position'   => 6,
                   'icon'       => 'dashicons-admin-home',
@@ -45,10 +45,10 @@ The method that registers the CPT uses only a subset of arguments available for 
 
 ## Notes
 
-After the post type has been created, an action hook is run called 'tcc_custom_post_{post slug}'.  Hook there to run any needed code, such as registering a taxonomy.
+After the post type has been created, an action hook is run named 'tcc_custom_post_{post slug}'.  Hook there to run any needed code, such as registering a taxonomy.
 
 #### Capabilities
-Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles.
+Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. Does not handle custom roles, although `$GLOBALS['wp_post_types'][$this->type][cap]` will give you a full list for the CPT.
 
 #### Taxonomies
 The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.
@@ -60,7 +60,7 @@ A 'single' template path and name for the CPT can be assigned, and it will be us
 A unique string placeholder 'text-domain' is currently used.  If you are familiar with the linux sed command you can use this command:  `sed -i 's/text-domain/your-domain-name-here/' path-to/custom-post.php`  Alternately, override the method translated_text(), but be sure to duplicate the array structure and __all__ the strings it contains.
 
 #### Text strings
-The class uses a method called translated_text to provide default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels() and taxonomy_labels().  There is also a method called post_type_messages() containing type-specific messages which are displayed in place of the standard WordPress messages when a post is changed.
+The class uses translated_text() to provide default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels() and taxonomy_labels().  There is also post_type_messages() which generates CPT specific messages which are displayed in place of the standard WordPress messages.
 
 ## Taxonomies
 
@@ -68,13 +68,13 @@ $this->taxonomy_registration($args)
 
 $args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress wp_parse_args() function.  Accepted arguments are:
 
-tax => the taxonomy slug (required)<br>
-single => single label name, same as labels=>singular_name (required)<br>
-plural => plural label name, same as label (required)<br>
-admin => same as show_admin_column<br>
-rewrite => utilized as array('slug'=>$rewrite), defaults to taxonomy slug (recommended)<br>
-nodelete => indicates that a term in this taxonomy cannot be deleted if a post uses it<br>
-taxargs => same as the third argument to the WordPress register_taxonomy() function, will supercede all $args values
+*tax => the taxonomy slug (required)
+*single => single label name, same as labels=>singular_name (required)
+*plural => plural label name, same as label (required)
+*admin => same as show_admin_column
+*rewrite => utilized as array('slug'=>$rewrite), defaults to taxonomy slug (recommended)
+*nodelete => indicates that a term in this taxonomy cannot be deleted if a post uses it
+*taxargs => same as the third argument to the WordPress register_taxonomy() function, will supercede all $args values
 
 This method calls the method taxonomy_labels(), which will construct a default labels array, suitable for most uses.  Override the labels method when needed.
 
