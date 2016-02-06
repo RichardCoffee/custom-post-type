@@ -66,7 +66,7 @@ or<br>
 A unique string placeholder 'text-domain' is currently used.  If you are familiar with the linux sed command you can use this command:  `sed -i 's/text-domain/your-domain-name-here/' path-to/custom-post.php`  Alternately, override the method translated_text(), but be sure to duplicate the array structure and __all__ the strings it contains.
 
 #### Text strings
-The class uses translated_text() to provide default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels() and taxonomy_labels().  There is also post_type_messages() which generates CPT specific messages which are displayed in place of the standard WordPress messages.
+The class uses a method named translated_text() to provide default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels() and taxonomy_labels().  There is also post_type_messages() which generates CPT specific messages which are displayed in place of the standard WordPress messages.
 
 ## Taxonomies
 
