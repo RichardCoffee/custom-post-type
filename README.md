@@ -57,7 +57,9 @@ The class provides a taxonomy_registration() method.  If used, it provides the a
 A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.
 
 #### Term Deletion
-If you want to prevent specific taxonomy terms from being deleted, then when creating the taxonomy in the child class, append an array of the term names to the tax_keep property array, like so:<br>
+If you want to prevent specific taxonomy terms from being deleted, then when creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
+`$this->tax_keep['taxonomy_slug'] = array('term-slug')`<br>
+or<br>
 `$this->tax_keep['taxonomy_slug'] = array(__('Term Name One','text-domain'))`
 
 #### Text domain
@@ -71,16 +73,18 @@ The class uses translated_text() to provide default strings for both post labels
 $this->taxonomy_registration($args)
 
 $args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress wp_parse_args() function.  Accepted arguments are:
-
-*tax => the taxonomy slug (required)
-*single => single label name, same as labels=>singular_name (required)
-*plural => plural label name, same as label (required)
-*admin => same as show_admin_column
-*rewrite => utilized as array('slug'=>$rewrite), defaults to taxonomy slug (recommended)
-*nodelete => indicates that a term in this taxonomy cannot be deleted if a post uses it
-*taxargs => same as the third argument to the WordPress register_taxonomy() function, will supercede all $args values
-
-This method calls the method taxonomy_labels(), which will construct a default labels array, suitable for most uses.  Override the labels method when needed.
+```
+tax      => string - the taxonomy slug (required)<br>
+single   => string - single label name, same as $taxargs['labels']['singular_name'] (one of the two is required)<br>
+plural   => string - plural label name, same as $taxargs['labels']['name'] or label (one of the three is required)<br>
+admin    => boolean - passed as show_admin_column<br>
+rewrite  => string - utilized as array('slug'=>$rewrite), defaults to taxonomy slug (recommended)<br>
+nodelete => boolean - indicates that a term in this taxonomy cannot be deleted if a post uses it<br>
+terms    => array - 
+slug     => boolean
+taxargs  => array - passed as the third argument to the WordPress register_taxonomy() function.
+```
+This method calls the method taxonomy_labels(), which will construct a default labels array.
 
 
 I shall endeavor to continue working on this readme, as well as better notes in the code.
