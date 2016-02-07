@@ -9,6 +9,7 @@ abstract class Custom_Post_Type {
 
   protected $columns    = null;     #  array('remove'=>array()','add'=>array())
 //  protected $comments   = null;     #  or true
+  protected $debug      = false;    # used in conjunction with $this->logging
   protected $edit_other = 'edit_others_posts';   #  used as check for author metabox
   protected $icon       = 'dashicon-admin-post'; #  admin dashboard icon
   protected $logging    = 'log_entry'; #  logging function
@@ -430,9 +431,11 @@ abstract class Custom_Post_Type {
   }
 
   private function log_entry($message) {
-    if (isset($this->logging) && function_exists($this->logging)) {
-      $log = $this->logging;
-      $log($message);
+    if ($this->debug) {
+      if (isset($this->logging) && function_exists($this->logging)) {
+        $log = $this->logging;
+        $log($message);
+      }
     }
   }
 
