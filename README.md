@@ -6,6 +6,14 @@ I have seen quite a few different ways of how people handle custom post types in
 
 The basis for a lot of the code originated from different places on the web.  I have tried to give credit where I can.  My coding style can not be considered 'orthodox' in any way, shape, form, or fashion.
 
+## Features
+
+* Provides a base class for easier CPT creation.
+* Automatically use the 'single-{custom-post-type}' template in a theme or child theme.
+* Assign a custom 'single' template for displaying a CPT from a plugin.
+* Ability to prevent a user from deleting a taxonomy term.
+* Automatically generates custom capabilites, which can be used for custom roles.
+
 ## Install
 
 Requires PHP 5.3+
@@ -26,8 +34,8 @@ The construction method in your child class might look like this:
 ```
 public function __construct() {
     $data = array('type'       => 'property',
-                  'label'      => _x('Property','owned plot of land - singular form','text-domain'),
-                  'plural'     => _x('Properties','owned plots of land - plural form','text-domain'),
+                  'label'      => _x('Property','single plot of land','text-domain'),
+                  'plural'     => _x('Properties','multiple plots of land','text-domain'),
                   'descrip'    => __('Real Estate Property','text-domain'),
                   'position'   => 6,
                   'icon'       => 'dashicons-admin-home',
