@@ -30,6 +30,7 @@ abstract class Custom_Post_Type {
       foreach($data as $prop=>$value) {
         $this->{$prop} = $value;
       }
+      if (!isset($this->type)) { $this->type = sanitize_title($this->label); }
       add_action('init',                 array($this,'create_post_type'));
       add_action('admin_init',           array($this,'add_caps'));
       add_filter('pre_get_posts',        array($this,'pre_get_posts'),5); // run early
@@ -216,26 +217,46 @@ abstract class Custom_Post_Type {
   }
 
   protected function taxonomy_registration($args) {
-    $defs = array('tax'=>'fix-me','single'=>'One Fix Me','plural'=>'Many Fix Mes','admin'=>false,'submenu'=>false,'nodelete'=>false);
+    $defs = array('admin'=>false,'submenu'=>false,'nodelete'=>false);
     $args = wp_parse_args($args,$defs);
     extract($args);
-    if (!isset($rewrite)) { $rewrite = $tax; }
-    $taxi = array('hierarchical' => false,
-                  'labels'       => $this->taxonomy_labels($single,$plural),
-                  'rewrite'      => array('slug'=>$rewrite),
-                  'show_admin_column'=>$admin);
-    if (isset($taxargs) && is_array($taxargs)) $taxi = array_replace_recursive($taxi,$taxargs);
-    register_taxonomy($tax,$this->type,$taxi);
+    if (empty($tax))     return;
+    if (empty($taxargs)) $taxargs = array();
+    if (empty($single) && empty($taxargs['labels']['singular_name'])) return;
+    $single = (isset($taxargs['labels']['singular_name'])) ? $taxargs['labels']['singular_name'] : $single;
+    if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;
+    $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
+    $labels = taxonomy_labels($single,$plural);
+    $taxargs['labels'] = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
+    $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;
+    $taxargs['rewrite'] = (isset($taxargs['rewrite'])) ? $taxargs['rewrite'] : (isset($rewrite)) ? array('slug'=>$rewrite) : array('slug'=>$tax);
+    register_taxonomy($tax,$this->type,$taxargs);
     if (taxonomy_exists($tax)) {
       if (!in_array($tax,$this->tax_list)) { $this->tax_list[] = $tax; }
       register_taxonomy_for_object_type($tax,$this->type);
-      $func = "default_$tax";
-      if ($func) {
-        $current = get_terms($tax,'hide_empty=0');
-        if (empty($current)) {
-          $defs = $this->$func();
-          foreach($defs as $each) {
-            wp_insert_term($each,$tax); }
+      $current = get_terms($tax,'hide_empty=0');
+      if (empty($current)) {
+        $defs = array();
+        if (empty($terms)) {
+          $func = (empty($func)) ? "default_$tax" :$func;
+          if (method_exists($this,$func)) {
+            $defs = $this->$func();
+          }
+        } else {
+          $defs = $terms;
+        }
+        if ($defs) {
+          if (!isset($slug)) {
+            $test = array_slice($defs,0,1,true);
+            $slug = (!isset($test[0]));
+          }
+          foreach($defs as $key=>$term) {
+            if ($slug) {
+              wp_insert_term($each,$tax,array('slug'=>$key));
+            } else {
+              wp_insert_term($each,$tax);
+            }
+          }
         }
       }
       if (($submenu) && (method_exists($this,$submenu))) {

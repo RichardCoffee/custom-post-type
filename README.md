@@ -83,12 +83,12 @@ plural   => string -- plural label name, same as $taxargs['labels']['name'] or $
                       (one of the three is required)
 admin    => boolean - same as $taxargs['show_admin_column']
 rewrite  => string -- same as $taxargs['rewrite']['slug'], defaults to taxonomy slug if either is not set
-nodelete => boolean - indicates that a term in this taxonomy cannot be deleted if the term is associated
-                      with a post. defaults to false
+nodelete => boolean - true indicates that a term in this taxonomy cannot be deleted if the term is
+                      associated with a post. default: false
 terms    => array --- terms to populate the taxonomy with.  only happens if the taxonomy is completely
                       devoid of terms.
-slug     => boolean - force the method to assume the 'terms' array uses slugs as keys if true, or no
-                      keys if false.  otherwise it will guess.
+slug     => boolean - true: force the method to assume the 'terms' array uses slugs as keys, false: names
+                      only, unset: it will try to guess.
 ```
 This method calls the taxonomy_labels() method, which constructs a labels array, based on the translated_text() method strings.  The terms array should be in structured as `array('Term Name')` or `array('term-slug'=>'Term Name')`.  It does not handle 'alias_of','description', or 'parent' at this time.
 
