@@ -55,13 +55,6 @@ abstract class Custom_Post_Type {
   }
 
   #  http://php.net/manual/en/language.oop5.overloading.php#object.unset
-  public static function __callStatic($name,$arguments) {
-    if (($name=='get_tax_list') && (self::$instance)) {
-      return self::$instance->get_tax_list(); }
-    return null;
-  }
-
-  #  http://php.net/manual/en/language.oop5.overloading.php#object.unset
   public function __get($name) {
     if (property_exists($this,$name)) {
       return $this->$name; } #  Allow read access to private/protected variables
@@ -126,8 +119,7 @@ abstract class Custom_Post_Type {
     $args = apply_filters('tcc_register_post_'.$this->type,$args);
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
-    log_entry('post type settings',$GLOBALS['wp_post_types'][$this->type]);
-    #log_entry(debug_backtrace());
+    $this->log_entry('post type settings',$GLOBALS['wp_post_types'][$this->type]);
   }
 
   protected function post_type_labels() {
@@ -153,42 +145,42 @@ abstract class Custom_Post_Type {
   # http://codex.wordpress.org/Function_Reference/register_post_type
   # http://thomasmaxson.com/update-messages-for-custom-post-types/
   public function post_type_messages($messages) {
-    $phrases  = $this->translated_text();
-    $messages = $phrases['messages'];
+    $phrases = $this->translated_text();
+    $strings = $phrases['messages'];
     $view_link = $preview_link = $formed_date = '';
-    if ($post=get_post()) { #  get_post() call should always succeed
-      $view_text      = sprintf( $phrases['view_s'],  $this->label);
-      $preview_text   = sprintf( $messages['preview'],$this->label);
+    if ($post=get_post()) { #  get_post() call should always succeed when editing a post
+      $view_text      = sprintf( $phrases['view_s'], $this->label);
+      $preview_text   = sprintf( $strings['preview'],$this->label);
       $link_tag_html  = '  <a href="%s" target="'.sanitize_title($post->title).'">';
       $view_link      = sprintf( $link_tag_html, esc_url( get_permalink($post->ID))) .$view_text.'</a>';
       $preview_link   = sprintf( $link_tag_html, esc_url( add_query_arg('preview', 'true', get_permalink($post->ID)))) .$preview_text.'</a>';
       $formed_date    = date_i18n( get_option('date_format'), strtotime($post->post_date));
     }
-    $messages[$this->type] = array( 0 => '', // Unused. Messages start at index 1.
-      1  => sprintf( $messages['update'],  $this->label) .$view_link,
-      2  => $messages['custom_u'],
-      3  => $messages['custom_d'],
-      4  => sprintf( $messages['update'],  $this->label),
-      5  => isset($_GET['revision']) ? sprintf( $messages['revision'], $this->label, wp_post_revision_title((int)$_GET['revision'],false)) : false,
-      6  => sprintf( $messages['publish'], $this->label) .$view_link,
-      7  => sprintf( $messages['saved'],   $this->label),
-      8  => sprintf( $messages['submit'],  $this->label) .$preview_link,
-      9  => sprintf( $messages['schedule'],$this->label,  $formed_date) .$preview_link,
-      10 => sprintf( $messages['draft'],   $this->label) .$preview_link);
+    $messages[$this->type] = array( 0 => '', #  Unused. Messages start at index 1.
+      1  => sprintf( $strings['update'],  $this->label) .$view_link,
+      2  => $strings['custom_u'],
+      3  => $strings['custom_d'],
+      4  => sprintf( $strings['update'],  $this->label),
+      5  => isset($_GET['revision']) ? sprintf( $strings['revision'], $this->label, wp_post_revision_title((int)$_GET['revision'],false)) : false,
+      6  => sprintf( $strings['publish'], $this->label) .$view_link,
+      7  => sprintf( $strings['saved'],   $this->label),
+      8  => sprintf( $strings['submit'],  $this->label) .$preview_link,
+      9  => sprintf( $strings['schedule'],$this->label,  $formed_date) .$preview_link,
+      10 => sprintf( $strings['draft'],   $this->label) .$preview_link);
     return $messages;
   }
 
   # http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
   public function add_caps() {
     $roles = array('contributor','author','editor','administrator');
-    if ($this->role_caps!=='normal') $roles = array('administrator');
+    if ($this->role_caps!=='normal') $roles = array('administrator'); // FIXME: provide for custom roles
     foreach($roles as $role) {
       $this->process_caps($role); }
   }
 
   private function process_caps($name) {
     $role = get_role($name);
-    $sing = sanitize_title($this->label); # not sure what these singular caps are supposed to do, may not need them at all...
+    $sing = sanitize_title($this->label); # not sure what these singular caps are supposed to do...
     $plur = sanitize_title($this->plural);
     $caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
     $auth = array("delete_published_$plur","edit_published_$plur","publish_$plur");
@@ -218,7 +210,7 @@ abstract class Custom_Post_Type {
   }
 
   protected function taxonomy_registration($args) {
-    $defs = array('admin'=>false,'submenu'=>false,'nodelete'=>false);
+    $defs = array('admin'=>false,'submenu'=>false,'nodelete'=>false,'func'=>null);
     $args = wp_parse_args($args,$defs);
     extract($args);
     if (empty($tax))     return;
@@ -239,9 +231,11 @@ abstract class Custom_Post_Type {
       if (empty($current)) {
         $defs = array();
         if (empty($terms)) {
-          $func = (empty($func)) ? "default_$tax" :$func;
-          if (method_exists($this,$func)) {
-            $defs = $this->$func();
+          $func = (is_null($func)) ? "default_$tax" : $func;
+          if ($func) {
+            if (is_array($func) && method_exists($func[0],$func[1])) { non_function(); } // FIXME?
+            else if (method_exists($this,$func)) { $defs = $this->$func(); }
+            else if (function_exists($func))     { $defs = $func(); }
           }
         } else {
           $defs = $terms;
@@ -251,7 +245,7 @@ abstract class Custom_Post_Type {
             $test = array_slice($defs,0,1,true);
             $slug = (!isset($test[0]));
           }
-          foreach($defs as $key=>$term) {
+          foreach($defs as $key=>$term) { // FIXME:  provide for description
             if ($slug) {
               wp_insert_term($each,$tax,array('slug'=>$key));
             } else {
@@ -354,11 +348,10 @@ abstract class Custom_Post_Type {
       $mytype = get_post_type($post_id);
       if ($mytype && ($this->type==$mytype)) {
         if ((is_single()) && (isset($this->templates['single']))) {
-          // FIXME:  what is the logic in this 'maybe' code?  why is it here?
           $name  = basename($this->templates['single']);
-          $maybe = locate_template(array($name));
+          $maybe = locate_template(array($name)); #  give priority to existing child/parent theme file
           $template = ($maybe) ? $maybe : $this->templates['single'];
-        }
+        } // FIXME: search, archive
       }
     }
     do_action('tcc_assign_template_'.$this->type);
@@ -430,11 +423,13 @@ abstract class Custom_Post_Type {
     }
   }
 
-  private function log_entry($message) {
-    if ($this->debug) {
-      if (isset($this->logging) && function_exists($this->logging)) {
-        $log = $this->logging;
-        $log($message);
+  private function log_entry() {
+    if ($this->debug && isset($this->logging)) {
+      $log = $this->logging; // FIXME:  check for array, ie: method of a different class
+      if (function_exists($log)) {
+        foreach (func_get_args() as $message) { $log($message); }
+      } else if (method_exists($this,$log)) {
+        foreach (func_get_args() as $message) { $this->$log($message); }
       }
     }
   }
