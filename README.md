@@ -9,9 +9,9 @@ The basis for a lot of the code originated from different places on the web.  I 
 ## Features
 
 * Provides a base class for easier CPT creation.
-* Automatically use the 'single-{custom-post-type}' template in a theme or child theme.
-* Assign a custom 'single' template for displaying a CPT from a plugin.
-* Ability to prevent a user from deleting a taxonomy term.
+* You can assign a custom 'single' template for displaying a CPT from a plugin.
+* You can assign a folder, or list of folders to look for templates in.
+* You have the option of being able to prevent a user from deleting a taxonomy term.
 * Automatically generates custom capabilites, which can be used for custom roles.
 
 ## Install
@@ -28,7 +28,7 @@ Simply copy these to their respective location.  That's it.
 
 ## Usage
 
-Create your own class extending this one.  Look in the examples/ directory for ideas.  um, there is only one there right now.  more coming though...  I would be must grateful if anyone could contribute an example or two...
+Create your own class extending this one.  There is currently one example in the examples/ directory.  I will be adding more.
 
 The construction method in your child class might look like this:
 ```
@@ -43,26 +43,26 @@ public function __construct() {
                   'template'   => array('single'=>plugins_url('../page_templates/single-property.php',__FILE__)),
                   'slug_edit'  => false);
     parent::__construct($data);
-    if (is_admin()) add_action('admin_enqueue_scripts',array($this,'admin_enqueue_scripts'));
-    add_action('tcc_custom_post_'.$this->type,array($this,'create_taxonomies'));
-    add_action('add_meta_boxes_'.$this->type, array($this,'add_meta_boxes'));
-    add_action('save_post_'.$this->type,      array($this,'save_meta_boxes'));
+    if (is_admin()) add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts'));
+    add_action( 'tcc_custom_post_'.$this->type, array( $this, 'create_taxonomies'));
+    add_action( 'add_meta_boxes_'.$this->type,  array( $this, 'add_meta_boxes'));
+    add_action( 'save_post_'.$this->type,       array( $this, 'save_meta_boxes'));
   }
 ```
-The method that registers the CPT uses only a subset of arguments available for the WordPress register_post_type() function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.  The source file contains some notes on what each property is for.
+The method that registers the CPT uses only a subset of arguments available for the WordPress register_post_type() function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.
 
 ## General Guidelines
 
 After the post type has been created, an action hook is run named 'tcc_custom_post_{post slug}'.  Hook there to run code such as registering a taxonomy.
 
 #### Capabilities
-Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. Does not handle custom roles, although `$GLOBALS['wp_post_types'][$this->type][cap]` will give you a full list for the CPT.
+Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][$this->type]['cap']`.
 
 #### Taxonomies
 The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See below for more information.
 
 #### Template
-A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  Provisions for 'search' and 'archive' will be added at some point in the future.
+A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  I plan to add this for 'search' and 'archive' at some time in the future.
 
 #### Term Deletion
 If you want to prevent specific taxonomy terms from being deleted, then after creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
