@@ -282,15 +282,20 @@ abstract class Custom_Post_Type {
       $keep_list = array();
       if (!empty($this->tax_keep[$screen->taxonomy])) {
         foreach($this->tax_keep[$screen->taxonomy] as $term) {
-          $keep_list[] = get_term_by('name',$term,$screen->taxonomy)->term_id;
+          if ($term===sanitize_title($term)) {
+            $keep_list[] = get_term_by('slug',$term,$screen->taxonomy)->term_id;
+          } else {
+            $keep_list[] = get_term_by('name',$term,$screen->taxonomy)->term_id;
+          }
         }
       }
       $term_list = get_terms($screen->taxonomy,'hide_empty=1');
       if ($term_list) {
         foreach($term_list as $term) {
           $keep_list[] = $term->term_id; }
-     }
-     if ($keep_list) {
+      }
+      if ($keep_list) {
+        $keep_list = array_unique($keep_list);
         wp_register_script('tax_nodelete',plugins_url('../js/tax_nodelete.js',__FILE__),array('jquery'),false,true);
         wp_localize_script('tax_nodelete','term_list',$keep_list);
         wp_enqueue_script('tax_nodelete');
