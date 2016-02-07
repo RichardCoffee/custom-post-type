@@ -41,9 +41,9 @@ public function __construct() {
     add_action('save_post_'.$this->type,      array($this,'save_meta_boxes'));
   }
 ```
-The method that registers the CPT uses only a subset of arguments available for the WordPress register_post_type() function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the $args array.
+The method that registers the CPT uses only a subset of arguments available for the WordPress register_post_type() function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.  These values will be utilized if passed:
 
-## Notes
+## General Guidelines
 
 After the post type has been created, an action hook is run named 'tcc_custom_post_{post slug}'.  Hook there to run any needed code, such as registering a taxonomy.
 
@@ -51,7 +51,7 @@ After the post type has been created, an action hook is run named 'tcc_custom_po
 Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. Does not handle custom roles, although `$GLOBALS['wp_post_types'][$this->type][cap]` will give you a full list for the CPT.
 
 #### Taxonomies
-The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.
+The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See below for more information.
 
 #### Template
 A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.
@@ -61,6 +61,7 @@ If you want to prevent specific taxonomy terms from being deleted, then when cre
 `$this->tax_keep['taxonomy_slug'] = array('term-slug')`<br>
 or<br>
 `$this->tax_keep['taxonomy_slug'] = array(__('Term Name One','text-domain'))`
+The array must be consistent, either all slugs, or all names.
 
 #### Text domain
 A unique string placeholder 'text-domain' is currently used.  If you are familiar with the linux sed command you can use this command:  `sed -i 's/text-domain/your-domain-name-here/' path-to/custom-post.php`  Alternately, override the method translated_text(), but be sure to duplicate the array structure and __all__ the strings it contains.
@@ -74,17 +75,15 @@ $this->taxonomy_registration($args)
 
 $args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress wp_parse_args() function.  Accepted arguments are:
 ```
-tax      => string - the taxonomy slug (required)<br>
-single   => string - single label name, same as $taxargs['labels']['singular_name'] (one of the two is required)<br>
-plural   => string - plural label name, same as $taxargs['labels']['name'] or label (one of the three is required)<br>
-admin    => boolean - passed as show_admin_column<br>
-rewrite  => string - utilized as array('slug'=>$rewrite), defaults to taxonomy slug (recommended)<br>
-nodelete => boolean - indicates that a term in this taxonomy cannot be deleted if a post uses it<br>
-terms    => array - 
-slug     => boolean
-taxargs  => array - passed as the third argument to the WordPress register_taxonomy() function.
+tax      => string -- the taxonomy slug (required)<br>
+taxargs  => array --- passed as the third argument to the WordPress register_taxonomy() function.
+single   => string -- single label name, same as $taxargs['labels']['singular_name'] (one of the two is required)<br>
+plural   => string -- plural label name, same as $taxargs['labels']['name'] or $taxargs['label'] (one of the three is required)<br>
+admin    => boolean - same as $taxargs['show_admin_column']<br>
+rewrite  => string -- same as $taxargs['rewrite']['slug'], defaults to taxonomy slug if either is not set<br>
+nodelete => boolean - indicates that a term in this taxonomy cannot be deleted if the term is associated with a post. default to false<br>
+terms    => array --- terms to populate the taxonomy with.  only happens if the taxonomy is completely devoid of terms.
+slug     => boolean - force the method to assume the 'terms' array uses slugs as keys if true, or no keys if false.  otherwise it will guess.
 ```
-This method calls the method taxonomy_labels(), which will construct a default labels array.
+This method calls the taxonomy_labels() method, which constructs a labels array, based on the translated_text() method strings.  The terms array should be in structured as `array('Term Name')` or `array('term-slug'=>'Term Name')`.  It does not handle 'alias_of','description', or 'parent' at this time.
 
-
-I shall endeavor to continue working on this readme, as well as better notes in the code.
