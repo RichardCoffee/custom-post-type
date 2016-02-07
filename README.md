@@ -89,6 +89,9 @@ terms    => array --- terms to populate the taxonomy with.  only happens if the 
                       devoid of terms.
 slug     => boolean - true: force the method to assume the 'terms' array uses slugs as keys, false: names
                       only, unset: it will try to guess.
+func     => string -- function/method name, if the terms array is empty, this function can be used to
+                      populate the terms array, default: '$this->default_{tax-slug}()'
+                      set to false to disable.
 ```
 This method calls the taxonomy_labels() method, which constructs a labels array, based on the translated_text() method strings.  The terms array should be in structured as `array('Term Name')` or `array('term-slug'=>'Term Name')`.  It does not handle 'alias_of','description', or 'parent' at this time.
 
