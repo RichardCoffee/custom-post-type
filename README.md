@@ -75,15 +75,20 @@ $this->taxonomy_registration($args)
 
 $args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress wp_parse_args() function.  Accepted arguments are:
 ```
-tax      => string -- the taxonomy slug (required)<br>
+tax      => string -- the taxonomy slug (required)
 taxargs  => array --- passed as the third argument to the WordPress register_taxonomy() function.
-single   => string -- single label name, same as $taxargs['labels']['singular_name'] (one of the two is required)<br>
-plural   => string -- plural label name, same as $taxargs['labels']['name'] or $taxargs['label'] (one of the three is required)<br>
-admin    => boolean - same as $taxargs['show_admin_column']<br>
-rewrite  => string -- same as $taxargs['rewrite']['slug'], defaults to taxonomy slug if either is not set<br>
-nodelete => boolean - indicates that a term in this taxonomy cannot be deleted if the term is associated with a post. default to false<br>
-terms    => array --- terms to populate the taxonomy with.  only happens if the taxonomy is completely devoid of terms.
-slug     => boolean - force the method to assume the 'terms' array uses slugs as keys if true, or no keys if false.  otherwise it will guess.
+single   => string -- single label name, same as $taxargs['labels']['singular_name']
+                      (one of the two is required)
+plural   => string -- plural label name, same as $taxargs['labels']['name'] or $taxargs['label']
+                      (one of the three is required)
+admin    => boolean - same as $taxargs['show_admin_column']
+rewrite  => string -- same as $taxargs['rewrite']['slug'], defaults to taxonomy slug if either is not set
+nodelete => boolean - indicates that a term in this taxonomy cannot be deleted if the term is associated
+                      with a post. defaults to false
+terms    => array --- terms to populate the taxonomy with.  only happens if the taxonomy is completely
+                      devoid of terms.
+slug     => boolean - force the method to assume the 'terms' array uses slugs as keys if true, or no
+                      keys if false.  otherwise it will guess.
 ```
 This method calls the taxonomy_labels() method, which constructs a labels array, based on the translated_text() method strings.  The terms array should be in structured as `array('Term Name')` or `array('term-slug'=>'Term Name')`.  It does not handle 'alias_of','description', or 'parent' at this time.
 
