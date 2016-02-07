@@ -226,7 +226,7 @@ abstract class Custom_Post_Type {
     $single = (isset($taxargs['labels']['singular_name'])) ? $taxargs['labels']['singular_name'] : $single;
     if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
-    $labels = taxonomy_labels($single,$plural);
+    $labels = $this->taxonomy_labels($single,$plural);
     $taxargs['labels'] = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
     $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;
     $taxargs['rewrite'] = (isset($taxargs['rewrite'])) ? $taxargs['rewrite'] : (isset($rewrite)) ? array('slug'=>$rewrite) : array('slug'=>$tax);
