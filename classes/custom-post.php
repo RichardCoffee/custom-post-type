@@ -1,5 +1,12 @@
 <?php
 
+/*
+ *  abstract class for WordPress custom post types
+ *
+ *
+ *  Copyright 2009-2016, Richard Coffee
+ */
+
 abstract class Custom_Post_Type {
 
   protected $type     = ''; #  'custom_post_type_name'
