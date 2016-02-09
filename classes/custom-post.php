@@ -28,7 +28,7 @@ abstract class Custom_Post_Type {
   protected $slug_edit  = true;     #  whether to allow editing of taxonomy slugs in admin screen
   protected $supports   = array('title','editor','author','thumbnail','revisions','comments');
   protected $tax_list   = array();
-  protected $taxonomies = array('post_tag','category');
+  protected $taxonomies = array();  #  array('post_tag','category');
   protected $tax_keep   = array();  #  example: array( 'taxonomy_slug' => array('Term One Name','Term Two Name') )
   protected $templates  = false;    #  example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-<custom_post_type>.php' )
   private static $types = array('posts');
