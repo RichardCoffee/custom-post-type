@@ -30,9 +30,23 @@ Simply copy these to their respective location.  That's it.
 
 ## Usage
 
-Create your own class extending this one.  There is currently one example in the examples/ directory.  I will be adding more.
+Create your own class extending this one.
 
-The construction method in your child class might look like this:
+A bare minumum child class could look like this:
+```
+class Simple_Custom_Post_Type extends Custom_Post_Type {
+
+  public function __construct() {
+    $args = array( 'type'   => 'simple',
+                   'label'  => __('Simple', 'text-domain'),
+                   'plural' => __('Simples','text-domain'));
+    parent::__construct($data);
+  }
+
+}
+```
+
+A more complicated construction method might look like this:
 ```
 public function __construct() {
     $data = array('type'       => 'property',
@@ -42,7 +56,7 @@ public function __construct() {
                   'position'   => 6,
                   'icon'       => 'dashicons-admin-home',
                   'taxonomies' => array('category'),
-                  'template'   => array('single'=>plugins_url('../page_templates/single-property.php',__FILE__)),
+                  'template'   => array('single' => plugin_dir_path(__FILE__)."../template_parts/single-property.php"),
                   'slug_edit'  => false);
     parent::__construct($data);
     if (is_admin()) add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts'));
