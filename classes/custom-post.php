@@ -442,7 +442,7 @@ $this->log_entry('user role',$role);
     return $columns;
   } //*/
 
-  protected function check_meta_boxes() {
+  public function check_meta_boxes() {
     $cap = "edit_others_".sanitize_title($this->plural);
     if (!current_user_can($cap)) {
       remove_meta_box('authordiv',$this->type,'normal');
