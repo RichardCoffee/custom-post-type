@@ -15,6 +15,7 @@ The basis for a lot of the code originated from different places on the web.  I 
 * You can turn off editing of taxonomy term slugs
 * Can generate log messages using your own logging function
 * Automatically generates custom capabilites, which can be used for custom roles.
+* Does all the other things needed for Custom Post Types to function properly
 
 ## Install
 
@@ -78,7 +79,7 @@ Automatically creates unique caps, based on the slug for the CPT.  Also, adds th
 The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See below for more information.
 
 #### Template
-A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  I plan to add this for 'search' and 'archive' at some time in the future.
+A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  There is a filter, "tcc_assign_template_{$this->type}", which can be used to extend it for 'search', 'archive', or others.
 
 #### Term Deletion
 If you want to prevent specific taxonomy terms from being deleted, then after creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
@@ -97,7 +98,7 @@ the method translated_text() provides default strings for both post labels and t
 
 $this->taxonomy_registration($args)
 
-$args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress wp_parse_args() function.  Accepted arguments are:
+$args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress [wp_parse_args()](http://codex.wordpress.org/Function_Reference/wp_parse_args) function.  Accepted arguments are:
 ```
 tax      => string -- the taxonomy slug (required)
 taxargs  => array --- passed as the third argument to the WordPress register_taxonomy() function if present
