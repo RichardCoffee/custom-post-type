@@ -39,7 +39,6 @@ abstract class Custom_Post_Type {
       }
       if (!isset($this->type)) { $this->type = sanitize_title($this->label); }
       add_action('init',                 array($this,'create_post_type'));
-      add_action('admin_init',           array($this,'add_caps'));
       add_filter('pre_get_posts',        array($this,'pre_get_posts'),5); // run early
       add_filter('post_updated_messages',array($this,'post_type_messages'));
       if (isset($this->columns)) { $this->setup_columns(); }
@@ -125,6 +124,7 @@ abstract class Custom_Post_Type {
     $args = apply_filters('tcc_register_post_'.$this->type,$args);
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
+    if ($args['map_meta_cap'])  add_action('admin_init', array($this,'add_caps'));
     $this->log_entry('post type settings',$GLOBALS['wp_post_types'][$this->type]);
     foreach($this->supports as $support) {
       $this->log_entry("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
@@ -179,7 +179,8 @@ abstract class Custom_Post_Type {
     return $messages;
   }
 
-  # http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
+  #  This only gets run if map_meta_caps is true
+  #  http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
   public function add_caps() {
     $roles = array('contributor','author','editor','administrator');
     if ($this->role_caps==='admin') $roles = array('administrator'); // FIXME: provide for custom roles
@@ -189,6 +190,7 @@ abstract class Custom_Post_Type {
 
   private function process_caps($name) {
     $role = get_role($name);
+$this->log_entry('user role',$role);
     $sing = sanitize_title($this->label); # not sure what these singular caps are supposed to do...
     $plur = sanitize_title($this->plural);
     $caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
