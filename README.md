@@ -13,6 +13,7 @@ The basis for a lot of the code originated from different places on the web.  I 
 * You can assign a folder, or list of folders to look for templates in.
 * You have the option of being able to prevent a user from deleting a taxonomy term.
 * You can turn off editing of taxonomy term slugs
+* Can generate log messages using your own logging function
 * Automatically generates custom capabilites, which can be used for custom roles.
 
 ## Install
