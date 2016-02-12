@@ -66,14 +66,14 @@ public function __construct() {
     add_action( 'save_post_'.$this->type,       array( $this, 'save_meta_boxes'));
   }
 ```
-The method that registers the CPT uses only a subset of arguments available for the WordPress register_post_type() function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.
+The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.
 
 ## General Guidelines
 
-After the post type has been created, an action hook is run named 'tcc_custom_post_{post slug}'.  Hook there to run code such as registering a taxonomy.
+After the post type has been created, an action hook is run named 'tcc_custom_post_{post type}'.  Hook there to run code such as registering a taxonomy.
 
 #### Capabilities
-Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][$this->type]['cap']`.
+Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.
 
 #### Taxonomies
 The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See below for more information.
@@ -85,7 +85,7 @@ A 'single' template path and name for the CPT can be assigned, and it will be us
 If you want to prevent specific taxonomy terms from being deleted, then after creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
 `$this->tax_keep['taxonomy_slug'] = array('term-slug')`<br>
 or<br>
-`$this->tax_keep['taxonomy_slug'] = array(__('Term Name One','text-domain'))`
+`$this->tax_keep['taxonomy_slug'] = array(__('Term Name One','text-domain'))`<br>
 The array must be consistent, either all slugs, or all names.
 
 #### Text domain
