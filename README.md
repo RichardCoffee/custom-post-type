@@ -121,3 +121,6 @@ func     => string -- function/method name - if the 'terms' array is empty, this
                       set to false to disable.
 ```
 
+# Change Log
+
+No formal release yet.  Code still subject to change without notice.
