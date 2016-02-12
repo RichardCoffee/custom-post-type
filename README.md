@@ -41,7 +41,7 @@ class Simple_Custom_Post_Type extends Custom_Post_Type {
     $args = array( 'type'   => 'simple',
                    'label'  => __('Simple', 'text-domain'),
                    'plural' => __('Simples','text-domain'));
-    parent::__construct($data);
+    parent::__construct($args);
   }
 
 }
