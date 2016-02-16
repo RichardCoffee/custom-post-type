@@ -245,8 +245,8 @@ $this->log_entry('user role',$role);
           $func = (is_null($func)) ? "default_$tax" : $func;
           if ($func) {
             if (is_array($func) && method_exists($func[0],$func[1])) { non_function(); } // FIXME?
-            else if (method_exists($this,$func)) { $defs = $this->$func(); }
-            else if (function_exists($func))     { $defs = $func(); }
+            elseif (method_exists($this,$func)) { $defs = $this->$func(); }
+            elseif (function_exists($func))     { $defs = $func(); }
           }
         } else {
           $defs = $terms;
@@ -369,7 +369,7 @@ $this->log_entry('user role',$role);
   private function locate_template($template,$slug) {
     if (isset($this->templates[$slug])) {
       $template = $this->templates[$slug];
-    } else if (isset($this->templates['folders'])) {
+    } elseif (isset($this->templates['folders'])) {
       foreach((array)$this->templates['folders'] as $folder) {
         $test = $folder."/$slug-{$this->type}.php";
         if (file_exists($test)) {
@@ -424,9 +424,9 @@ $this->log_entry('user role',$role);
           $check = $query->get('post_type');
           if (empty($check)) {
             $query->set('post_type',array('post',$this->type));
-          } else if (!((array)$check==$check)) {
+          } elseif (!((array)$check==$check)) {
             if ($check!==$this->type) $query->set('post_type',array($check,$this->type));
-          } else if (!in_array($this->type,$check)) {
+          } elseif (!in_array($this->type,$check)) {
             $check[] = $this->type;
             $query->set('post_type',$check);
           }
@@ -454,7 +454,7 @@ $this->log_entry('user role',$role);
       $log = $this->logging; // FIXME:  check for array, ie: method of a different class
       if (function_exists($log)) {
         foreach (func_get_args() as $message) { $log($message); }
-      } else if (method_exists($this,$log)) {
+      } elseif (method_exists($this,$log)) {
         foreach (func_get_args() as $message) { $this->$log($message); }
       }
     }
