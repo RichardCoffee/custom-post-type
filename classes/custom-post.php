@@ -24,7 +24,6 @@ abstract class Custom_Post_Type {
   protected $position   = 6;           #  position on admin dashboard
   protected $rewrite    = array();     #  array('slug'=>$this->type));
   protected $role_caps  = 'normal';    #  value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
-  protected $sidebars   = array();
   protected $slug_edit  = true;        #  whether to allow editing of taxonomy slugs in admin screen
   protected $supports   = array('title','editor','author','thumbnail','revisions','comments');
   protected $tax_list   = array();
@@ -50,8 +49,6 @@ abstract class Custom_Post_Type {
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
       if ($this->main_blog) {
         add_filter('pre_get_posts',        array($this,'pre_get_posts'),5); } #  run early
-      if ($this->sidebars) {
-        add_filter('tcc_register_sidebars',array($this,'custom_post_sidebars')); }
       if ( !$this->slug_edit) {
         add_action('admin_enqueue_scripts',array($this,'stop_slug_edit'));
       if ($this->templates) {
@@ -390,8 +387,7 @@ abstract class Custom_Post_Type {
     return $template;
   }
 
-/*
-  public function comments_limit($open,$post_id) {
+/*  public function comments_limit($open,$post_id) {
     $mytype = get_post_type($post_id);
     if ($this->type==$mytype) {
       if (is_singular($mytype)) {
@@ -406,19 +402,6 @@ abstract class Custom_Post_Type {
       }
     }
     return $open;
-  } //*/
-
-  public function custom_post_sidebars($sidebars) {
-    $defaults = array('before_widget' => '<div class="panel panel-primary">', // bootstrap css classes
-                      'before_title'  => '<div class="panel-heading"><h3 class="panel-title">',
-                      'after_title'   => '</h3></div><div class="panel-body">',
-                      'after_widget'  => '</div></div>');
-    foreach($this->sidebars as $sidebar) {
-      if (empty($sidebar['id']) || empty($sidebar['name'])) continue;
-      $add_sidebar = array_merge($defaults,$sidebar);
-      $sidebars[]  = $add_sidebar;
-    }
-    return $sidebars;
   } //*/
 
 
