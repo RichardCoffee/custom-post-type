@@ -13,7 +13,9 @@ The basis for a lot of the code originated from different places on the web.  I 
 * You can assign a folder, or list of folders to look for templates in.
 * You have the option of being able to prevent a user from deleting a taxonomy term.
 * You can turn off editing of taxonomy term slugs
+* Can generate log messages using your own logging function
 * Automatically generates custom capabilites, which can be used for custom roles.
+* Does all the other things needed for Custom Post Types to function properly
 
 ## Install
 
@@ -29,9 +31,23 @@ Simply copy these to their respective location.  That's it.
 
 ## Usage
 
-Create your own class extending this one.  There is currently one example in the examples/ directory.  I will be adding more.
+Create your own class extending this one.
 
-The construction method in your child class might look like this:
+A bare minumum child class could look like this:
+```
+class Simple_Custom_Post_Type extends Custom_Post_Type {
+
+  public function __construct() {
+    $args = array( 'type'   => 'simple',
+                   'label'  => __('Simple', 'text-domain'),
+                   'plural' => __('Simples','text-domain'));
+    parent::__construct($args);
+  }
+
+}
+```
+
+A more complicated construction method might look like this:
 ```
 public function __construct() {
     $data = array('type'       => 'property',
@@ -41,7 +57,7 @@ public function __construct() {
                   'position'   => 6,
                   'icon'       => 'dashicons-admin-home',
                   'taxonomies' => array('category'),
-                  'template'   => array('single'=>plugins_url('../page_templates/single-property.php',__FILE__)),
+                  'template'   => array('single' => plugin_dir_path(__FILE__)."../template_parts/single-property.php"),
                   'slug_edit'  => false);
     parent::__construct($data);
     if (is_admin()) add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts'));
@@ -50,26 +66,26 @@ public function __construct() {
     add_action( 'save_post_'.$this->type,       array( $this, 'save_meta_boxes'));
   }
 ```
-The method that registers the CPT uses only a subset of arguments available for the WordPress register_post_type() function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.
+The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.
 
 ## General Guidelines
 
-After the post type has been created, an action hook is run named 'tcc_custom_post_{post slug}'.  Hook there to run code such as registering a taxonomy.
+After the post type has been created, an action hook is run named 'tcc_custom_post_{post type}'.  Hook there to run code such as registering a taxonomy.
 
 #### Capabilities
-Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][$this->type]['cap']`.
+Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.
 
 #### Taxonomies
 The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See below for more information.
 
 #### Template
-A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  I plan to add this for 'search' and 'archive' at some time in the future.
+A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  There is a filter, "tcc_assign_template_{$this->type}", which can be used to extend it for 'search', 'archive', or others.
 
 #### Term Deletion
 If you want to prevent specific taxonomy terms from being deleted, then after creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
 `$this->tax_keep['taxonomy_slug'] = array('term-slug')`<br>
 or<br>
-`$this->tax_keep['taxonomy_slug'] = array(__('Term Name One','text-domain'))`
+`$this->tax_keep['taxonomy_slug'] = array(__('Term Name One','text-domain'))`<br>
 The array must be consistent, either all slugs, or all names.
 
 #### Text domain
@@ -82,7 +98,7 @@ the method translated_text() provides default strings for both post labels and t
 
 $this->taxonomy_registration($args)
 
-$args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress wp_parse_args() function.  Accepted arguments are:
+$args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress [wp_parse_args()](http://codex.wordpress.org/Function_Reference/wp_parse_args) function.  Accepted arguments are:
 ```
 tax      => string -- the taxonomy slug (required)
 taxargs  => array --- passed as the third argument to the WordPress register_taxonomy() function if present
@@ -105,3 +121,6 @@ func     => string -- function/method name - if the 'terms' array is empty, this
                       set to false to disable.
 ```
 
+# Change Log
+
+No formal release yet.  Code still subject to change without notice.
