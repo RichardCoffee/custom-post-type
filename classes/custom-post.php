@@ -15,8 +15,8 @@ abstract class Custom_Post_Type {
   protected $descrip  = '';  #  __('Custom Post Type Title','textdomain')
 
   protected $columns    = null;        #  array('remove'=>array()','add'=>array())
-//  protected $comments   = null;        #  or true
-  protected $debug      = false;       # used in conjunction with $this->logging
+  protected $comments   = false;       #  boolean:  allow comments
+  protected $debug      = false;       #  used in conjunction with $this->logging
   protected $icon       = 'dashicon-admin-post'; #  admin dashboard icon
   protected $logging    = 'log_entry'; #  assign your own logging function here
   protected $main_blog  = true;        #  set to false to not force inclusion in WP post queries
@@ -40,20 +40,20 @@ abstract class Custom_Post_Type {
       }
       if (!isset($this->type)) { $this->type = sanitize_title($this->label); }  // seriously?
       add_action('init',                 array($this,'create_post_type'));
+      add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
       add_filter('post_updated_messages',array($this,'post_type_messages'));
-      if (isset($this->columns)) { $this->setup_columns(); }
-      /*if (isset($this->comments)) {
+      if ($this->columns) {
+        $this->setup_columns(); }
+      if ($this->comments)) {
         add_filter('comments_open',array($this,'comments_limit'),10,2);
         add_filter('pings_open',   array($this,'comments_limit'),10,2);
       } //*/
-      add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
       if ($this->main_blog) {
         add_filter('pre_get_posts',        array($this,'pre_get_posts'),5); } #  run early
-      if ( !$this->slug_edit) {
-        add_action('admin_enqueue_scripts',array($this,'stop_slug_edit'));
+      if ( ! $this->slug_edit) {
+        add_action('admin_enqueue_scripts',array($this,'stop_slug_edit')); }
       if ($this->templates) {
         add_filter('template_include',     array($this,'assign_template')); }
-      }
     }
   }
 
@@ -387,16 +387,16 @@ abstract class Custom_Post_Type {
     return $template;
   }
 
-/*  public function comments_limit($open,$post_id) {
+  public function comments_limit($open,$post_id) {
     $mytype = get_post_type($post_id);
     if ($this->type==$mytype) {
       if (is_singular($mytype)) {
         if ((isset($this->comments)) && ($this->comments)) {
           if (is_bool($this->comments)) {
             $open = $this->comments;
-          } else {
+          } else { // FIXME:  support numeric values
 #            $postime = get_the_time('U', $post_id);
-             $this->log_entry('WARNING: Numeric values for custom_post_type->comments is not yet supported.');
+             $this->log_entry("WARNING: Numeric values for {$this->type}->comments is not yet supported.");
           }
         }
       }
