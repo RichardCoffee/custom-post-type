@@ -44,7 +44,7 @@ abstract class Custom_Post_Type {
       add_filter('post_updated_messages',array($this,'post_type_messages'));
       if ($this->columns) {
         $this->setup_columns(); }
-      if ($this->comments)) {
+      if ($this->comments) {
         add_filter('comments_open',array($this,'comments_limit'),10,2);
         add_filter('pings_open',   array($this,'comments_limit'),10,2);
       } //*/
