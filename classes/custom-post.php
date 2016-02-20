@@ -221,7 +221,7 @@ abstract class Custom_Post_Type {
   protected function taxonomy_registration($args) {
     $defs = array('admin'=>false,'submenu'=>false,'nodelete'=>false,'func'=>null);
     $args = wp_parse_args($args,$defs);
-    extract($args);
+    extract($args);  #  see README.md for extracted variables list
     if (empty($tax))     return;
     if (empty($taxargs)) $taxargs = array();
     if (empty($single) && empty($taxargs['labels']['singular_name'])) return;
