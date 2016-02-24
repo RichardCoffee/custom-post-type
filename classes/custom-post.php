@@ -326,10 +326,10 @@ abstract class Custom_Post_Type {
 
   private function setup_columns() {
     if (isset($this->columns['remove'])) {
-      add_filter("manage_edit-{$type}_columns",array($this,'remove_custom_post_columns')); }
+      add_filter("manage_edit-{$this->type}_columns",array($this,'remove_custom_post_columns')); }
     if (isset($data['columns']['add'])) {
-      add_filter("manage_edit-{$type}_columns",array($this,'add_custom_post_columns'));
-      add_filter("manage_edit-{$type}_sortable_columns",array($this,'add_custom_post_columns'));
+      add_filter("manage_edit-{$this->type}_columns",array($this,'add_custom_post_columns'));
+      add_filter("manage_edit-{$this->type}_sortable_columns",array($this,'add_custom_post_columns'));
       if (isset($data['columns']['content'])) {
         if (is_callable(array($this,$this->columns['content']))) {
           add_action('manage_posts_custom_column',array($this,$this->columns['content']),10,2);
