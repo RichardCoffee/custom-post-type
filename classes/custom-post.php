@@ -17,7 +17,7 @@ abstract class Custom_Post_Type {
   protected $columns    = null;        #  array('remove'=>array()','add'=>array())
   protected $comments   = false;       #  boolean:  allow comments
   protected $debug      = false;       #  used in conjunction with $this->logging
-  protected $icon       = 'dashicon-admin-post'; #  admin dashboard icon
+  protected $icon       = 'dashicons-admin-post'; #  admin dashboard icon
   protected $logging    = 'log_entry'; #  assign your own logging function here
   protected $main_blog  = true;        #  set to false to not force inclusion in WP post queries
   private   $nodelete   = array();     #  used in $this->taxonomy_registration($args)
