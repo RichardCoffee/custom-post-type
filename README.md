@@ -83,13 +83,13 @@ A 'single' template path and name for the CPT can be assigned, and it will be us
 
 #### Term Deletion
 If you want to prevent specific taxonomy terms from being deleted, then after creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
-`$this->tax_keep['taxonomy_slug'] = array('term-slug')`<br>
+`$this->tax_keep['taxonomy-slug'] = array('term-slug')`<br>
 or<br>
-`$this->tax_keep['taxonomy_slug'] = array(__('Term Name One','text-domain'))`<br>
+`$this->tax_keep['taxonomy-slug'] = array(__('Term Name One','text-domain'))`<br>
 The array must be consistent, either all slugs, or all names.
 
 #### Text domain
-All the strings the class uses are defined in the method translated_text().  Redefine the method in the child class to change the text-domain and/or wording of the strings, but be sure to duplicate the array structure __exactly__.  Alternately, you could change the custom-post.php text to the needed domain.  If you are comfortable with the linux command line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/custom-post.php`
+All the strings the class uses are defined in the method translated_text().  Redefine the method in the child class to change the text-domain and/or wording of the strings, but be sure to duplicate the array structure __exactly__.  Alternately, you could change the custom-post.php text to the needed domain.  If you are comfortable with the linux command line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/custom-post.php`.  Or you could just do a search and replace in your favorite text editor.
 
 #### Text strings
 the method translated_text() provides default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels(), taxonomy_labels(), and post_type_messages().  The latter generates CPT specific messages which are displayed in place of the standard WordPress messages.
