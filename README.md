@@ -19,7 +19,7 @@ The basis for a lot of the code originated from different places on the web.  I 
 
 ## Install
 
-Requires PHP 5.3+, no term deletion and no slug editing functions require jQuery
+Requires PHP 5.3+, the 'no term deletion' and 'no slug editing' functions require jQuery
 
 This really consists of only three files:
 ```
@@ -47,9 +47,11 @@ class Simple_Custom_Post_Type extends Custom_Post_Type {
 }
 ```
 
-A more complicated construction method might look like this:
+A more complicated class might look like this:
 ```
-public function __construct() {
+class Property extends Custom_Post_Type {
+
+  public function __construct() {
     $data = array('type'       => 'property',
                   'label'      => _x('Property','single plot of land','text-domain'),
                   'plural'     => _x('Properties','multiple plots of land','text-domain'),
@@ -64,22 +66,30 @@ public function __construct() {
     add_action( 'tcc_custom_post_'.$this->type, array( $this, 'create_taxonomies'));
     add_action( 'add_meta_boxes_'.$this->type,  array( $this, 'add_meta_boxes'));
     add_action( 'save_post_'.$this->type,       array( $this, 'save_meta_boxes'));
+    add_filter( 'tcc_register_post_property',   array( $this, 'register_property'));
   }
+
+  public function register_property($args) {
+    $args['capability_type'] = 'post';
+    return $args;
+  }
+
+}
 ```
-The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post type}' that allows you to modify the array.
+The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post-type}' that allows you to modify the array.
 
 ## General Guidelines
 
-After the post type has been created, an action hook is run named 'tcc_custom_post_{post type}'.  Hook there to run code such as registering a taxonomy.
+After the post type has been created, an action hook is run named 'tcc_custom_post_{post-type}'.  Hook there to run code such as registering a taxonomy.  See the 'Taxonomies' sections below.
 
 #### Capabilities
-Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.
+Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.  This behavior can be overridden as in the second example above.
 
 #### Labels
-The class generates a default array of strings for the labels based upon the singular and plural labels.  This array can be altered using the filter action `tcc_post_label_{$custom-post-type}`.  See the 'Text domain' section below for related information.
+The class generates a default array of strings for the labels based upon the singular and plural labels.  This array can be altered using the filter action `tcc_post_label_{post-type}`.  See the 'Text domain' and 'Text strings' sections below for related information.
 
 #### Taxonomies
-The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See below for more information.
+The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See the 'Term Deletion' section below for more information.
 
 #### Template
 A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  There is a filter, "tcc_assign_template_{$this->type}", which can be used to extend it for 'search', 'archive', or others.
@@ -89,9 +99,9 @@ If you want to prevent specific taxonomy terms from being deleted, then after cr
 `$this->tax_keep['taxonomy-slug'] = array('term-slug')`<br>
 or<br>
 `$this->tax_keep['taxonomy-slug'] = array(__('Term Name One','text-domain'))`<br>
-The array must be consistent, either all slugs, or all names.
+The array must be consistent, either all slugs, or all names.  I need to fix that.
 
-#### Text domain
+#### Text Domain
 All the strings the class uses are defined in the method translated_text().  Redefine the method in the child class to change the text-domain and/or wording of the strings, but be sure to duplicate the array structure __exactly__.  Alternately, you could change the custom-post.php text to the needed domain.  If you are comfortable with the linux command line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/custom-post.php`.  Or you could just do a search and replace in your favorite text editor.
 
 #### Text strings
