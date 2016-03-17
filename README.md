@@ -75,6 +75,9 @@ After the post type has been created, an action hook is run named 'tcc_custom_po
 #### Capabilities
 Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.
 
+#### Labels
+The class generates a default array of strings for the labels based upon the singular and plural labels.  This array can be altered using the filter action `tcc_post_label_{$custom-post-type}`.  See the 'Text domain' section below for related information.
+
 #### Taxonomies
 The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See below for more information.
 
