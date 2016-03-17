@@ -17,7 +17,7 @@ abstract class Custom_Post_Type {
   protected $columns    = null;        #  array('remove'=>array()','add'=>array())
   protected $comments   = false;       #  boolean:  allow comments
   protected $debug      = false;       #  used in conjunction with $this->logging
-  protected $icon       = 'dashicons-admin-post'; #  admin dashboard icon
+  protected $menu_icon  = 'dashicons-admin-post'; #  admin dashboard icon
   protected $logging    = 'log_entry'; #  assign your own logging function here
   protected $main_blog  = true;        #  set to false to not force inclusion in WP post queries
   private   $nodelete   = array();     #  used in $this->taxonomy_registration($args)
@@ -110,7 +110,7 @@ abstract class Custom_Post_Type {
         'public'            => true,
         'show_in_admin_bar' => false,
         'menu_position'     => $this->position,
-        'menu_icon'         => $this->icon,
+        'menu_icon'         => $this->menu_icon,
         'capability_type'   => array(sanitize_title($this->label),sanitize_title($this->plural)), # Note: method add_caps
         'map_meta_cap'      => true,
         'hierarchical'      => false,

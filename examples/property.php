@@ -14,7 +14,7 @@ class Real_Estate_Property extends Custom_Post_Type {
                   'plural'     => _x('Properties','plural form','tcc-real-estate'),
                   'descrip'    => __('Real Estate Property','tcc-real-estate'),
                   'position'   => 6,
-                  'icon'       => 'dashicons-admin-home',
+                  'menu_icon'  => 'dashicons-admin-home',
                   'taxonomies' => array(),
                   'slug_edit'  => false,
                   'sidebars'   => array(array('name'=>__('Property Sidebar','tcc-real-estate'),'id'=>'property'))); // FIXME: is this being used?
