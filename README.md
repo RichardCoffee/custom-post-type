@@ -124,11 +124,9 @@ rewrite  => string -- same as $taxargs['rewrite']['slug'], defaults to taxonomy 
 nodelete => boolean - true indicates that a term in this taxonomy cannot be deleted if the term is
                       associated with a post. default: false
 terms    => array --- terms to populate the taxonomy with.  Only happens if the taxonomy is completely
-                      devoid of terms.  The 'terms' array should be in structured as `array('Term Name One')`
-                      or `array('term-slug-one'=>'Term Name One')`.  Be consistant, do not mix slugs with
-                      names.  It does not handle 'alias_of','description', or 'parent' at this time.
-slug     => boolean - true: force the method to assume the 'terms' array uses slugs as keys, false: names
-                      only, unset: it will try to guess.
+                      devoid of terms.  The 'terms' array can be in structured as `array('Term Name One',
+                      'term-slug-two'=>'Term Name Two')`.  It does not handle 'alias_of','description', or
+                      'parent' at this time.
 func     => string -- function/method name - if the 'terms' array is empty, this function will be used to
                       populate the terms array, default function called: '$this->default_{tax-slug}'
                       set to false to disable.

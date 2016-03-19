@@ -253,15 +253,11 @@ abstract class Custom_Post_Type {
           $defs = $terms;
         }
         if ($defs) {
-          if (!isset($slug)) {
-            $test = array_slice($defs,0,1,true);
-            $slug = (!isset($test[0]));
-          }
           foreach($defs as $key=>$term) { // FIXME:  provide for description
-            if ($slug) {
-              wp_insert_term($term,$tax,array('slug'=>$key));
-            } else {
+            if (is_numeric($key)) {
               wp_insert_term($term,$tax);
+            } else {
+              wp_insert_term($term,$tax,array('slug'=>$key));
             }
           }
         }
