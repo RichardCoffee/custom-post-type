@@ -259,9 +259,9 @@ abstract class Custom_Post_Type {
           }
           foreach($defs as $key=>$term) { // FIXME:  provide for description
             if ($slug) {
-              wp_insert_term($each,$tax,array('slug'=>$key));
+              wp_insert_term($term,$tax,array('slug'=>$key));
             } else {
-              wp_insert_term($each,$tax);
+              wp_insert_term($term,$tax);
             }
           }
         }
