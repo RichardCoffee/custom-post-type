@@ -357,12 +357,15 @@ log_entry($keep_list);
   #  http://codex.wordpress.org/Function_Reference/locate_template
   #  https://wordpress.org/support/topic/stylesheetpath-in-plugin
   public function assign_template($template) {
-    if ($post_id=get_the_ID()) {
+    $post_id = get_the_ID();
+    if ($post_id) {
       $mytype = get_post_type($post_id);
       if ($mytype && ($this->type==$mytype)) {
         if (is_single()) {
           $template = $this->locate_template($template,'single');
-        } // FIXME: search, archive
+        } else if (is_search || is_post_type_archive($this->type)) {
+          $template = $this->locate_template($template,'archive');
+        }
         $template = apply_filters('tcc_assign_template_'.$this->type,$template);
       }
     }

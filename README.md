@@ -92,7 +92,7 @@ The class generates a default array of strings for the labels based upon the sin
 The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See the 'Term Deletion' section below for more information.
 
 #### Template
-A 'single' template path and name for the CPT can be assigned, and it will be used when displaying the CPT.  There is a filter, "tcc_assign_template_{$this->type}", which can be used to extend it for 'search', 'archive', or others.
+A template file can be assigned for 'single' and 'archive' templates.  A template 'folder' can also be specified.  The filter, `tcc_assign_template_{$this->type}`, can also be used.
 
 #### Term Deletion
 If you want to prevent specific taxonomy terms from being deleted, then after creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
