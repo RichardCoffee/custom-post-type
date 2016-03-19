@@ -56,7 +56,7 @@ class Property extends Custom_Post_Type {
                   'label'      => _x('Property','single plot of land','text-domain'),
                   'plural'     => _x('Properties','multiple plots of land','text-domain'),
                   'descrip'    => __('Real Estate Property','text-domain'),
-                  'position'   => 6,
+                  'menu_position' => 6,
                   'menu_icon'  => 'dashicons-admin-home',
                   'taxonomies' => array('category'),
                   'template'   => array('single' => plugin_dir_path(__FILE__)."../template_parts/single-property.php"),

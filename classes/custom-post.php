@@ -22,7 +22,7 @@ abstract class Custom_Post_Type {
   protected $logging    = 'log_entry'; #  assign your own logging function here
   protected $main_blog  = true;        #  set to false to not force inclusion in WP post queries
   private   $nodelete   = array();     #  used in $this->taxonomy_registration($args)
-  protected $position   = 6;           #  position on admin dashboard
+  protected $menu_position = null;     #  position on admin dashboard
   protected $rewrite    = array();     #  array('slug'=>$this->type));
   protected $role_caps  = 'normal';    #  value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
   protected $slug_edit  = true;        #  whether to allow editing of taxonomy slugs in admin screen
@@ -111,7 +111,7 @@ abstract class Custom_Post_Type {
         'description'       => $this->descrip,
         'public'            => (isset($this->public)) ? $this->public : true,
         'show_in_admin_bar' => (isset($this->show_in_admin_bar)) ? $this->show_in_admin_bar : false,
-        'menu_position'     => $this->position,
+        'menu_position'     => $this->menu_position,
         'menu_icon'         => $this->menu_icon,
         'capability_type'   => (isset($this->capability_type)) ? $this->capability_type : (empty($this->caps)) ? $caps : $this->caps,
         'map_meta_cap'      => (isset($this->map_meta_cap))    ? $this->map_meta_cap : true,
@@ -299,6 +299,7 @@ abstract class Custom_Post_Type {
       }
       if ($keep_list) {
         $keep_list = array_unique($keep_list);
+log_entry($keep_list);
         wp_register_script('tax_nodelete',plugins_url('../js/tax_nodelete.js',__FILE__),array('jquery'),false,true);
         wp_localize_script('tax_nodelete','term_list',$keep_list);
         wp_enqueue_script('tax_nodelete');
