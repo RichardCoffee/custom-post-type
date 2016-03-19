@@ -14,6 +14,7 @@ abstract class Custom_Post_Type {
   protected $plural   = '';  #  _x('Custom Post Types','plural form','textdomain')
   protected $descrip  = '';  #  __('Custom Post Type Title','textdomain')
 
+  protected $caps       = 'post';      #  default is to not create custom capabilities
   protected $columns    = null;        #  array('remove'=>array()','add'=>array())
   protected $comments   = false;       #  boolean:  allow comments
   protected $debug      = false;       #  used in conjunction with $this->logging
@@ -38,7 +39,7 @@ abstract class Custom_Post_Type {
       foreach($data as $prop=>$value) {
         $this->{$prop} = $value;
       }
-      if (!isset($this->type)) { $this->type = sanitize_title($this->label); }  // seriously?
+      if (empty($this->type)) { $this->type = sanitize_title($this->label); }  // seriously?
       add_action('init',                 array($this,'create_post_type'));
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
       add_filter('post_updated_messages',array($this,'post_type_messages'));
@@ -49,7 +50,7 @@ abstract class Custom_Post_Type {
         add_filter('pings_open',   array($this,'comments_limit'),10,2);
       } //*/
       if ($this->main_blog) {
-        add_filter('pre_get_posts',        array($this,'pre_get_posts'),5); } #  run early
+        add_filter('pre_get_posts',        array($this,'pre_get_posts'),5); } #  run early - priority 5
       if ( ! $this->slug_edit) {
         add_action('admin_enqueue_scripts',array($this,'stop_slug_edit')); }
       if ($this->templates) {
@@ -103,18 +104,19 @@ abstract class Custom_Post_Type {
 
   public function create_post_type() {
     if (empty($this->rewrite) || empty($this->rewrite['slug'])) { $this->rewrite['slug'] = $this->type; }
-    $args = array (
+    $caps = array( sanitize_title($this->label), sanitize_title($this->plural) ); # Note: method add_caps
+    $args = array(
         'label'             => $this->plural,
         'labels'            => $this->post_type_labels(),
         'description'       => $this->descrip,
-        'public'            => true,
-        'show_in_admin_bar' => false,
+        'public'            => (isset($this->public)) ? $this->public : true,
+        'show_in_admin_bar' => (isset($this->show_in_admin_bar)) ? $this->show_in_admin_bar : false,
         'menu_position'     => $this->position,
         'menu_icon'         => $this->menu_icon,
-        'capability_type'   => array(sanitize_title($this->label),sanitize_title($this->plural)), # Note: method add_caps
-        'map_meta_cap'      => true,
-        'hierarchical'      => false,
-        'query_var'         => false,
+        'capability_type'   => (isset($this->capability_type)) ? $this->capability_type : (empty($this->caps)) ? $caps : $this->caps,
+        'map_meta_cap'      => (isset($this->map_meta_cap))    ? $this->map_meta_cap : true,
+        'hierarchical'      => (isset($this->hierarchical))    ? $this->hierarchical : false,
+        'query_var'         => (isset($this->query_var))       ? $this->query_var    : false,
         'supports'          => $this->supports,
         'taxonomies'        => $this->taxonomies,
         'has_archive'       => $this->type,
