@@ -79,6 +79,7 @@ abstract class Custom_Post_Type {
                      'archive' => _x('%s Archive', 'placeholder is singular form','tcc-custom-post'),
                      'edit_p'  => _x('Edit %s',    'placeholder is plural form',  'tcc-custom-post'),
                      'edit_s'  => _x('Edit %s',    'placeholder is singular form','tcc-custom-post'),
+                     'list'    => _x('%s list',    'placeholder is singular form','tcc-custom-post'),
                      'new'     => _x('New %s',     'placeholder is singular form','tcc-custom-post'),
                      'search'  => _x('Search %s',  'placeholder is plural form',  'tcc-custom-post'),
                      'trash'   => _x('No %s found in trash','placeholder is plural form','tcc-custom-post'),
@@ -147,7 +148,8 @@ abstract class Custom_Post_Type {
       'items_archive' => sprintf($phrases['archive'],$this->label),
       'search_items'  => sprintf($phrases['search'], $this->plural),
       'not_found'     => sprintf($phrases['404'],    $this->plural),
-      'not_found_in_trash' => sprintf($phrases['trash'],$this->plural));
+      'not_found_in_trash' => sprintf($phrases['trash'],$this->plural),
+      'items_list'    => sprintf($phrases['list']    $this->label));
     $arr = apply_filters('tcc_post_labels_'.$this->type,$arr);
     return $arr;
   }
