@@ -149,7 +149,7 @@ abstract class Custom_Post_Type {
       'search_items'  => sprintf($phrases['search'], $this->plural),
       'not_found'     => sprintf($phrases['404'],    $this->plural),
       'not_found_in_trash' => sprintf($phrases['trash'],$this->plural),
-      'items_list'    => sprintf($phrases['list']    $this->label));
+      'items_list'    => sprintf($phrases['list'],   $this->label));
     $arr = apply_filters('tcc_post_labels_'.$this->type,$arr);
     return $arr;
   }
