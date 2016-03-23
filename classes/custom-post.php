@@ -14,23 +14,26 @@ abstract class Custom_Post_Type {
   protected $plural   = '';  #  _x('Custom Post Types','plural form','textdomain')
   protected $descrip  = '';  #  __('Custom Post Type Title','textdomain')
 
-  protected $caps       = 'post';      #  default is to not create custom capabilities
-  protected $columns    = null;        #  array('remove'=>array()','add'=>array())
-  protected $comments   = false;       #  boolean:  allow comments
-  protected $debug      = false;       #  used in conjunction with $this->logging
+
+  # I have marked properties with '**' that I believe people may want to change more often.
+  protected $caps       = 'post';      #    default is to not create custom capabilities
+  protected $columns    = null;        #    array('remove'=>array()','add'=>array())
+  protected $comments   = false;       # ** boolean:  allow comments
+  protected $debug      = false;       #    used in conjunction with $this->logging
+  #protected $has_archive = false;     #    can be set to the archive template path
   protected $menu_icon  = 'dashicons-admin-post'; #  admin dashboard icon
-  protected $logging    = 'log_entry'; #  assign your own logging function here
-  protected $main_blog  = true;        #  set to false to not force inclusion in WP post queries
-  private   $nodelete   = array();     #  used in $this->taxonomy_registration($args)
-  protected $menu_position = null;     #  position on admin dashboard
-  protected $rewrite    = array();     #  array('slug'=>$this->type));
-  protected $role_caps  = 'normal';    #  value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
-  protected $slug_edit  = true;        #  whether to allow editing of taxonomy slugs in admin screen
+  protected $logging    = 'log_entry'; #    assign your own logging function here
+  protected $main_blog  = false;       # ** set to true to force inclusion in WP post queries
+  private   $nodelete   = array();     #    used in $this->taxonomy_registration($args)
+  protected $menu_position = null;     # ** position on admin dashboard
+  protected $rewrite    = array();     #    array('slug'=>$this->type));
+  protected $role_caps  = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
+  protected $slug_edit  = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $supports   = array('title','editor','author','thumbnail','revisions','comments');
   protected $tax_list   = array();
-  protected $taxonomies = array();     #  array('post_tag','category');  passed to register_post_type() - FIXME:  possible auto call of $this->taxonomy_registration()
-  protected $tax_keep   = array();     #  example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
-  protected $templates  = false;       #  example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
+  protected $taxonomies = array();     # ** array('post_tag','category'); passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
+  protected $tax_keep   = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
+  protected $templates  = false;       #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
 
   private static $types = array('posts');
 
@@ -124,7 +127,7 @@ abstract class Custom_Post_Type {
         'query_var'         => (isset($this->query_var))       ? $this->query_var    : false,
         'supports'          => $this->supports,
         'taxonomies'        => $this->taxonomies,
-        'has_archive'       => $this->type,
+        'has_archive'       => (isset($this->has_archive)) ? $this->has_archive : $this->type,
         'rewrite'           => $this->rewrite);
     $args = apply_filters('tcc_register_post_'.$this->type,$args);
     register_post_type($this->type,$args);
@@ -386,6 +389,8 @@ log_entry($keep_list);
   private function locate_template($template,$slug) {
     if (isset($this->templates[$slug])) {
       $template = $this->templates[$slug];
+    } elseif (($slug==='archive') && isset($this->has_archive) && is_string($this->has_archive)) {
+      $template = $this->has_archives;
     } elseif (isset($this->templates['folders'])) {
       foreach((array)$this->templates['folders'] as $folder) {
         $test = $folder."/$slug-{$this->type}.php";
