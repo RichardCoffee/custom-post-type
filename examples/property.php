@@ -1,6 +1,6 @@
 <?php
 
-require_once(WP_PLUGIN_DIR.'/tcc-theme-options/classes/custom-post.php');
+require_once('custom-post.php');
 
 class Real_Estate_Property extends Custom_Post_Type {
 
@@ -10,16 +10,20 @@ class Real_Estate_Property extends Custom_Post_Type {
 
   public function __construct() {
     $data = array('type'       => 'property',
-                  'label'      => _x('Property','singular form','tcc-real_estate'),
-                  'plural'     => _x('Properties','plural form','tcc-real-estate'),
+                  'label'      => _x('Property','single plot of land','tcc-real_estate'),
+                  'plural'     => _x('Properties','multiple plots of land','tcc-real-estate'),
                   'descrip'    => __('Real Estate Property','tcc-real-estate'),
-                  'position'   => 6,
+                  'main_blog'  => true,
+                  'menu_position' => 6,
                   'menu_icon'  => 'dashicons-admin-home',
                   'taxonomies' => array(),
                   'slug_edit'  => false,
-                  'sidebars'   => array(array('name'=>__('Property Sidebar','tcc-real-estate'),'id'=>'property'))); // FIXME: is this being used?
+                  'tax_keep'   => array('prop_city'=>$this->default_prop_city(),'prop_state'=>$this->default_prop_state(),'prop_area'=>$this->default_prop_area()),
+                  'sidebars'   => array(array('name'=>__('Property Sidebar','tcc-real-estate'),'id'=>'property')),  // FIXME: is this being used?
+                  'templates'  => array('single'=> plugin_dir_path(__FILE__)."../template-parts/single-property.php"));
     parent::__construct($data);
-    if (is_admin()) add_action('admin_enqueue_scripts',array($this,'admin_enqueue_scripts'));
+    $this->caps = '';  #  allow this class to determine capability_types for custom roles
+    add_action('admin_enqueue_scripts',       array($this,'admin_enqueue_scripts'));
     add_action('tcc_custom_post_'.$this->type,array($this,'create_taxonomies'));
     add_action('add_meta_boxes_'.$this->type, array($this,'add_meta_boxes'));
     add_action('save_post_'.$this->type,      array($this,'save_meta_boxes'));
@@ -36,7 +40,7 @@ class Real_Estate_Property extends Custom_Post_Type {
 
   public function admin_enqueue_scripts() {
     $screen = get_current_screen();
-     if ($screen && ($screen->post_type==$this->type)) {
+    if ($screen && ($screen->post_type==$this->type)) {
       wp_register_style('listing',plugin_dir_url(__FILE__)."../css/admin-listing.css");
       wp_enqueue_style('tcc-columns');
       wp_enqueue_style('listing');
@@ -50,12 +54,13 @@ class Real_Estate_Property extends Custom_Post_Type {
   /**  Property Meta Boxes  **/
 
   public function add_meta_boxes() {
-    add_meta_box('prop_financ_meta', __('Property Financials','tcc-real-estate'),array($this,'meta_box_finances'),   'property','normal','high');
-    add_meta_box('prop_images_meta', __('Property Images',    'tcc-real-estate'),array($this,'meta_box_prop_images'),'property','normal','high');
-    add_meta_box('prop_address_meta',__('Property Location',  'tcc-real-estate'),array($this,'meta_box_address'),    'property','normal','high');
-    add_meta_box('prop_details_meta',__('Property Details',   'tcc-real-estate'),array($this,'meta_box_details'),    'property','normal','high');
-    add_meta_box('prop_type_meta',   __('Property Type',      'tcc-real-estate'),array($this,'meta_box_prop_type'),  'property','side',  'core');
-    add_meta_box('prop_type_amens',  __('Amenities',          'tcc-real-estate'),array($this,'meta_box_amenities'),  'property','side',  'core');
+    add_meta_box('prop_financ_meta', __('Property Financials','tcc-real-estate'),array($this,'meta_box_finances'), 'property','normal','high');
+    add_meta_box('prop_images_meta', __('Property Images',    'tcc-real-estate'),array($this,'meta_box_images'),   'property','normal','high');
+    add_meta_box('prop_address_meta',__('Property Location',  'tcc-real-estate'),array($this,'meta_box_address'),  'property','normal','high');
+    add_meta_box('prop_details_meta',__('Property Details',   'tcc-real-estate'),array($this,'meta_box_details'),  'property','normal','high');
+    add_meta_box('prop_type_meta',   __('Property Type',      'tcc-real-estate'),array($this,'meta_box_types'),    'property','side',  'high');
+    add_meta_box('prop_amens_meta',  __('Amenities',          'tcc-real-estate'),array($this,'meta_box_amenities'),'property','side',  'low');
+    add_meta_box('prop_close_meta',  __("What's Close",       'tcc-real-estate'),array($this,'meta_box_closest'),  'property','side',  'low');
     remove_meta_box('tagsdiv-prop_action','property','side');
     remove_meta_box('tagsdiv-prop_categ', 'property','side');
     remove_meta_box('tagsdiv-prop_status','property','side');
@@ -104,7 +109,7 @@ class Real_Estate_Property extends Custom_Post_Type {
     </table><?php
   }
 
-  public function meta_box_prop_images($post) { ?>
+  public function meta_box_images($post) { ?>
     <div id="listing-images" class="section group"><?php
     $images = get_listing_images($post->ID,true);
     foreach($images as $ID=>$src) { ?>
@@ -187,7 +192,7 @@ class Real_Estate_Property extends Custom_Post_Type {
     </table><?php
   }
 
-  public function meta_box_prop_type($post) {
+  public function meta_box_types($post) {
     wp_nonce_field(basename(__FILE__),'property_nonce');
     $this->show_prop_type_field($post,__('Listing Type',   'tcc-real-estate'),'action');
     $this->show_prop_type_field($post,__('Property Type',  'tcc-real-estate'),'categ');
@@ -195,7 +200,23 @@ class Real_Estate_Property extends Custom_Post_Type {
   }
 
   public function meta_box_amenities($post) {
-#    $amens = $this->layout['right']
+    $this->meta_box_checkboxes($post,'prop_list');
+  }
+
+  public function meta_box_closest($post) {
+    $this->meta_box_checkboxes($post,'prop_close');
+  }
+
+  private function meta_box_checkboxes($post,$tax) {
+    $data = $this->layout['right'][$tax];
+    #log_entry('amenities',$amens);
+    $terms = reformat_taxonomy_terms($post->ID,$tax);
+    #log_entry('post amenities',$terms);
+    foreach($data as $key=>$item) {
+      if ($key=='title') continue;
+      $mine  = (in_array($key,(array)$terms['slugs'])) ? " checked" : "";
+      echo "<p><label><input type='checkbox' name='{$tax}[]' value='$key'$mine/> {$item['label']} </label></p>";
+    }
   }
 
   private function show_prop_item($post,$name,$layout) {
@@ -244,18 +265,17 @@ class Real_Estate_Property extends Custom_Post_Type {
 
   public function save_meta_boxes($postID) {
     remove_action('save_post_'.$this->type, array($this,'save_meta_boxes')); # prevent recursion
-    if (!isset($_POST['property_nonce'])) return;
-    if (!current_user_can('edit_post',$postID))  return;
-    if (wp_is_post_autosave($postID))            return;
-    if (wp_is_post_revision($postID))            return;
+    if (!isset($_POST['property_nonce']))       return;
+    if (!current_user_can('edit_post',$postID)) return;
+    if (wp_is_post_autosave($postID))           return;
+    if (wp_is_post_revision($postID))           return;
     if (!wp_verify_nonce($_POST['property_nonce'],basename(__FILE__))) return;
     $verified = true;
     $in_admin = true;
     $incoming = $_POST;
     $incoming['prop_id'] = $postID;
     $plugin = Real_Estate_Plugin::get_instance();
-    include($plugin->path.'/actions/save_agent_listing.php');
-    // FIXME:  handle error message here
+    require($plugin->path.'/actions/save_agent_listing.php');
     if ($result['result']===0) {
       if (isset($result['index'])) {
         $this->error = $result;
@@ -369,7 +389,7 @@ class Real_Estate_Property extends Custom_Post_Type {
   private function create_categ_tax() {
     $args = array('tax'      => 'prop_categ',
                   'single'   => _x('Property Type', 'Taxonomy singular name for a plot of land','tcc-real-estate'),
-                  'plural'   => _x('Property Types','Taxonomy plural name for plots of land', 'tcc-real-estate'),
+                  'plural'   => _x('Property Types','Taxonomy plural name for multiple plots of land', 'tcc-real-estate'),
                   'rewrite'  => 'type',
                   'nodelete' => true);
     $this->taxonomy_registration($args);
