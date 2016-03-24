@@ -26,7 +26,7 @@ abstract class RC_Custom_Post_Type {
   protected $main_blog  = false;       # ** set to true to force inclusion in WP post queries
   private   $nodelete   = array();     #    used in $this->taxonomy_registration($args)
   protected $menu_position = null;     # ** position on admin dashboard
-  protected $rewrite    = array();     #    array('slug'=>$this->type));
+  protected $rewrite    = array();     #    defaults to: array('slug'=>$this->type));
   protected $role_caps  = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
   protected $slug_edit  = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $supports   = array('title','editor','author','thumbnail','revisions','comments');

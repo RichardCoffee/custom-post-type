@@ -9,17 +9,18 @@ The basis for a lot of the code originated from different places on the web.  I 
 ## Features
 
 * Provides a base class for easier CPT creation.
-* You can assign a custom 'single' template for displaying a CPT from a plugin.
+* Control whether the CPT show ups on the Blog page along with regular posts.
+* You can assign a custom 'single' template for displaying the CPT from a plugin.
 * You can assign a folder, or list of folders to look for templates in.
-* You have the option of being able to prevent a user from deleting a taxonomy term.
-* You can turn off editing of taxonomy term slugs
-* Can generate log messages using your own logging function
-* Automatically generates custom capabilites, which can be used for custom roles.
+* You can stop a user from deleting a taxonomy term, either permanently or if in use.
+* You can prevent editing of taxonomy term slugs.
+* Can automatically generate custom capabilites, suitable to be used for custom roles.
+* Can generate log messages using your own logging function.
 * Does all the other things needed for Custom Post Types to function properly
 
 ## Install
 
-Requires PHP 5.3+, the 'no term deletion' and 'no slug editing' functions require jQuery
+Requires PHP 5.3+, the 'no term deletion' and 'no slug editing' functions require jQuery.
 
 This really consists of only three files:
 ```
@@ -38,9 +39,10 @@ A bare minumum child class could look like this:
 class Simple_Custom_Post_Type extends RC_Custom_Post_Type {
 
   public function __construct() {
-    $args = array( 'type'   => 'simple',
-                   'label'  => __('Simple', 'text-domain'),
-                   'plural' => __('Simples','text-domain'));
+    $args = array( 'type'      => 'simple',
+                   'label'     => __('Simple', 'text-domain'),
+                   'plural'    => __('Simples','text-domain'),
+                   'main_blog' => true);
     parent::__construct($args);
   }
 
@@ -59,7 +61,8 @@ class Property extends RC_Custom_Post_Type {
                   'menu_position' => 6,
                   'menu_icon'  => 'dashicons-admin-home',
                   'taxonomies' => array('category'),
-                  'template'   => array('single' => plugin_dir_path(__FILE__)."../template_parts/single-property.php"),
+                  'templates'  => array('single'  => plugin_dir_path(__FILE__).'../page-templates/single-property.php',
+                                        'archive' => plugin_dir_path(__FILE__).'../page-templates/archive-property.php'),
                   'slug_edit'  => false);
     parent::__construct($data);
     if (is_admin()) add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts'));
@@ -70,42 +73,41 @@ class Property extends RC_Custom_Post_Type {
   }
 
   public function register_property($args) {
-    $args['capability_type'] = 'post';
+    $args['show_in_nav_menus'] = false;
     return $args;
   }
 
 }
 ```
-The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post-type}' that allows you to modify the array.
+Look in classes/custom-post.php for a list of all available arguments, and what they do.  The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post-type}' that allows you to modify the $args array.  I seem to be adding something with every project, so it may have the full set at some point.  :)  I have tried to use what I consider reasonable defaults.
 
 ## General Guidelines
 
-After the post type has been created, an action hook is run named 'tcc_custom_post_{post-type}'.  Hook there to run code such as registering a taxonomy.  See the 'Taxonomies' sections below.
-
 #### Capabilities
-Automatically creates unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.  This behavior can be overridden as in the second example above.
+While defaulting to using standard Wordpress caps,  The class can generate unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For a listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.
 
 #### Labels
 The class generates a default array of strings for the labels based upon the singular and plural labels.  This array can be altered using the filter action `tcc_post_label_{post-type}`.  See the 'Text domain' and 'Text strings' sections below for related information.
 
 #### Taxonomies
-The class provides a taxonomy_registration() method.  If used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See the 'Term Deletion' section below for more information.
+After the post type has been created, an action hook is run named 'tcc_custom_post_{post-type}'.  Hook there to run code such as registering a taxonomy.  See the 'Taxonomies' sections below.
+The class provides its own taxonomy_registration() method.  When used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See the 'Term Deletion' section below for more information.
 
 #### Template
-A template file can be assigned for 'single' and 'archive' templates.  A template 'folder' can also be specified.  The filter, `tcc_assign_template_{$this->type}`, can also be used.
+A template file can be assigned for 'single' and 'archive' templates.  A template 'folder' can also be specified.  The filter, `tcc_assign_template_{$this->type}`, can also be used.  I think this still needs more work.  Let me know if you run into use cases this doesn't handle properly.
 
 #### Term Deletion
-If you want to prevent specific taxonomy terms from being deleted, then after creating the taxonomy in the child class, append an array of the term slugs or names to the tax_keep property array, like so:<br>
+The taxonomy must have been created use the class method taxonomy_registration() in order for this to work.  If you want to prevent specific taxonomy terms from being deleted, append an array of the term slugs or names to the tax_keep property array, like so:<br>
 `$this->tax_keep['taxonomy-slug'] = array('term-slug')`<br>
 or<br>
 `$this->tax_keep['taxonomy-slug'] = array(__('Term Name One','text-domain'))`<br>
-The array must be consistent, either all slugs, or all names.  I need to fix that.
+The array must be consistent, either all slugs, or all names.  (I need to fix that)
 
 #### Text Domain
-All the strings the class uses are defined in the method translated_text().  Redefine the method in the child class to change the text-domain and/or wording of the strings, but be sure to duplicate the array structure __exactly__.  Alternately, you could change the custom-post.php text to the needed domain.  If you are comfortable with the linux command line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/custom-post.php`.  Or you could just do a search and replace in your favorite text editor.
+All the strings the class uses are defined in the method translated_text().  Redefine the method in the child class to change the text-domain and/or wording of the strings, but be sure to duplicate the array structure __exactly__.  Alternately, you could change the custom-post.php text domain to your domain.  If you are comfortable with the linux command line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/custom-post.php`.  Or you could just do a search and replace in your favorite text editor.
 
 #### Text strings
-the method translated_text() provides default strings for both post labels and taxonomy labels.  The methods utilizing the strings are post_type_labels(), taxonomy_labels(), and post_type_messages().  The latter generates CPT specific messages which are displayed in place of the standard WordPress messages.
+the method translated_text() provides default strings for both cpt and taxonomy labels.  The methods utilizing the strings are post_type_labels(), taxonomy_labels(), and post_type_messages().  The latter generates CPT specific messages which are displayed in place of the standard WordPress messages.
 
 ## Taxonomies
 
