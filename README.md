@@ -35,7 +35,7 @@ Create your own class extending this one.
 
 A bare minumum child class could look like this:
 ```
-class Simple_Custom_Post_Type extends Custom_Post_Type {
+class Simple_Custom_Post_Type extends RC_Custom_Post_Type {
 
   public function __construct() {
     $args = array( 'type'   => 'simple',
@@ -49,7 +49,7 @@ class Simple_Custom_Post_Type extends Custom_Post_Type {
 
 A more complicated class might look like this:
 ```
-class Property extends Custom_Post_Type {
+class Property extends RC_Custom_Post_Type {
 
   public function __construct() {
     $data = array('type'       => 'property',

@@ -7,7 +7,7 @@
  *  Copyright 2009-2016, Richard Coffee
  */
 
-abstract class Custom_Post_Type {
+abstract class RC_Custom_Post_Type {
 
   protected $type     = '';  #  'custom_post_type_name'
   protected $label    = '';  #  _x('Custom Post Type','singular form','textdomain')
