@@ -453,10 +453,13 @@ log_entry($keep_list);
 
   private function log_entry() {
     if ($this->debug && isset($this->logging)) {
-      $log = $this->logging; // FIXME:  check for array, ie: method of a different class
-      if (function_exists($log)) {
+      $log = $this->logging;
+      if (is_array($log) && method_exists($log)) {  #  Method in a different class
+        extract($log,EXTR_PREFIX_INVALID,'logger');
+        foreach (func_get_args() as $message) { $logger_0->$logger_1($message); }
+      } elseif (function_exists($log)) {            #  Function
         foreach (func_get_args() as $message) { $log($message); }
-      } elseif (method_exists($this,$log)) {
+      } elseif (method_exists($this,$log)) {        #  Method in this class
         foreach (func_get_args() as $message) { $this->$log($message); }
       }
     }
