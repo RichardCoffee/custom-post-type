@@ -10,6 +10,7 @@ The basis for a lot of the code originated from different places on the web.  I 
 
 * Provides a base class for easier CPT creation.
 * Control whether the CPT show ups on the Blog page along with regular posts.
+* You can stop a CPT with a specific taxonomy term from showing up on queries.
 * You can assign a custom 'single' template for displaying the CPT from a plugin.
 * You can assign a folder, or list of folders to look for templates in.
 * You can stop a user from deleting a custom taxonomy term, either permanently or if in use.
@@ -129,6 +130,7 @@ terms    => array --- terms to populate the taxonomy with.  Only happens if the 
 func     => string -- function/method name - if the 'terms' array is empty, this function will be used to
                       populate the terms array, default function called: '$this->default_{tax-slug}'
                       set to false to disable.
+omit     => array --- array of terms not to display in searches. ie:  if a post has this term, that post will not be displayed.
 ```
 
 # Change Log
