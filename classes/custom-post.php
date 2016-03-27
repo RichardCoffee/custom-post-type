@@ -14,7 +14,6 @@ abstract class RC_Custom_Post_Type {
   protected $plural   = '';  #  _x('Custom Post Types','plural form','textdomain')
   protected $descrip  = '';  #  __('Custom Post Type Title','textdomain')
 
-
   # I have marked properties with '**' that I believe people may want to change more often.
   protected $caps       = 'post';      #    default is to not create custom capabilities
   protected $columns    = null;        #    array('remove'=>array()','add'=>array())
@@ -24,7 +23,6 @@ abstract class RC_Custom_Post_Type {
   protected $menu_icon  = 'dashicons-admin-post'; #  admin dashboard icon
   protected $logging    = 'log_entry'; #    assign your own logging function here
   protected $main_blog  = false;       # ** set to true to force inclusion in WP post queries
-  private   $nodelete   = array();     #    used in $this->taxonomy_registration($args)
   protected $menu_position = null;     # ** position on admin dashboard
   protected $rewrite    = array();     #    defaults to: array('slug'=>$this->type));
   protected $role_caps  = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
@@ -36,22 +34,32 @@ abstract class RC_Custom_Post_Type {
   protected $templates  = false;       #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
 
   private static $types = array('posts');
+  //  FIXME:  this needs to be handled differently
+  private $cpt_nodelete = false;       #    no deletion policy on builtin taxonomies assigned to this cpt
+  private $enqueue_flag = false;       #    indicates js_nodelete.js needs to be enqueued
+  private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
   public function __construct($data) {
     if (!post_type_exists($data['type'])) {
+      if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }
+      unset($data['enqueue_flag'],$data['nodelete']);
       foreach($data as $prop=>$value) {
         $this->{$prop} = $value;
       }
       if (empty($this->type)) { $this->type = sanitize_title($this->label); }  // seriously?
       add_action('init',                 array($this,'create_post_type'));
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
+      add_action('admin_enqueue_scripts',array($this,'admin_enqueue_scripts'));
       add_filter('post_updated_messages',array($this,'post_type_messages'));
       if ($this->columns) {
         $this->setup_columns(); }
       if ($this->comments) {
         add_filter('comments_open',array($this,'comments_limit'),10,2);
         add_filter('pings_open',   array($this,'comments_limit'),10,2);
-      } //*/
+      }
+      if ($this->cpt_nodelete) {
+        $this->add_builtins();
+      }
       if ($this->main_blog) {
         add_filter('pre_get_posts',        array($this,'pre_get_posts'),5); } #  run early - priority 5
       if ( ! $this->slug_edit) {
@@ -280,8 +288,22 @@ abstract class RC_Custom_Post_Type {
         add_filter('wp_get_nav_menu_items',array($this,$submenu)); }
       if ($nodelete) {
         $this->nodelete[] = $tax;
-        add_action('admin_enqueue_scripts',array($this,'stop_term_deletion'));
+        $this->enqueue_flag = true;
       }
+    }
+  }
+
+  private function add_builtins() {
+    $check = array('post_tag','category');
+    foreach($check as $tax) {
+      $this->nodelete[] = $tax;
+      $this->enqueue_flag = true;
+    }
+  }
+
+  public function admin_enqueue_scripts() {
+    if ($this->enqueue_flag) {
+      $this->stop_term_deletion();
     }
   }
 

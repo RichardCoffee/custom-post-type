@@ -12,8 +12,8 @@ The basis for a lot of the code originated from different places on the web.  I 
 * Control whether the CPT show ups on the Blog page along with regular posts.
 * You can assign a custom 'single' template for displaying the CPT from a plugin.
 * You can assign a folder, or list of folders to look for templates in.
-* You can stop a user from deleting a taxonomy term, either permanently or if in use.
-* You can prevent editing of taxonomy term slugs.
+* You can stop a user from deleting a custom taxonomy term, either permanently or if in use.
+* You can prevent editing of custom taxonomy term slugs.
 * Can automatically generate custom capabilites, suitable to be used for custom roles.
 * Can generate log messages using your own logging function.
 * Does all the other things needed for Custom Post Types to function properly
@@ -97,11 +97,8 @@ The class provides its own taxonomy_registration() method.  When used, it provid
 A template file can be assigned for 'single' and 'archive' templates.  A template 'folder' can also be specified.  The filter, `tcc_assign_template_{$this->type}`, can also be used.  I think this still needs more work.  Let me know if you run into use cases this doesn't handle properly.
 
 #### Term Deletion
-The taxonomy must have been created use the class method taxonomy_registration() in order for this to work.  If you want to prevent specific taxonomy terms from being deleted, append an array of the term slugs or names to the tax_keep property array, like so:<br>
-`$this->tax_keep['taxonomy-slug'] = array('term-slug')`<br>
-or<br>
-`$this->tax_keep['taxonomy-slug'] = array(__('Term Name One','text-domain'))`<br>
-The array must be consistent, either all slugs, or all names.  (I need to fix that)
+The taxonomy must have been created use the class method taxonomy_registration() in order for this to work.  If you want to prevent specific taxonomy terms from being deleted, append an array of the term slugs and/or names to the tax_keep property array, like so:<br>
+`$this->tax_keep['taxonomy-slug'] = array('term-slug-one',__('Term Name Two','text-domain'))`
 
 #### Text Domain
 All the strings the class uses are defined in the method translated_text().  Redefine the method in the child class to change the text-domain and/or wording of the strings, but be sure to duplicate the array structure __exactly__.  Alternately, you could change the custom-post.php text domain to your domain.  If you are comfortable with the linux command line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/custom-post.php`.  Or you could just do a search and replace in your favorite text editor.
