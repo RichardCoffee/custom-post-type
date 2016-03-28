@@ -31,7 +31,7 @@ abstract class RC_Custom_Post_Type {
   protected $slug_edit  = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $supports   = array('title','editor','author','thumbnail','revisions','comments');
   protected $tax_list   = array();
-  protected $taxonomies = array();     # ** array('post_tag','category'); passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
+  protected $taxonomies = array('post_tag','category'); # passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
   protected $tax_keep   = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
   protected $tax_omit   = array();     #    taxonomy terms to omit from normal queries - not yet implemented
   protected $templates  = false;       #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
