@@ -14,8 +14,9 @@ abstract class RC_Custom_Post_Type {
   protected $plural   = '';  #  _x('Custom Post Types','plural form','textdomain')
   protected $descrip  = '';  #  __('Custom Post Type Title','textdomain')
 
-  # I have marked properties with '**' that I believe people may want to change more often.
+  ######  I have marked properties with '**' that I believe people may want to change more often.
   protected $caps       = 'post';      #    default is to not create custom capabilities
+  protected $cap_suffix = array();     #    can be used to assign custom suffix for capabilities, ex: array('singular'=>'singular-suffix','plural'=>'plural-suffix')
   protected $columns    = null;        #    array('remove'=>array()','add'=>array())
   protected $comments   = false;       # ** boolean:  allow comments
   protected $debug      = false;       #    used in conjunction with $this->logging
@@ -89,8 +90,10 @@ abstract class RC_Custom_Post_Type {
     if (empty($text)) {
       $text =  array('404'     => _x('No %s found',          'placeholder is plural form',  'tcc-custom-post'),
                      'add'     => _x('Add New %s',           'placeheader is singular form','tcc-custom-post'),
+                     'add_rem' => _x('Add or remove $s',     'placeholder is plural form',  'tcc-custom-post'),
                      'all'     => _x('All %s',               'placeholder is plural form',  'tcc-custom-post'),
                      'archive' => _x('%s Archive',           'placeholder is singular form','tcc-custom-post'),
+                     'commas'  => _x('Separate %s with commas','placeholder is plural form','tcc-custom-post'),
                      'edit_p'  => _x('Edit %s',              'placeholder is plural form',  'tcc-custom-post'),
                      'edit_s'  => _x('Edit %s',              'placeholder is singular form','tcc-custom-post'),
                      'filter'  => _x('Filter %s list',       'placeholder is plural form',  'tcc-custom-post'),
@@ -98,10 +101,14 @@ abstract class RC_Custom_Post_Type {
                      'list'    => _x('%s list',              'placeholder is singular form','tcc-custom-post'),
                      'navig'   => _x('%s list navigation',   'placeholder is plural form',  'tcc-custom-post'),
                      'new'     => _x('New %s',               'placeholder is singular form','tcc-custom-post'),
+                     'none'    => _x('No %s',                'placeholder is plural form',  'tcc-custom-post'),
+                     'parent'  => _x('Parent %s',            'placeholder is singular form','tcc-custom-post'),
+                     'popular' => _x('Popular %s',           'placeholder is plural form',  'tcc-custom-post'),
                      'search'  => _x('Search %s',            'placeholder is plural form',  'tcc-custom-post'),
                      'trash'   => _x('No %s found in trash', 'placeholder is plural form',  'tcc-custom-post'),
                      'update'  => _x('Update %s',            'placeholder is singular form','tcc-custom-post'),
                      'upload'  => _x('Uploaded to this %s',  'placeholder is singular form','tcc-custom-post'),
+                     'used'    => _x('Choose from the most used %s','placeholder is plural form','tcc-custom-post'),
                      'view_p'  => _x('View %s',              'placeholder is plural form',  'tcc-custom-post'),
                      'view_s'  => _x('View %s',              'placeholder is singular form','tcc-custom-post'),
                      'messages'=> array('custom_u' => __('Custom field updated.', 'tcc-custom-post'),
@@ -163,10 +170,16 @@ abstract class RC_Custom_Post_Type {
       'search_items'  => sprintf($phrases['search'], $this->plural),
       'not_found'     => sprintf($phrases['404'],    $this->plural),
       'not_found_in_trash'    => sprintf($phrases['trash'],  $this->plural),
+      #'parent_item_colon' – This string isn’t used on non-hierarchical types. In hierarchical ones the default is ‘Parent Page:’.
       'all_items'             => sprintf($phrases['all'],    $this->plural),
       'archives'              => sprintf($phrases['all'],    $this->plural),
       'insert_into_item'      => sprintf($phrases['insert'], $this->label),
       'uploaded_to_this_item' => sprintf($phrases['upload'], $this->label),
+      #'featured_image' – Default is Featured Image.
+      #'set_featured_image' – Default is Set featured image.
+      #'remove_featured_image' – Default is Remove featured image.
+      #'use_featured_image' – Default is Use as featured image.
+      #'menu_name' – Default is the same as name.
       'filter_items_list'     => sprintf($phrases['filter'], $this->plural),
       'items_list_navigation' => sprintf($phrases['navig'],  $this->plural),
       'items_list'    => sprintf($phrases['list'],   $this->label),
@@ -217,7 +230,7 @@ abstract class RC_Custom_Post_Type {
   private function process_caps($name) {
     $role = get_role($name);
     $this->log_entry('user role',$role);
-    $sing = sanitize_title($this->label); # not sure what these singular caps are supposed to do...
+    $sing = sanitize_title($this->label);
     $plur = sanitize_title($this->plural);
     $caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
     $auth = array("delete_published_$plur","edit_published_$plur","publish_$plur");
@@ -237,13 +250,24 @@ abstract class RC_Custom_Post_Type {
     $phrases = $this->translated_text();
     return array('name'              => $plural,
                  'singular_name'     => $single,
-                 'search_items'      => sprintf($phrases['search'],$plural),
-                 'all_items'         => sprintf($phrases['all'],   $plural),
-                 'edit_item'         => sprintf($phrases['edit_s'],$single),
-                 'update_item'       => sprintf($phrases['update'],$single),
-                 'add_new_item'      => sprintf($phrases['add'],   $single),
-                 'new_item_name'     => sprintf($phrases['new'],   $single),
-                 'menu_name'         => $plural);
+                 'search_items'      => sprintf($phrases['search'], $plural),
+                 'popular_items'     => sprintf($phrases['popular'],$plural),
+                 'all_items'         => sprintf($phrases['all'],    $plural),
+                 'parent_item'       => sprintf($phrases['parent'], $single),
+                 'parent_item_colon' => sprintf($phrases['parent'], $single).':',
+                 'edit_item'         => sprintf($phrases['edit_s'], $single),
+                 'view_item'         => sprintf($phrases['view_s'], $single),
+                 'update_item'       => sprintf($phrases['update'], $single),
+                 'add_new_item'      => sprintf($phrases['add'],    $single),
+                 'new_item_name'     => sprintf($phrases['new'],    $single),
+                 'separate_items_with_commas' => sprintf($phrases['commas'],  $plural),
+                 'add_or_remove_items'        => sprintf($phrases['add_rem'], $plural),
+                 'choose_from_most_used'      => sprintf($phrases['used'],    $plural),
+                 'not_found'                  => sprintf($phrases['404'],     $plural),
+                 'menu_name'                  => $plural,
+                 'no_terms'                   => sprintf($phrases['none'],    $plural),
+                 'items_list_navigation'      => sprintf($phrases['navig'],   $plural),
+                 'items_list'                 => sprintf($phrases['list'],    $plural));
   }
 
   protected function taxonomy_registration($args) {
