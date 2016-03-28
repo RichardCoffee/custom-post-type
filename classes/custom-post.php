@@ -27,6 +27,7 @@ abstract class RC_Custom_Post_Type {
   protected $menu_position = null;     # ** position on admin dashboard
   protected $rewrite    = array();     #    defaults to: array('slug'=>$this->type));
   protected $role_caps  = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
+  protected $sidebar    = false;       #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
   protected $slug_edit  = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $supports   = array('title','editor','author','thumbnail','revisions','comments');
   protected $tax_list   = array();
@@ -151,6 +152,7 @@ abstract class RC_Custom_Post_Type {
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
     if ($args['map_meta_cap'])  add_action('admin_init', array($this,'add_caps'));
+    if ($this->sidebar)         $this->register_sidebar();
     $this->log_entry('post type settings',$GLOBALS['wp_post_types'][$this->type]);
     foreach($this->supports as $support) {
       $this->log_entry("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
@@ -217,6 +219,14 @@ abstract class RC_Custom_Post_Type {
       10 => sprintf( $strings['draft'],   $this->label) .$preview_link);
     return $messages;
   }
+
+  protected function register_sidebar() {
+    $sidebar = array('id' => $this->type, 'name' => $this->label);
+    if (is_array($this->sidebar)) $sidebar = array_merge($sidebar,$this->sidebar);
+    register_sidebar($sidebar);
+  }
+
+  /*  Capabilities  */
 
   #  This only gets run if map_meta_caps is true
   #  http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
