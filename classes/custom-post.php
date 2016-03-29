@@ -9,42 +9,43 @@
 
 abstract class RC_Custom_Post_Type {
 
-  protected $type     = '';  #  'custom_post_type_name'
-  protected $label    = '';  #  _x('Custom Post Type','singular form','textdomain')
-  protected $plural   = '';  #  _x('Custom Post Types','plural form','textdomain')
-  protected $descrip  = '';  #  __('Custom Post Type Title','textdomain')
+  protected $type     = 'post';  #  'custom_post_type_name'
+  protected $label    = 'Post';  #  _x('Custom Post Type','singular form','textdomain')
+  protected $plural   = 'Posts'; #  _x('Custom Post Types','plural form','textdomain')
+  protected $descrip  = '';      #  __('Custom Post Type Title','textdomain')
 
   ######  I have marked properties with '**' that I believe people may want to change more often.
-  protected $caps       = 'post';      #    default is to not create custom capabilities
-  protected $cap_suffix = array();     #    can be used to assign custom suffix for capabilities, ex: array('singular'=>'singular-suffix','plural'=>'plural-suffix')
-  protected $columns    = null;        #    array('remove'=>array()','add'=>array())
-  protected $comments   =  false;      # ** boolean:  allow comments
-  protected $debug      =  false;      #    used in conjunction with $this->logging
-  #protected $has_archive = false;     #    can be set to the archive template path
-  protected $logging    = 'log_entry'; #    assign your own logging function here
-  protected $main_blog  =  false;      # ** set to true to force inclusion in WP post queries
-  protected $menu_icon  = 'dashicons-admin-post'; # ** admin dashboard icon
-  protected $menu_position = null;     # ** position on admin dashboard
-  protected $rewrite    = array();     #    defaults to: array('slug'=>$this->type));
-  protected $role_caps  = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
-  protected $sidebar    =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
-  protected $slug_edit  =  true;       # ** whether to allow editing of taxonomy slugs in admin screen
-  protected $supports   = array('title','editor','author','thumbnail','revisions','comments');
-  protected $tax_list   = array();
-  protected $taxonomies = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
-  protected $tax_keep   = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
-  protected $tax_omit   = array();     #    taxonomy terms to omit from normal queries - not yet implemented
-  protected $templates  = false;       #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
-  protected $user_col   = false;       # ** set to true to add a count column for this CPT to the admin users screen
+  protected $caps        = 'post';      #    default is to not create custom capabilities
+  protected $cap_suffix  = array();     #    can be used to assign custom suffix for capabilities, ex: array('singular'=>'singular-suffix','plural'=>'plural-suffix')
+  protected $columns     = null;        #    array('remove'=>array()','add'=>array())
+  protected $comments    =  false;      # ** boolean:  allow comments
+  protected $debug       =  false;      #    used in conjunction with $this->logging
+  protected $has_archive =  false;      #    boolean or string - can be set to the archive template path
+  protected $logging     = 'log_entry'; #    assign your own logging function here
+  protected $main_blog   =  false;      # ** set to true to force inclusion in WP post queries
+  protected $menu_icon   = 'dashicons-admin-post'; # ** admin dashboard icon
+  protected $menu_position = null;      # ** position on admin dashboard
+  protected $rewrite     = array();     #    defaults to: array('slug'=>$this->type));
+  protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
+  protected $sidebar     =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
+  protected $slug_edit   =  true;       # ** whether to allow editing of taxonomy slugs in admin screen
+  protected $supports    = array('title','editor','author','thumbnail','revisions','comments');
+  protected $tax_list    = array();
+  protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
+  protected $tax_keep    = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
+  protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - not yet implemented
+  protected $templates   = false;       #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
+  protected $user_col    = false;       # ** set to true to add a count column for this CPT to the admin users screen
 
-  private static $types = array('posts');
+  # Do not set these in the child class
+  private static $types = array('posts'=>null);
   //  FIXME:  this needs to be handled differently
   private $cpt_nodelete = false;       #    if true then implement no deletion policy on builtin taxonomies assigned to this cpt
   private $enqueue_flag = false;       #    flag to indicate that js_nodelete.js needs to be enqueued
   private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
   public function __construct($data) {
-    if (!post_type_exists($data['type'])) {
+    if ((isset($data['type']) && !post_type_exists($data['type'])) || !post_type_exists($this->type)) {
       if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }
       unset($data['cpt_nodelete'],$data['enqueue_flag'],$data['nodelete']);
       foreach($data as $prop=>$value) {
@@ -55,28 +56,34 @@ abstract class RC_Custom_Post_Type {
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
       add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'));
       add_filter('post_updated_messages', array($this,'post_type_messages'));
-      if ($this->columns) {
+      if ($this->columns) {      #  Add/Remove cpt screen columns
         $this->setup_columns(); }
-      if ($this->comments) {
+      if ($this->comments) {     #  Allow comments for cpt
         add_filter('comments_open', array($this,'comments_limit'),10,2);
         add_filter('pings_open',    array($this,'comments_limit'),10,2);
       }
-      if ($this->cpt_nodelete) {
-        $this->add_builtins();
-      }
-      if ($this->main_blog) {
+      if ($this->cpt_nodelete) { #  Add nodelete code for builtin taxonomies
+        $this->add_builtins(); }
+      if ($this->main_blog) {    #  Force cpt in main wp query
         add_filter('pre_get_posts', array($this,'pre_get_posts'),5); } #  run early - priority 5
-      if ($this->tax_omit) {
+      if ($this->tax_omit) {     #  Stop posts with tax term from showing in any query
         add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }
-      if ( ! $this->slug_edit) {
+      if ( ! $this->slug_edit) { #  Deny admin ability to edit taxonomy term slugs
         add_action('admin_enqueue_scripts',array($this,'stop_slug_edit')); }
-      if ($this->templates) {
+      if ($this->templates) {    #  Handle templates
         add_filter('template_include', array($this,'assign_template')); }
-      if ($this->user_col) {
+      if ($this->user_col) {     #  Add count column to Users screen
         add_action('manage_users_columns',array($this,'manage_users_columns'));
         add_action('manage_users_custom_column',array($this,'manage_users_custom_column'),10,3);
       }
+      if (!isset(static::$types[$this->type])) {
+        static::$types[$this->type] = $this;
+      }
     }
+  }
+
+  public function __destruct() {  // FIXME:  php internals - will this get called?
+    unset(static::$types[$this->type]);
   }
 
   #  http://php.net/manual/en/language.oop5.overloading.php#object.unset
