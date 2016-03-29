@@ -473,7 +473,7 @@ log_entry($column,$column_name,$user_id);
         $column = "<a href={$link}>";
         $column.= "<span aria-hidden='true'>{$counts[$user_id]}</span>";
         $column.= "<span class='screen-reader-text'>";
-        $string = translate_post_count($counts[$user_id])
+        $string = translate_post_count($counts[$user_id]);
         $place  = ($counts[$user_id]==1) ? $this->label : $this->plural;
         $column.= sprintf($string,$counts[$user_id],$place);
         $column.= "</span></a>";
