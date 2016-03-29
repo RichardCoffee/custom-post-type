@@ -115,7 +115,7 @@ abstract class RC_Custom_Post_Type {
                      'messages'=> array('custom_u' => __('Custom field updated.', 'tcc-custom-post'),
                          'custom_d' => __('Custom field deleted.','tcc-custom-post' ),
                          'draft'    => _x('%s draft updated.','placeholder is singular form', 'tcc-custom-post'),
-                         'preview'  => _x('Preview $s',       'placeholder is singular form', 'tcc-custom-post'),
+                         'preview'  => _x('Preview %s',       'placeholder is singular form', 'tcc-custom-post'),
                          'publish'  => _x('%s published.',    'placeholder is singular form', 'tcc-custom-post'),
                          'revision' => _x('%1$s restored to revision from %2$s', '1: label in singular form, 2: date and time of the revision','tcc-custom-post'),
                          'saved'    => _x('%s saved.',        'placeholder is singular form', 'tcc-custom-post'),
