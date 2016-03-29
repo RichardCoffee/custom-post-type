@@ -2,16 +2,30 @@
 
 require_once('custom-post.php');
 
-class Project_Types extends Custom_Post_Type {
+class Project_Types extends RC_Custom_Post_Type {
+
+  protected $type          = 'project';
+  protected $main_blog     =  true;
+  protected $menu_icon     = 'dashicons-analytics';
+  protected $menu_position = 6;
 
   public function __construct() {
-    $data = array('type'      => 'project',
-                  'label'     => _x('Project Type','singular form','creatom'),
-                  'plural'    => _x('Project Types','plural form','creatom'),
-                  'descrip'   => __('Project Type Deep Dives','creatom'),
-                  'position'  => 6,
-                  'templates' => array('single' => WP_PLUGIN_DIR.'/creatombuilder/templates/single-project.php'));
-#                  'columns'   => array('remove' => array('categories')));
+    $data = array(#'type'       => 'project',
+                  'label'      => _x('Project Type','singular form','creatom'),
+                  'plural'     => _x('Project Types','plural form','creatom'),
+                  'descrip'    => __('Project Type Deep Dives','creatom'),
+                  #'main_blog'  => true,
+                  #'menu_icon'  =>'dashicons-analytics',
+                  #'menu_position' => 6,
+                  'cap_suffix' => array('singular'=>'project-type','plural'=>'project-types'),
+                  'sidebar'    => array('description'   => 'Sidebar for Project Type Deep Dives single template',
+                                        'before_title'  => '<h3 class="centerme bookman">',
+                                        'after_title'   => '</h3>',
+                                        'before_widget' => '<div class="row">',
+                                        'after_widget'  => '</div>'),
+#                  'columns'    => array('remove' => array('categories')),
+#                  'taxonomies' => array('post_tag','category'),
+                  'templates'  => array('single' => WP_PLUGIN_DIR.'/creatombuilder/templates/single-project.php'));
     parent::__construct($data);
     add_action('admin_enqueue_scripts',array($this,'enqueue_styles'),11);
     add_action('add_meta_boxes',       array($this,'add_meta_boxes'));
@@ -22,19 +36,19 @@ class Project_Types extends Custom_Post_Type {
   public function check_caps() {
     $roles = array('contributor','author','editor','administrator');
     foreach($roles as $role) {
-      log_entry($role,get_role($role));
-      }
+#      log_entry($role,get_role($role));
+    }
   }
 
   public function enqueue_styles() {
     $screen = get_current_screen();
-    if(($screen->post_type==='project') || ($screen->post_type==='board')) {
+    if ($screen->post_type===$this->type) {
       wp_enqueue_media();
       wp_register_script('cb_postmeta',PBL_URL.'js/post-meta.js', array('jquery','cblibrary'), null, true); // cblibrary provided by pbl_content plugin
       wp_enqueue_script('cb_postmeta');
       wp_enqueue_style('cb_meta_styles',PBL_URL.'css/meta-styles.css');
-      wp_enqueue_style('columns');  // provided by pbl_content plugin
-      wp_enqueue_style('font-awe'); // provided by pbl_content plugin
+      wp_enqueue_style('columns');   #  provided by pbl_content plugin
+      wp_enqueue_style('font-awe');  #  provided by pbl_content plugin
     }
   }
 

@@ -2,14 +2,21 @@
 
 require_once('custom-post.php');
 
-class On_The_Boards extends Custom_Post_Type {
+class On_The_Boards extends RC_Custom_Post_Type {
 
   public function __construct() {
     $data = array('type'      => 'board',
                   'label'     => _x('Board','noun - singular form','creatom'),
                   'plural'    => _x('Boards','noun - plural form','creatom'),
                   'descrip'   => __('On The Boards','creatom'),
-                  'position'  => 7,
+                  'main_blog' => true,
+                  'menu_icon' => 'dashicons-welcome-write-blog',
+                  'menu_position' => 7,
+                  'sidebar'   => array('description'   => 'Sidebar for On The Boards single template',
+                                       'before_title'  => '<h3 class="centerme bookman">',
+                                       'after_title'   => '</h3>',
+                                       'before_widget' => '<div class="row">',
+                                       'after_widget'  => '</div>'),
                   'templates' => array('single' => WP_PLUGIN_DIR.'/creatombuilder/templates/single-board.php'),
                   'columns'   => array('remove' => array('categories')));
     parent::__construct($data);
@@ -135,3 +142,5 @@ class On_The_Boards extends Custom_Post_Type {
   }
 
 }
+
+$on_the_boards = new On_The_Boards();

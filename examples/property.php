@@ -2,7 +2,7 @@
 
 require_once('custom-post.php');
 
-class Real_Estate_Property extends Custom_Post_Type {
+class Real_Estate_Property extends RC_Custom_Post_Type {
 
   private $error = array();
   private $layout;
