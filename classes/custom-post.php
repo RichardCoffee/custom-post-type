@@ -98,6 +98,10 @@ abstract class RC_Custom_Post_Type {
     return isset($this->$name); #  Allow read access to private/protected variables
   } //*/
 
+  protected function translate_post_count($count) {
+    return _nx('%1$s %2$s by this author','%1$s %2$s by this author',$count,'first placeholder is numeric, second is singular/plural form','tcc-custom-post');
+  }
+
   protected function translated_text() {
     static $text;
     if (empty($text)) {
@@ -460,22 +464,24 @@ abstract class RC_Custom_Post_Type {
     return $column_headers;
   }
 
-  public function manage_users_custom_column($custom_column,$column_name,$user_id) {
+  public function manage_users_custom_column($column,$column_name,$user_id) {
+log_entry($column,$column_name,$user_id);
     if ($column_name==$this->type) {
       $counts = $this->get_author_post_type_counts();
-      $custom_column = array();
       if (isset($counts[$user_id])) {
-        foreach($counts[$user_id] as $count) {
-          $link = admin_url() . "edit.php?post_type={$this->type}&author=".$user_id;
-          $custom_column[] = "\t<tr><th><a href={$link}>{$this->label}</a></th><td>{$count['count']}</td></tr>";
-        }
+        $link = admin_url() . "edit.php?post_type={$this->type}&author=".$user_id;
+        $column = "<a href={$link}>";
+        $column.= "<span aria-hidden='true'>{$counts[$user_id]}</span>";
+        $column.= "<span class='screen-reader-text'>";
+        $string = translate_post_count($counts[$user_id])
+        $place  = ($counts[$user_id]==1) ? $this->label : $this->plural;
+        $column.= sprintf($string,$counts[$user_id],$place);
+        $column.= "</span></a>";
+      } else {
+        $column = "[none]";
       }
-      $custom_column = implode("\n",$custom_column);
-      if (empty($custom_column)) {
-        $custom_column = "<th>[none]</th>"; }
-      $custom_column = "<table>\n{$custom_column}\n</table>"; // ????
     }
-    return $custom_column;
+    return $column;
   }
 
   private function get_author_post_type_counts() {
