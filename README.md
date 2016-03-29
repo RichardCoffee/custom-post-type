@@ -10,14 +10,14 @@ The basis for a lot of the code originated from different places on the web.  I 
 
 * Provides a base class for easier CPT creation.
 * Control whether the CPT show ups on the Blog page along with regular posts.
-* You can stop a CPT with a specific taxonomy term from showing up on queries.
-* You can assign a custom 'single' template for displaying the CPT from a plugin.
-* You can assign a folder, or list of folders to look for templates in.
-* You can stop a user from deleting a custom taxonomy term, either permanently or if in use.
-* You can prevent editing of custom taxonomy term slugs.
-* Can automatically generate custom capabilites, suitable to be used for custom roles.
-* Can generate log messages using your own logging function.
-* Does all the other things needed for Custom Post Types to function properly
+* Assign a custom 'single' template for displaying the CPT from a plugin.
+* Assign a folder, or list of folders to look for templates in.
+* Show a column on the admin Users screen, providing an author count.
+* Stop a user from deleting a custom taxonomy term, either permanently or if in use.
+* Prevent editing of custom taxonomy term slugs.
+* Stop a CPT with a specific taxonomy term from showing up on queries.
+* Automatically generate custom capabilites, suitable to be used for custom roles.
+* Generate log messages using your own logging function.
 
 ## Install
 
@@ -39,11 +39,12 @@ A bare minumum child class could look like this:
 ```
 class Simple_Custom_Post_Type extends RC_Custom_Post_Type {
 
+  protected $type = 'simple';
+  protected $main_blog = true;
+
   public function __construct() {
-    $args = array( 'type'      => 'simple',
-                   'label'     => __('Simple', 'text-domain'),
-                   'plural'    => __('Simples','text-domain'),
-                   'main_blog' => true);
+    $args = array( 'label'     => __('Simple', 'text-domain'),
+                   'plural'    => __('Simples','text-domain'));
     parent::__construct($args);
   }
 
@@ -85,7 +86,7 @@ Look in classes/custom-post.php for a list of all available arguments, and what 
 ## General Guidelines
 
 #### Capabilities
-While defaulting to using standard Wordpress caps,  The class can generate unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For a listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.
+While defaulting to using standard Wordpress caps, the class can generate unique caps, based on the slug for the CPT.  Also, adds the expected caps to the default WordPress user roles. For a listing of those caps, look in `$GLOBALS['wp_post_types'][post type]['cap']`.
 
 #### Labels
 The class generates a default array of strings for the labels based upon the singular and plural labels.  This array can be altered using the filter action `tcc_post_label_{post-type}`.  See the 'Text domain' and 'Text strings' sections below for related information.
