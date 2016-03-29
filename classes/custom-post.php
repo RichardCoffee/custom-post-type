@@ -459,14 +459,14 @@ abstract class RC_Custom_Post_Type {
   # http://www.wpcustoms.net/snippets/post-count-users-custom-post-type/
 
   public function manage_users_columns($column_headers) {
-    #unset($column_headers['posts']);
+    $index = "{$this->type} num";  # get WP to add the num css class
     $column_headers[$this->type] = $this->plural;
     return $column_headers;
   }
 
   public function manage_users_custom_column($column,$column_name,$user_id) {
-log_entry($column,$column_name,$user_id);
-    if ($column_name==$this->type) {
+    $index = "{$this->type} num";
+    if ($column_name==$index) {
       $counts = $this->get_author_post_type_counts();
       if (isset($counts[$user_id])) {
         $link = admin_url() . "edit.php?post_type={$this->type}&author=".$user_id;
