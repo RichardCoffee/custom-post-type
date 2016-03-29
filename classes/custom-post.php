@@ -18,23 +18,24 @@ abstract class RC_Custom_Post_Type {
   protected $caps       = 'post';      #    default is to not create custom capabilities
   protected $cap_suffix = array();     #    can be used to assign custom suffix for capabilities, ex: array('singular'=>'singular-suffix','plural'=>'plural-suffix')
   protected $columns    = null;        #    array('remove'=>array()','add'=>array())
-  protected $comments   = false;       # ** boolean:  allow comments
-  protected $debug      = false;       #    used in conjunction with $this->logging
+  protected $comments   =  false;      # ** boolean:  allow comments
+  protected $debug      =  false;      #    used in conjunction with $this->logging
   #protected $has_archive = false;     #    can be set to the archive template path
-  protected $menu_icon  = 'dashicons-admin-post'; #  admin dashboard icon
   protected $logging    = 'log_entry'; #    assign your own logging function here
-  protected $main_blog  = false;       # ** set to true to force inclusion in WP post queries
+  protected $main_blog  =  false;      # ** set to true to force inclusion in WP post queries
+  protected $menu_icon  = 'dashicons-admin-post'; # ** admin dashboard icon
   protected $menu_position = null;     # ** position on admin dashboard
   protected $rewrite    = array();     #    defaults to: array('slug'=>$this->type));
   protected $role_caps  = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
-  protected $sidebar    = false;       #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
-  protected $slug_edit  = true;        # ** whether to allow editing of taxonomy slugs in admin screen
+  protected $sidebar    =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
+  protected $slug_edit  =  true;       # ** whether to allow editing of taxonomy slugs in admin screen
   protected $supports   = array('title','editor','author','thumbnail','revisions','comments');
   protected $tax_list   = array();
-  protected $taxonomies = array('post_tag','category'); # passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
+  protected $taxonomies = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
   protected $tax_keep   = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
   protected $tax_omit   = array();     #    taxonomy terms to omit from normal queries - not yet implemented
   protected $templates  = false;       #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
+  protected $user_col   = false;       # ** set to true to add a count column for this CPT to the admin users screen
 
   private static $types = array('posts');
   //  FIXME:  this needs to be handled differently
@@ -45,11 +46,11 @@ abstract class RC_Custom_Post_Type {
   public function __construct($data) {
     if (!post_type_exists($data['type'])) {
       if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }
-      unset($data['enqueue_flag'],$data['nodelete']);
+      unset($data['cpt_nodelete'],$data['enqueue_flag'],$data['nodelete']);
       foreach($data as $prop=>$value) {
         $this->{$prop} = $value;
       }
-      if (empty($this->type)) { $this->type = sanitize_title($this->label); }  // seriously?
+      $this->type = (empty($this->type)) ? sanitize_title($this->label) : sanitize_title($this->type);
       add_action('init', array( $this, 'create_post_type'));
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
       add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'));
@@ -71,6 +72,10 @@ abstract class RC_Custom_Post_Type {
         add_action('admin_enqueue_scripts',array($this,'stop_slug_edit')); }
       if ($this->templates) {
         add_filter('template_include', array($this,'assign_template')); }
+      if ($this->user_col) {
+        add_action('manage_users_columns',array($this,'manage_users_columns'));
+        add_action('manage_users_custom_column',array($this,'manage_users_custom_column'),10,3);
+      }
     }
   }
 
@@ -375,7 +380,7 @@ abstract class RC_Custom_Post_Type {
       }
       if ($keep_list) {
         $keep_list = array_unique($keep_list);
-log_entry($keep_list);
+        $this->log_entry($keep_list);
         wp_register_script('tax_nodelete',plugins_url('../js/tax_nodelete.js',__FILE__),array('jquery'),false,true);
         wp_localize_script('tax_nodelete','term_list',$keep_list);
         wp_enqueue_script('tax_nodelete');
@@ -408,6 +413,8 @@ log_entry($keep_list);
 
   /*  Post Admin Column functions/filters  */
 
+  /**  CPT screen  **/
+
   private function setup_columns() {
     if (isset($this->columns['remove'])) {
       add_filter("manage_edit-{$this->type}_columns",array($this,'remove_custom_post_columns')); }
@@ -433,6 +440,50 @@ log_entry($keep_list);
     foreach($this->columns['remove'] as $no_col) {
       if (isset($columns[$no_col])) { unset($columns[$no_col]); } }
     return $columns;
+  } //*/
+
+  /**  Users screen  **/
+  # http://wordpress.stackexchange.com/questions/3233/showing-users-post-counts-by-custom-post-type-in-the-admins-user-list
+  # https://gist.github.com/mikeschinkel/643240
+  # http://www.wpcustoms.net/snippets/post-count-users-custom-post-type/
+
+  public function manage_users_columns($column_headers) {
+    #unset($column_headers['posts']);
+    $column_headers[$this->type] = $this->plural;
+    return $column_headers;
+  }
+
+  public function manage_users_custom_column($custom_column,$column_name,$user_id) {
+    if ($column_name==$this->type) {
+      $counts = $this->get_author_post_type_counts();
+      $custom_column = array();
+      if (isset($counts[$user_id])) {
+        foreach($counts[$user_id] as $count) {
+          $link = admin_url() . "edit.php?post_type={$this->type}&author=".$user_id;
+          $custom_column[] = "\t<tr><th><a href={$link}>{$this->label}</a></th><td>{$count['count']}</td></tr>";
+        }
+      }
+      $custom_column = implode("\n",$custom_column);
+      if (empty($custom_column)) {
+        $custom_column = "<th>[none]</th>"; }
+      $custom_column = "<table>\n{$custom_column}\n</table>"; // ????
+    }
+    return $custom_column;
+  }
+
+  private function get_author_post_type_counts() {
+    static $counts;
+    if (!isset($counts)) {
+      global $wpdb;
+      $sql = "SELECT post_author, COUNT(*) AS post_count FROM {$wpdb->posts}";
+      $sql.= " WHERE post_type='{$this->type}' AND post_status IN ('publish','pending', 'draft')";
+      $sql.= " GROUP BY post_author";
+      $authors = $wpdb->get_results($sql);
+      foreach($authors as $author) {
+        $counts[$author->post_author] = $author->post_count;
+      }
+    }
+    return $counts;
   } //*/
 
 
