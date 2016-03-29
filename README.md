@@ -131,7 +131,8 @@ terms    => array --- terms to populate the taxonomy with.  Only happens if the 
 func     => string -- function/method name - if the 'terms' array is empty, this function will be used to
                       populate the terms array, default function called: '$this->default_{tax-slug}'
                       set to false to disable.
-omit     => array --- array of terms not to display in searches. ie:  if a post has this term, that post will not be displayed.
+omit     => array --- array of terms not to display in searches. ie:  if a post has this term, that post
+                      will be omitted from query results.
 ```
 
 # Change Log
