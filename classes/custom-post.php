@@ -460,7 +460,7 @@ abstract class RC_Custom_Post_Type {
 
   public function manage_users_columns($column_headers) {
     $index = "{$this->type} num";  # get WP to add the num css class
-    $column_headers[$this->type] = $this->plural;
+    $column_headers[$index] = $this->plural;
     return $column_headers;
   }
 
