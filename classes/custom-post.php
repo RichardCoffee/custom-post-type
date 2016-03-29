@@ -38,7 +38,7 @@ abstract class RC_Custom_Post_Type {
   protected $user_col    = false;       # ** set to true to add a count column for this CPT to the admin users screen
 
   # Do not set these in the child class
-  private static $types = array('posts'=>null);
+  protected static $types = array('posts'=>null);
   //  FIXME:  this needs to be handled differently
   private $cpt_nodelete = false;       #    if true then implement no deletion policy on builtin taxonomies assigned to this cpt
   private $enqueue_flag = false;       #    flag to indicate that js_nodelete.js needs to be enqueued
