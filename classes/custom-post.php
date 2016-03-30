@@ -50,6 +50,9 @@ abstract class RC_Custom_Post_Type {
       foreach($data as $prop=>$value) {
         $this->{$prop} = $value;
       }
+#      foreach((array)$this as $key=>$value) {
+#        if (isset($data[$key])) $this->{$key} = $data[$key];
+#      }
       $this->type = (empty($this->type)) ? sanitize_title($this->label) : sanitize_title($this->type);
       add_action('init', array( $this, 'create_post_type'));
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
@@ -168,10 +171,10 @@ abstract class RC_Custom_Post_Type {
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
     if ($args['map_meta_cap'])  add_action('admin_init', array($this,'add_caps'));
-    $this->log_entry('cpt object',$this);
-   #$this->log_entry('post type settings',$GLOBALS['wp_post_types'][$this->type]);
+    $this->logging('cpt object',$this);
+   #$this->logging('post type settings',$GLOBALS['wp_post_types'][$this->type]);
     foreach($this->supports as $support) {
-      #$this->log_entry("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
+      #$this->logging("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
     }
   }
 
@@ -237,7 +240,7 @@ abstract class RC_Custom_Post_Type {
   }
 
   public function register_sidebar() {
-   #$this->log_entry('register sidebar');
+   #$this->logging('register sidebar');
     $sidebar = array('id' => $this->type, 'name' => $this->label);
     if (is_array($this->sidebar)) $sidebar = array_merge($sidebar,$this->sidebar);
     register_sidebar($sidebar);
@@ -256,7 +259,7 @@ abstract class RC_Custom_Post_Type {
 
   private function process_caps($name) {
     $role = get_role($name);
-    $this->log_entry('user role',$role);
+    $this->logging('user role',$role);
     $sing = sanitize_title($this->label);
     $plur = sanitize_title($this->plural);
     $caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
@@ -352,6 +355,7 @@ abstract class RC_Custom_Post_Type {
   }
 
   private function add_builtins() {
+    $this->logging('function: add_builtins');
     $check = array('post_tag','category');
     foreach($check as $tax) {
       $this->nodelete[] = $tax;
@@ -386,7 +390,7 @@ abstract class RC_Custom_Post_Type {
       }
       if ($keep_list) {
         $keep_list = array_unique($keep_list);
-        $this->log_entry($keep_list);
+        $this->logging($keep_list);
         wp_register_script('tax_nodelete',plugins_url('../js/tax_nodelete.js',__FILE__),array('jquery'),false,true);
         wp_localize_script('tax_nodelete','term_list',$keep_list);
         wp_enqueue_script('tax_nodelete');
@@ -431,7 +435,7 @@ abstract class RC_Custom_Post_Type {
         if (is_callable(array($this,$this->columns['content']))) {
           add_action('manage_posts_custom_column',array($this,$this->columns['content']),10,2);
         } else {
-          $this->log_entry('columns[content] not callable: '.$this->columns['content']); }
+          $this->logging('columns[content] not callable: '.$this->columns['content']); }
       }
     }
   }
@@ -547,7 +551,7 @@ abstract class RC_Custom_Post_Type {
             $open = $this->comments;
           } else { // FIXME:  support numeric values
 #            $postime = get_the_time('U', $post_id);
-             $this->log_entry("WARNING: Numeric values for {$this->type}->comments is not yet supported.");
+             $this->logging("WARNING: Numeric values for {$this->type}->comments is not yet supported.");
           }
         }
       }
@@ -615,7 +619,7 @@ abstract class RC_Custom_Post_Type {
 
   /*  Debugging  */
 
-  private function log_entry() {
+  private function logging() {
     if ($this->debug && isset($this->logging)) {
       $log = $this->logging;
       if (is_array($log) && method_exists($log)) {  #  Method in a different class
