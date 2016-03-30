@@ -56,6 +56,7 @@ abstract class RC_Custom_Post_Type {
       $this->type = (empty($this->type)) ? sanitize_title($this->label) : sanitize_title($this->type);
       add_action('init', array( $this, 'create_post_type'));
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
+      add_action('contextual_help', array($this,'contextual_help'), 10, 3 );
       add_filter('post_updated_messages', array($this,'post_type_messages'));
       if ($this->columns) {      #  Add/Remove cpt screen columns
         $this->setup_columns(); }
@@ -101,8 +102,21 @@ abstract class RC_Custom_Post_Type {
     return isset($this->$name); #  Allow read access to private/protected variables
   } //*/
 
+
+  /**  Text functions  **/
+
+  public function contextual_help( $contextual_help, $screen_id, $screen ) {
+    $this->logging("contextual help:  $screen_id");
+    if ( $screen->id == $this->type ) {
+      if (isset($this->contextual_help)) $contextual_help = $this->contextual_help;
+    } elseif ( $screen->id == "edit-{$this->type}") {
+      if (isset($this->contextual_edit)) $contextual_help = $this->contextual_edit;
+    }
+    return $contextual_help;
+  }
+
   protected function translate_post_count($count) {
-    return _nx('%1$s %2$s by this author','%1$s %2$s by this author',$count,'first placeholder is numeric, second is singular/plural form','tcc-custom-post');
+    return _nx('%1$s %2$s by this author','%1$s %2$s by this author',$count,'first placeholder is numeric, second should be a noun','tcc-custom-post');
   }
 
   protected function translated_text() {
@@ -119,6 +133,7 @@ abstract class RC_Custom_Post_Type {
                      'filter'  => _x('Filter %s list',       'placeholder is plural form',  'tcc-custom-post'),
                      'insert'  => _x('Insert into %s',       'placeholder is singular form','tcc-custom-post'),
                      'list'    => _x('%s list',              'placeholder is singular form','tcc-custom-post'),
+                     'menu'    => _x('%s',                   'placeholder is plural form',  'tcc-custom-post'),
                      'navig'   => _x('%s list navigation',   'placeholder is plural form',  'tcc-custom-post'),
                      'new'     => _x('New %s',               'placeholder is singular form','tcc-custom-post'),
                      'none'    => _x('No %s',                'placeholder is plural form',  'tcc-custom-post'),
@@ -200,7 +215,7 @@ abstract class RC_Custom_Post_Type {
      #'set_featured_image' – Default is Set featured image.
      #'remove_featured_image' – Default is Remove featured image.
      #'use_featured_image' – Default is Use as featured image.
-     #'menu_name' – Default is the same as name.
+      'menu_name'             => sprintf($phrases['menu'],   $this->plural),
       'filter_items_list'     => sprintf($phrases['filter'], $this->plural),
       'items_list_navigation' => sprintf($phrases['navig'],  $this->plural),
       'items_list'    => sprintf($phrases['list'],   $this->label),
