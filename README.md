@@ -12,6 +12,7 @@ The basis for a lot of the code originated from different places on the web.  I 
 * Control whether the CPT show ups on the Blog page along with regular posts.
 * Assign a custom 'single' template for displaying the CPT from a plugin.
 * Assign a folder, or list of folders to look for templates in.
+* Add a sidebar for the CPT.
 * Show a column on the admin Users screen, providing an author count.
 * Stop a user from deleting a custom taxonomy term, either permanently or if in use.
 * Prevent editing of custom taxonomy term slugs.
