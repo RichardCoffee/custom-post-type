@@ -94,13 +94,15 @@ The class generates a default array of strings for the labels based upon the sin
 
 #### Taxonomies
 After the post type has been created, an action hook is run named 'tcc_custom_post_{post-type}'.  Hook there to run code such as registering a taxonomy.  See the 'Taxonomies' sections below.
-The class provides its own taxonomy_registration() method.  When used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specific term deletion.  See the 'Term Deletion' section below for more information.
+The class provides its own taxonomy_registration() method.  When used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specified term deletion.  See the 'Term Deletion' section below for more information.
 
 #### Template
 A template file can be assigned for 'single' and 'archive' templates.  A template 'folder' can also be specified.  The filter, `tcc_assign_template_{$this->type}`, can also be used.  I think this still needs more work.  Let me know if you run into use cases this doesn't handle properly.
 
 #### Term Deletion
-The taxonomy must have been created use the class method taxonomy_registration() in order for this to work.  If you want to prevent specific taxonomy terms from being deleted, append an array of the term slugs and/or names to the tax_keep property array, like so:<br>
+The taxonomy must have been created use the class method taxonomy_registration() in order for this to work.
+There is some support for builtin taxonomies - `'nodelete'=>true` must be passed as a construction argument.
+If you want to prevent specific taxonomy terms from being deleted, append an array of the term slugs and/or names to the tax_keep property array, like so:<br>
 `$this->tax_keep['taxonomy-slug'] = array('term-slug-one',__('Term Name Two','text-domain'))`
 
 #### Text Domain
