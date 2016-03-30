@@ -8,18 +8,22 @@ class Real_Estate_Property extends RC_Custom_Post_Type {
   private $layout;
   private static $instance = null;
 
+  protected $type = 'property';
+ #protected $debug         = true;
+  protected $logging       = 'tcc_log_entry';
+ #protected $main_blog     = true;
+  protected $menu_icon     = 'dashicons-admin-home';
+  protected $menu_position = 6;
+  protected $slug_edit     = false;
+  protected $taxonomies    = array();
+  protected $user_col      = true;
+
   public function __construct() {
-    $data = array('type'       => 'property',
-                  'label'      => _x('Property','single plot of land','tcc-real_estate'),
+    $data = array('label'      => _x('Property','single plot of land','tcc-real_estate'),
                   'plural'     => _x('Properties','multiple plots of land','tcc-real-estate'),
                   'descrip'    => __('Real Estate Property','tcc-real-estate'),
-                  'main_blog'  => true,
-                  'menu_position' => 6,
-                  'menu_icon'  => 'dashicons-admin-home',
-                  'taxonomies' => array(),
-                  'slug_edit'  => false,
                   'tax_keep'   => array('prop_city'=>$this->default_prop_city(),'prop_state'=>$this->default_prop_state(),'prop_area'=>$this->default_prop_area()),
-                  'sidebars'   => array(array('name'=>__('Property Sidebar','tcc-real-estate'),'id'=>'property')),  // FIXME: is this being used?
+                  'sidebar'    => array('name'=>__('Property Sidebar','tcc-real-estate'),'id'=>'property'),
                   'templates'  => array('single'=> plugin_dir_path(__FILE__)."../template-parts/single-property.php"));
     parent::__construct($data);
     $this->caps = '';  #  allow this class to determine capability_types for custom roles
