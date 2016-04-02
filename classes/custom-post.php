@@ -261,6 +261,7 @@ abstract class RC_Custom_Post_Type {
     register_sidebar($sidebar);
   }
 
+
   /*  Capabilities  */
 
   #  This only gets run if map_meta_caps is true
@@ -326,7 +327,7 @@ abstract class RC_Custom_Post_Type {
     if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
     $labels = $this->taxonomy_labels($single,$plural);
-    $taxargs['labels'] = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
+    $taxargs['labels']  = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
     $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;
     $taxargs['rewrite'] = (isset($taxargs['rewrite'])) ? $taxargs['rewrite'] : (isset($rewrite)) ? array('slug'=>$rewrite) : array('slug'=>$tax);
     register_taxonomy($tax,$this->type,$taxargs);
@@ -378,6 +379,7 @@ abstract class RC_Custom_Post_Type {
     add_action('admin_enqueue_scripts', array($this,'stop_term_deletion'));
   }
 
+  public function stop_slug_edit() {
   public function stop_slug_edit() {
     $screen = get_current_screen();
     if ($screen->base=='edit-tags') {
@@ -525,7 +527,7 @@ abstract class RC_Custom_Post_Type {
       if ($mytype && ($this->type==$mytype)) {
         if (is_single()) {
           $template = $this->locate_template($template,'single');
-        } else if (is_search || is_post_type_archive($this->type)) {
+        } else if (is_search() || is_post_type_archive($this->type)) {
           $template = $this->locate_template($template,'archive');
         }
         $template = apply_filters('tcc_assign_template_'.$this->type,$template);
@@ -582,7 +584,6 @@ abstract class RC_Custom_Post_Type {
     if (!is_admin() && $query->is_main_query()) {
       if ((!$query->is_page()) || (is_feed())) {  #  || (is_post_type_archive($this->type))) {
         $check = $query->get('post_type');
-        if (empty($check)) {
           $query->set('post_type',array('post',$this->type));
         } elseif (!((array)$check==$check)) {
           if ($check!==$this->type) $query->set('post_type',array($check,$this->type));

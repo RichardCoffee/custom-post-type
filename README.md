@@ -24,6 +24,8 @@ The basis for a lot of the code originated from different places on the web.  I 
 
 Requires PHP 5.3+, the 'no term deletion' and 'no slug editing' functions require jQuery.
 
+Works with WordPress 4.4.2
+
 This really consists of only three files:
 ```
   classes/custom-post.php
@@ -119,12 +121,12 @@ $args must be either an associative array or a string.  If it is a string then i
 ```
 tax      => string -- the taxonomy slug (required)
 taxargs  => array --- passed as the third argument to the WordPress register_taxonomy() function if present
-single   => string -- single label name, same as $taxargs['labels']['singular_name']
+single   => string -- single label name, same as `$taxargs['labels']['singular_name']`
                       (one of the two is required)
-plural   => string -- plural label name, same as $taxargs['labels']['name'] or $taxargs['label']
+plural   => string -- plural label name, same as `$taxargs['labels']['name'] or $taxargs['label']`
                       (one of the three is required)
-admin    => boolean - same as $taxargs['show_admin_column']
-rewrite  => string -- same as $taxargs['rewrite']['slug'], defaults to taxonomy slug if either is not set
+admin    => boolean - same as `$taxargs['show_admin_column']`
+rewrite  => string -- same as `$taxargs['rewrite']['slug']`, defaults to taxonomy slug if either is not set
 nodelete => boolean - true indicates that a term in this taxonomy cannot be deleted if the term is
                       associated with a post. default: false
 terms    => array --- terms to populate the taxonomy with.  Only happens if the taxonomy is completely
