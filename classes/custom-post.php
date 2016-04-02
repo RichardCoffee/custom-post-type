@@ -380,7 +380,6 @@ abstract class RC_Custom_Post_Type {
   }
 
   public function stop_slug_edit() {
-  public function stop_slug_edit() {
     $screen = get_current_screen();
     if ($screen->base=='edit-tags') {
       wp_register_script('slug_noedit',plugins_url('../js/slug_noedit.js',__FILE__),array('jquery'),false,true);
@@ -584,13 +583,12 @@ abstract class RC_Custom_Post_Type {
     if (!is_admin() && $query->is_main_query()) {
       if ((!$query->is_page()) || (is_feed())) {  #  || (is_post_type_archive($this->type))) {
         $check = $query->get('post_type');
-          $query->set('post_type',array('post',$this->type));
-        } elseif (!((array)$check==$check)) {
-          if ($check!==$this->type) $query->set('post_type',array($check,$this->type));
-        } elseif (!in_array($this->type,$check)) {
-          $check[] = $this->type;
-          $query->set('post_type',$check);
-        }
+        $query->set('post_type',array('post',$this->type));
+      } elseif (!((array)$check==$check)) {
+        if ($check!==$this->type) $query->set('post_type',array($check,$this->type));
+      } elseif (!in_array($this->type,$check)) {
+        $check[] = $this->type;
+        $query->set('post_type',$check);
       }
     }
     return $query;
