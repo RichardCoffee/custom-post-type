@@ -634,7 +634,7 @@ abstract class RC_Custom_Post_Type {
 
   /*  Debugging  */
 
-  private function logging() {
+  public function logging() {
     if ($this->debug && isset($this->logging)) {
       $log = $this->logging;
       if (is_array($log) && method_exists($log)) {  #  Method in a different class
