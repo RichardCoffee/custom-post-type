@@ -16,15 +16,15 @@ abstract class RC_Custom_Post_Type {
 
   ######  I have marked properties with '**' that I believe people may want to change more often.
   protected $caps        = 'post';      #    default is to not create custom capabilities
-  protected $cap_suffix  = array();     #    can be used to assign custom suffix for capabilities, ex: array('singular'=>'singular-suffix','plural'=>'plural-suffix')
-  protected $columns     = null;        #    array('remove'=>array()','add'=>array())
+  protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, or send me a fix
+  protected $columns     =  null;       #    array('remove'=>array()','add'=>array())
   protected $comments    =  false;      # ** boolean:  allow comments
   protected $debug       =  false;      #    used in conjunction with $this->logging
   protected $has_archive =  false;      #    boolean or string - can be set to the archive template path
   protected $logging     = 'log_entry'; #    assign your own logging function here
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
   protected $menu_icon   = 'dashicons-admin-post'; # ** admin dashboard icon
-  protected $menu_position = null;      # ** position on admin dashboard
+  protected $menu_position = 6;         # ** position on admin dashboard
   protected $rewrite     = array();     #    defaults to: array('slug'=>$this->type));
   protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
   protected $sidebar     =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
