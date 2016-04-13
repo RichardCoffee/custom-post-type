@@ -10,7 +10,7 @@ The basis for a lot of the code originated from different places on the web.  I 
 
 * Provides a base class for easier CPT creation.
 * Control whether the CPT show ups on the Blog page along with regular posts.
-* Assign a custom 'single' template for displaying the CPT from a plugin.
+* Assign custom 'single'/'archive' templates for displaying the CPT.
 * Assign a folder, or list of folders to look for templates in.
 * Add a sidebar for the CPT.
 * Show a column on the admin Users screen, providing an author count.
