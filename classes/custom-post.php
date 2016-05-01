@@ -106,11 +106,11 @@ abstract class RC_Custom_Post_Type {
   /**  Text functions  **/
 
   public function contextual_help( $contextual_help, $screen_id, $screen ) {
-    $this->logging("contextual help:  $screen_id");
+    #$this->logging("contextual help:  $screen_id", $contextual_help);
     if ( $screen->id == $this->type ) {
-      if (isset($this->contextual_help)) $contextual_help = $this->contextual_help;
+      if (isset($this->contextual_help)) { $contextual_help = $this->contextual_help; }
     } elseif ( $screen->id == "edit-{$this->type}") {
-      if (isset($this->contextual_edit)) $contextual_help = $this->contextual_edit;
+      if (isset($this->contextual_edit)) { $contextual_help = $this->contextual_edit; }
     }
     return $contextual_help;
   }
@@ -274,7 +274,7 @@ abstract class RC_Custom_Post_Type {
 
   private function process_caps($name) {
     $role = get_role($name);
-    $this->logging('user role',$role);
+    #$this->logging('user role',$role);
     $sing = sanitize_title($this->label);
     $plur = sanitize_title($this->plural);
     $caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
