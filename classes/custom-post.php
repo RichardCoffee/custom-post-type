@@ -517,6 +517,7 @@ abstract class RC_Custom_Post_Type {
 
   /*  Template filters  */
 
+
   #  http://codex.wordpress.org/Function_Reference/locate_template
   #  https://wordpress.org/support/topic/stylesheetpath-in-plugin
   public function assign_template($template) {
@@ -539,7 +540,7 @@ abstract class RC_Custom_Post_Type {
     if (isset($this->templates[$slug])) {
       $template = $this->templates[$slug];
     } elseif (($slug==='archive') && isset($this->has_archive) && is_string($this->has_archive)) {
-      $template = $this->has_archives;
+      $template = $this->has_archive;
     } elseif (isset($this->templates['folders'])) {
       foreach((array)$this->templates['folders'] as $folder) {
         $test = $folder."/$slug-{$this->type}.php";
@@ -553,6 +554,44 @@ abstract class RC_Custom_Post_Type {
       if ($maybe) { $template = $maybe; }
     }
     return $template;
+  }
+
+
+  /**  Alternate Template filters  **/
+
+  private function assign_template_filters() {
+    if (!empty($this->templates['single'])) {
+      add_filter('single_template', array($this,'single_template')); }
+    }
+    if (!empty($this->templates['archive'])) {
+      add_filter('archive_template', array($this,'archive_template')); }
+    } /*  FIXME:  Test this construct
+    foreach($this->templates as $key=>$template) {
+      if ($key==='folders') { continue; }
+      add_filter("{$key}_template", function($mytemplate) use ($key) { // FIXME:  does it need to use $this?
+        global $post;
+        if ($post->post_type===$this->type) {
+          $mytemplate = $this->templates[$key];
+        }
+        return $mytemplate;
+      });
+    } //*/
+  }
+
+  public function archive_template($archive_template) {
+    global $post;
+    if ($post->post_type===$this->type) {
+      $archive_template = $this->templates['archive'];
+     }
+     return $archive_template;
+  }
+
+  public function single_template($single_template) {
+    global $post;
+    if ($post->post_type===$this->type) {
+      $single_template = $this->templates['single'];
+     }
+     return $single_template;
   }
 
 
