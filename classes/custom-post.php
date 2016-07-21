@@ -3,8 +3,10 @@
 /*
  *  abstract class for WordPress custom post types
  *
+ *  GitHub:  https://github.com/RichardCoffee/custom-post-type
  *
  *  Copyright 2009-2016, Richard Coffee
+ *
  */
 
 abstract class RC_Custom_Post_Type {
@@ -567,7 +569,10 @@ abstract class RC_Custom_Post_Type {
       add_filter('archive_template', array($this,'archive_template')); }
     } /*  FIXME:  Test this construct
     foreach($this->templates as $key=>$template) {
-      if ($key==='folders') { continue; }
+      if ($key==='folders') {
+        // FIXME:  this needs to be handled
+        continue;
+      }
       add_filter("{$key}_template", function($mytemplate) use ($key) { // FIXME:  does it need to use $this?
         global $post;
         if ($post->post_type===$this->type) {
