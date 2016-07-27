@@ -563,10 +563,10 @@ abstract class RC_Custom_Post_Type {
 
   private function assign_template_filters() {
     if (!empty($this->templates['single'])) {
-      add_filter('single_template', array($this,'single_template')); }
+      add_filter('single_template', array($this,'single_template'));
     }
     if (!empty($this->templates['archive'])) {
-      add_filter('archive_template', array($this,'archive_template')); }
+      add_filter('archive_template', array($this,'archive_template'));
     } /*  FIXME:  Test this construct
     foreach($this->templates as $key=>$template) {
       if ($key==='folders') {
