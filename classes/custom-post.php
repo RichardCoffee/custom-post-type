@@ -147,7 +147,8 @@ abstract class RC_Custom_Post_Type {
                      'used'    => _x('Choose from the most used %s','placeholder is plural form','tcc-custom-post'),
                      'view_p'  => _x('View %s',              'placeholder is plural form',  'tcc-custom-post'),
                      'view_s'  => _x('View %s',              'placeholder is singular form','tcc-custom-post'),
-                     'messages'=> array('custom_u' => __('Custom field updated.', 'tcc-custom-post'),
+                     'messages'=> array(
+                         'custom_u' => __('Custom field updated.', 'tcc-custom-post'),
                          'custom_d' => __('Custom field deleted.','tcc-custom-post' ),
                          'draft'    => _x('%s draft updated.','placeholder is singular form', 'tcc-custom-post'),
                          'preview'  => _x('Preview %s',       'placeholder is singular form', 'tcc-custom-post'),
@@ -236,7 +237,7 @@ abstract class RC_Custom_Post_Type {
     if ($post=get_post()) { #  get_post() call should always succeed when editing a post
       $view_text      = sprintf( $phrases['view_s'], $this->label);
       $preview_text   = sprintf( $strings['preview'],$this->label);
-      $link_tag_html  = '  <a href="%s" target="'.sanitize_title($post->title).'">';
+      $link_tag_html  = '  <a href="%s" target="'.sanitize_title($post->post_title).'">';
       $view_link      = sprintf( $link_tag_html, esc_url( get_permalink($post->ID))) .$view_text.'</a>';
       $preview_link   = sprintf( $link_tag_html, esc_url( add_query_arg('preview', 'true', get_permalink($post->ID)))) .$preview_text.'</a>';
       $formed_date    = date_i18n( get_option('date_format'), strtotime($post->post_date));
