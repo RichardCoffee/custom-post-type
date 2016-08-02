@@ -85,7 +85,7 @@ class Property extends RC_Custom_Post_Type {
 
 }
 ```
-Look in classes/custom-post.php for a list of all available arguments, and what they do.  The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post-type}' that allows you to modify the $args array.  I seem to be adding something with every project, so it may have the full set at some point.  :)  I have tried to use what I consider reasonable defaults.
+Look in classes/custom-post.php for a list of all available arguments, and what they do.  The method that registers the CPT uses only a subset of arguments available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type) function.  If you need to utilize more, there is a filter 'tcc_register_post_{post-type}' that allows you to modify the $args array.  I seem to be adding something with every project, so it may have the full set at some point.  :)  I have tried to use what I consider reasonable defaults.  There are some examples in the `examples\` directory.  They may not work with the current version of `/classes/custom-post.php`.
 
 ## General Guidelines
 
