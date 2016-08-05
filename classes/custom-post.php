@@ -17,27 +17,37 @@ abstract class RC_Custom_Post_Type {
   protected $descrip  = '';      #  __('Custom Post Type Title','textdomain')
 
   ######  I have marked properties with '**' that I believe people may want to change more often.
-  protected $caps        = 'post';      #    default is to not create custom capabilities
-  protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, or send me a fix
-  protected $columns     =  null;       #    array('remove'=>array()','add'=>array())
+
   protected $comments    =  false;      # ** boolean:  allow comments
-  protected $debug       =  false;      #    used in conjunction with $this->logging
-  protected $has_archive =  false;      #    boolean or string - can be set to the archive template path
-  protected $logging     = 'log_entry'; #    assign your own logging function here
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
+  protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
+
+  protected $debug       =  false;      #    used in conjunction with $this->logging
+  protected $logging     = 'log_entry'; #    assign your own logging function here
+
+  protected $caps        = 'post';      #    default is to not create custom capabilities
+  protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
+
+  protected $columns     =  null;       #    array('remove'=>array()','add'=>array())
+
+  protected $has_archive =  false;      #    boolean or string - can be set to the archive template path
+  protected $templates   =  false;      #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
+
   protected $menu_icon   = 'dashicons-admin-post'; # ** admin dashboard icon
   protected $menu_position = 6;         # ** position on admin dashboard
+
   protected $rewrite     = array();     #    defaults to: array('slug'=>$this->type));
-  protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
-  protected $sidebar     =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
-  protected $slug_edit   =  true;       # ** whether to allow editing of taxonomy slugs in admin screen
   protected $supports    = array('title','editor','author','thumbnail','revisions','comments');
-  protected $tax_list    = array();
+
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
+  protected $slug_edit   =  true;       # ** whether to allow editing of taxonomy slugs in admin screen
+  protected $tax_list    = array();
   protected $tax_keep    = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
   protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - not yet implemented
-  protected $templates   = false;       #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
-  protected $user_col    = false;       # ** set to true to add a count column for this CPT to the admin users screen
+
+  #  Experimental
+  protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, or send me a fix
+  protected $sidebar     =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
 
   # Do not set these in the child class
   protected static $types = array('posts'=>null);
@@ -73,7 +83,7 @@ abstract class RC_Custom_Post_Type {
       if ($this->tax_omit) {     #  Stop posts with tax term from showing in any query
         add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }  #  run early - priority 6
       if ($this->sidebar) {
-        add_action('widgets_init',array($this,'register_sidebar'),11); } # run late - priority 11
+        add_action('widgets_init',array($this,'register_sidebar'),20); } # run late - priority 20
       if ( ! $this->slug_edit) { #  Deny admin ability to edit taxonomy term slugs
         add_action('admin_enqueue_scripts',array($this,'stop_slug_edit')); }
       if ($this->templates) {    #  Handle templates
@@ -324,15 +334,19 @@ abstract class RC_Custom_Post_Type {
     extract($args);  #  see README.md for extracted variables list
     if (empty($tax))     return;
     if (empty($taxargs)) $taxargs = array();
-    if (empty($single) && empty($taxargs['labels']['singular_name'])) return;
+
+    if (empty($single) && empty($taxargs['labels']['singular_name'])) return;  #  Notice the silent return
     $single = (isset($taxargs['labels']['singular_name'])) ? $taxargs['labels']['singular_name'] : $single;
-    if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;
+    if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;  #  Here too
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
     $labels = $this->taxonomy_labels($single,$plural);
     $labels = apply_filters('tcc_taxonomy_labels_'.$tax,$labels);
+
     $taxargs['labels']  = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
     $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;
     $taxargs['rewrite'] = (isset($taxargs['rewrite'])) ? $taxargs['rewrite'] : (isset($rewrite)) ? array('slug'=>$rewrite) : array('slug'=>$tax);
+    $taxargs = apply_filters('tcc_register_taxonomy_'.$tax,$taxargs,$args);
+
     register_taxonomy($tax,$this->type,$taxargs);
     if (taxonomy_exists($tax)) {
       if (!in_array($tax,$this->tax_list)) { $this->tax_list[] = $tax; }
