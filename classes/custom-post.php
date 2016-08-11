@@ -266,7 +266,7 @@ abstract class RC_Custom_Post_Type {
       8  => sprintf( $strings['submit'],  $this->label) .$preview_link,
       9  => sprintf( $strings['schedule'],$this->label,  $formed_date) .$preview_link,
       10 => sprintf( $strings['draft'],   $this->label) .$preview_link);
-    return apply_filter('tcc_post_type_messages',$messages);
+    return apply_filters('tcc_post_type_messages',$messages);
   }
 
   public function register_sidebar() {
@@ -329,7 +329,7 @@ abstract class RC_Custom_Post_Type {
                  'no_terms'                   => sprintf($phrases['none'],    $plural),
                  'items_list_navigation'      => sprintf($phrases['navig'],   $plural),
                  'items_list'                 => sprintf($phrases['list'],    $plural));
-    return apply_filter('tcc_taxonomy_labels',$arr);  #  Alternate, more specific, filter: 'tcc_taxonomy_labels_{tax slug}'
+    return apply_filters('tcc_taxonomy_labels',$arr);  #  Alternate, more specific, filter: 'tcc_taxonomy_labels_{tax slug}'
   }
 
   protected function taxonomy_registration($args) {
