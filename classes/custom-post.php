@@ -142,6 +142,10 @@ abstract class RC_Custom_Post_Type {
                      'commas'  => _x('Separate %s with commas','placeholder is plural form','tcc-custom-post'),
                      'edit_p'  => _x('Edit %s',              'placeholder is plural form',  'tcc-custom-post'),
                      'edit_s'  => _x('Edit %s',              'placeholder is singular form','tcc-custom-post'),
+                     'feature' => _x('%s Image'),            'placeholder is singular form','tcc-custom-post'),
+                     'feat_rem'=> _x('Remove %s image'),     'placeholder is singular form','tcc-custom-post'),
+                     'feat_set'=> _x('Set %s image'),        'placeholder is singular form','tcc-custom-post'),
+                     'feat_use'=> _x('Use as %s image'),     'placeholder is singular form','tcc-custom-post'),
                      'filter'  => _x('Filter %s list',       'placeholder is plural form',  'tcc-custom-post'),
                      'insert'  => _x('Insert into %s',       'placeholder is singular form','tcc-custom-post'),
                      'list'    => _x('%s list',              'placeholder is singular form','tcc-custom-post'),
@@ -223,10 +227,10 @@ abstract class RC_Custom_Post_Type {
       'archives'              => sprintf($phrases['all'],    $this->plural),
       'insert_into_item'      => sprintf($phrases['insert'], $this->label),
       'uploaded_to_this_item' => sprintf($phrases['upload'], $this->label),
-     #'featured_image' – Default is Featured Image.
-     #'set_featured_image' – Default is Set featured image.
-     #'remove_featured_image' – Default is Remove featured image.
-     #'use_featured_image' – Default is Use as featured image.
+      'featured_image'        => sprintf($phrases['feature'],$this->label),
+      'set_featured_image'    => sprintf($phrases['feat_set'],strtolower($this->label)),
+      'remove_featured_image' => sprintf($phrases['feat_rem'],strtolower($this->label)),
+      'use_featured_image'    => sprintf($phrases['feat_use'],strtolower($this->label)),
       'menu_name'             => $this->plural,
       'filter_items_list'     => sprintf($phrases['filter'], $this->plural),
       'items_list_navigation' => sprintf($phrases['navig'],  $this->plural),
@@ -234,8 +238,7 @@ abstract class RC_Custom_Post_Type {
       'edit'          => sprintf($phrases['edit_p'], $this->plural),
       'view'          => sprintf($phrases['view_p'], $this->plural),
       'items_archive' => sprintf($phrases['archive'],$this->label));
-    $arr = apply_filters('tcc_post_labels_'.$this->type,$arr);
-    return $arr;
+    return apply_filters('tcc_post_labels_'.$this->type,$arr);
   }
 
   # http://codex.wordpress.org/Function_Reference/register_post_type
@@ -263,7 +266,7 @@ abstract class RC_Custom_Post_Type {
       8  => sprintf( $strings['submit'],  $this->label) .$preview_link,
       9  => sprintf( $strings['schedule'],$this->label,  $formed_date) .$preview_link,
       10 => sprintf( $strings['draft'],   $this->label) .$preview_link);
-    return $messages;
+    return apply_filter('tcc_post_type_messages',$messages);
   }
 
   public function register_sidebar() {
@@ -306,7 +309,7 @@ abstract class RC_Custom_Post_Type {
 
   protected function taxonomy_labels($single,$plural) {
     $phrases = $this->translated_text();
-    return array('name'              => $plural,
+    $arr = array('name'              => $plural,
                  'singular_name'     => $single,
                  'search_items'      => sprintf($phrases['search'], $plural),
                  'popular_items'     => sprintf($phrases['popular'],$plural),
@@ -326,6 +329,7 @@ abstract class RC_Custom_Post_Type {
                  'no_terms'                   => sprintf($phrases['none'],    $plural),
                  'items_list_navigation'      => sprintf($phrases['navig'],   $plural),
                  'items_list'                 => sprintf($phrases['list'],    $plural));
+    return apply_filter('tcc_taxonomy_labels',$arr);  #  Alternate, more specific, filter: 'tcc_taxonomy_labels_{tax slug}'
   }
 
   protected function taxonomy_registration($args) {
@@ -340,7 +344,7 @@ abstract class RC_Custom_Post_Type {
     if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;  #  Here too
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
     $labels = $this->taxonomy_labels($single,$plural);
-    $labels = apply_filters('tcc_taxonomy_labels_'.$tax,$labels);
+    $labels = apply_filters('tcc_taxonomy_labels_'.$tax,$labels);  #  Alternate, more general, filter: 'tcc_taxonomy_labels'
 
     $taxargs['labels']  = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
     $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;

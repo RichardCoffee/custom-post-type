@@ -29,6 +29,8 @@ if (!function_exists('microdata')) {
   }
 }
 
+if (!class_exists('TCC_Microdata')) {
+
 class TCC_Microdata {
 
   static $instance = null;
@@ -355,3 +357,5 @@ if ($attr) tcc_log_entry('micro: comments_popup_link_attributes',$attr);
 
 
 }
+
+)  #  end of class exists check
