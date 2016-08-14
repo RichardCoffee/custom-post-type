@@ -358,4 +358,4 @@ if ($attr) tcc_log_entry('micro: comments_popup_link_attributes',$attr);
 
 }
 
-)  #  end of class exists check
+}  #  end of class exists check
