@@ -688,9 +688,11 @@ abstract class RC_Custom_Post_Type {
   /*  Meta box  */
 
   public function check_meta_boxes() {
-    $cap = "edit_others_".sanitize_title($this->plural);
-    if (!current_user_can($cap)) {
-      remove_meta_box('authordiv',$this->type,'normal');
+    if (!$this->caps==='post') {
+      $cap = "edit_others_".sanitize_title($this->plural);
+      if (!current_user_can($cap)) {
+        remove_meta_box('authordiv',$this->type,'normal');
+      }
     }
   }
 
