@@ -40,18 +40,19 @@ abstract class RC_Custom_Post_Type {
   protected $supports    = array('title','editor','author','thumbnail','revisions','comments');
 
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
-  protected $slug_edit   =  true;       # ** whether to allow editing of taxonomy slugs in admin screen
+  protected $js_path     = false;       #    Set this in child if needed
+  protected $slug_edit   = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $tax_list    = array();
   protected $tax_keep    = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
-  protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - not yet implemented
+  protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - FIXME: not yet implemented
 
   #  Experimental
   protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, or send me a fix
   protected $sidebar     =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
 
-  # Do not set these in the child class
+  #  Important: Do not set these in the child class
   protected static $types = array('posts'=>null);
-  //  FIXME:  this needs to be handled differently
+  //  FIXME:  this next line needs to be handled differently
   private $cpt_nodelete = false;       #    if true then implement no deletion policy on builtin taxonomies assigned to this cpt
   private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
@@ -163,7 +164,7 @@ abstract class RC_Custom_Post_Type {
                      'view_s'  => _x('View %s',              'placeholder is singular form','tcc-custom-post'),
                      'messages'=> array(
                          'custom_u' => __('Custom field updated.', 'tcc-custom-post'),
-                         'custom_d' => __('Custom field deleted.','tcc-custom-post' ),
+                         'custom_d' => __('Custom field deleted.', 'tcc-custom-post'),
                          'draft'    => _x('%s draft updated.','placeholder is singular form', 'tcc-custom-post'),
                          'preview'  => _x('Preview %s',       'placeholder is singular form', 'tcc-custom-post'),
                          'publish'  => _x('%s published.',    'placeholder is singular form', 'tcc-custom-post'),
@@ -403,7 +404,8 @@ abstract class RC_Custom_Post_Type {
   public function stop_slug_edit() {
     $screen = get_current_screen();
     if ($screen->base=='edit-tags') {
-      wp_register_script('slug_noedit',plugins_url('../js/slug_noedit.js',__FILE__),array('jquery'),false,true);
+      $noedit = ($this->js_path) ? plugins_url($this->js_path.'slug_noedit.js') : plugins_url('../js/slug_noedit.js',__FILE__);
+      wp_register_script('slug_noedit',$noedit,array('jquery'),false,true);
       wp_enqueue_script('slug_noedit');
     }
   }
