@@ -383,7 +383,8 @@ abstract class RC_Custom_Post_Type {
         add_filter('wp_get_nav_menu_items',array($this,$submenu)); }
       if ($nodelete) {
         $this->nodelete[] = $tax;
-        add_action('admin_enqueue_scripts', array($this,'stop_term_deletion'));
+        if (!has_action('admin_enqueue_scripts', array($this,'stop_term_deletion'))) {
+          add_action('admin_enqueue_scripts', array($this,'stop_term_deletion')); }
       }
       if (!empty($omit)) {
         $this->omit[$tax] = (empty($this->omit[$tax])) ? $omit : array_merge($this->omit[$tax],$omit);
@@ -398,13 +399,14 @@ abstract class RC_Custom_Post_Type {
     foreach($check as $tax) {
       $this->nodelete[] = $tax;
     }
-    add_action('admin_enqueue_scripts', array($this,'stop_term_deletion'));
+    if (!has_action('admin_enqueue_scripts', array($this,'stop_term_deletion'))) {
+      add_action('admin_enqueue_scripts', array($this,'stop_term_deletion')); }
   }
 
   public function stop_slug_edit() {
     $screen = get_current_screen();
     if ($screen->base=='edit-tags') {
-      $noedit = ($this->js_path) ? plugins_url($this->js_path.'slug_noedit.js') : plugins_url('../js/slug_noedit.js',__FILE__);
+      $noedit = ($this->js_path) ? plugin_dir_url($this->js_path.'/dummy.js').'slug_noedit.js' : plugins_url('../js/slug_noedit.js',__FILE__);
       wp_register_script('slug_noedit',$noedit,array('jquery'),false,true);
       wp_enqueue_script('slug_noedit');
     }
@@ -430,7 +432,8 @@ abstract class RC_Custom_Post_Type {
       if ($keep_list) {
         $keep_list = array_unique($keep_list);
         $this->logging($keep_list);
-        wp_register_script('tax_nodelete',plugins_url('../js/tax_nodelete.js',__FILE__),array('jquery'),false,true);
+        $nodelete  = ($this->js_path) ? plugin_dir_url($this->js_path.'/dummy.js').'tax_nodelete.js' : plugins_url('../js/tax_nodelete.js',__FILE__);
+        wp_register_script('tax_nodelete',$nodelete,array('jquery'),false,true);
         wp_localize_script('tax_nodelete','term_list',$keep_list);
         wp_enqueue_script('tax_nodelete');
       }
