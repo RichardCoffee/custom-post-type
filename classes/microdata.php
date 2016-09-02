@@ -252,8 +252,9 @@ if ($attr) tcc_log_entry('micro: comments_popup_link_attributes',$attr);
   }
 
   public function get_the_title($title,$id) {
-    if (!strpos($title,'itemprop')===false) return $title;
-    if (!strpos($title,'screen-reader-text')===false) return $title;
+    if (!strpos($title,'itemprop')===false) return $title; // itemprop already present
+    if (!strpos($title,'sr-only')===false) return $title;  // bootstrap css
+    if (!strpos($title,'screen-reader-text')===false) return $title; // underscore theme
     if ($this->called_by(array('wp_title','_wp_render_title_tag'))) return $title;
     return "<span itemprop='headline'>$title</span>";
   }
