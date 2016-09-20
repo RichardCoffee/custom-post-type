@@ -322,25 +322,28 @@ if ($attr) tcc_log_entry('micro: comments_popup_link_attributes',$attr);
 
   /**  Address functions  **/
 
-// FIXME: check for pre-existing itemprop
-
   public function city($city) {
+    if (!strpos($city,'itemprop')===false) return $city;
     return "<span itemprop='addressLocality'>$city</span>";
   }
 
   public function pobox($pobox) {
+    if (!strpos($pobox,'itemprop')===false) return $pobox;
     return "<span itemprop='postOfficeBoxNumber'>$pobox</span>";
   }
 
   public function state($state) {
+    if (!strpos($state,'itemprop')===false) return $state;
     return "<span itemprop='addressRegion'>$state</span>";
   }
 
   public function street($street) {
+    if (!strpos($street,'itemprop')===false) return $street;
     return "<span itemprop='streetAddress'>$street</span>";
   }
 
   public function zipcode($zipcode) {
+    if (!strpos($zipcode,'itemprop')===false) return $zipcode;
     return "<span itemprop='postalCode'>$zipcode</span>";
   }
 
