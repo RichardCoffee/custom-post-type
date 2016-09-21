@@ -390,6 +390,18 @@ abstract class RC_Custom_Post_Type {
         $this->omit[$tax] = (empty($this->omit[$tax])) ? $omit : array_merge($this->omit[$tax],$omit);
         if (!has_filter('pre_get_posts', array($this,'omit_get_posts'))) { add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }
       }
+      add_filter("cpt_{$this->type}_pre_get_posts", function($query) use ($tax) {
+        if ($query->is_search()) {
+          $value = $query->get($tax);
+          if ($value) {
+            $args = $query->get('tax_query');
+            $args = ($args) ? $args : array();
+            $args[] = array( 'taxonomy'=>$tax, 'field'=>'slug', 'terms'=>$value );
+            $query->set('tax_query', $args);
+          }
+        }
+        return $query;
+      } ,11);
     }
   }
 
@@ -659,6 +671,7 @@ abstract class RC_Custom_Post_Type {
         $check[] = $this->type;
         $query->set('post_type',$check);
       }
+      $query = apply_filters("cpt_{$this->type}_pre_get_posts",$query);
     }
     return $query;
   }
