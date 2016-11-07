@@ -173,7 +173,6 @@ class TCC_Microdata {
   }
 
   public function comments_popup_link_attributes($attr) {
-if ($attr) tcc_log_entry('micro: comments_popup_link_attributes',$attr);
     return 'itemprop="discussionURL"';
   }
 
