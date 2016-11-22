@@ -485,7 +485,7 @@ abstract class RC_Custom_Post_Type {
     if (isset($this->columns['add'])) {
       add_filter("manage_edit-{$this->type}_columns",array($this,'add_custom_post_columns'));
       add_filter("manage_edit-{$this->type}_sortable_columns",array($this,'add_custom_post_columns'));
-      if (isset($data['columns']['content'])) {
+      if (isset($this->columns['content'])) {
         if (is_callable(array($this,$this->columns['content']))) {
           add_action('manage_posts_custom_column',array($this,$this->columns['content']),10,2);
         } else {
