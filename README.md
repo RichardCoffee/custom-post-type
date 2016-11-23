@@ -14,6 +14,7 @@ The basis for a lot of the code originated from different places on the web.  I 
 * Assign a folder, or list of folders to look for templates in.
 * Add a sidebar for the CPT.
 * Show a column on the admin Users screen, providing an author count.
+* Add taxonomy columns to CPT admin dashboard.
 * Stop a user from deleting a custom taxonomy term, either permanently or if in use.
 * Prevent editing of custom taxonomy term slugs.
 * Stop a CPT with a specific taxonomy term from showing up on queries.
@@ -33,7 +34,7 @@ This really consists of only three files:
   js/slug_noedit.js
   js/tax_nodelete.js
 ```
-Simply copy these to their respective location.  That's it.
+Simply copy these to their respective location.  That's it.  Take note:  source code supersends any information contained within this document.
 
 ## Usage
 

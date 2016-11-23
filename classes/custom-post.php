@@ -478,6 +478,7 @@ abstract class RC_Custom_Post_Type {
   /*  Post Admin Column functions/filters  */
 
   /**  CPT screen  **/
+  # https://yoast.com/dev-blog/custom-post-type-snippets/
 
   private function setup_columns() {
     if (isset($this->columns['remove'])) {
@@ -487,18 +488,34 @@ abstract class RC_Custom_Post_Type {
       add_filter("manage_edit-{$this->type}_sortable_columns",array($this,'add_custom_post_columns'));
       if (isset($this->columns['content'])) {
         if (is_callable(array($this,$this->columns['content']))) {
-          add_action('manage_posts_custom_column',array($this,$this->columns['content']),10,2);
-        } else {
-          $this->logging('columns[content] not callable: '.$this->columns['content']); }
-      }
+          add_action('manage_posts_custom_column',array($this,$this->columns['content']),10,2); }
+        else {
+          $this->logging('columns[content] function name not callable: '.$this->columns['content']); } }
+      else {
+        add_filter('manage_posts_custom_column',array($this,'add_custom_post_column'),10,2); }
     }
   }
 
   public function add_custom_post_columns($columns) {
+    $place = 'title';
     foreach($this->columns['add'] as $key=>$col) {
-      if (!isset($columns[$key])) $columns[$key] = $col; }
+      if (!isset($columns[$key])) {
+        $columns = array_insert_after( $place, $columns, $key, $col );
+        $place   = $key;
+      }
+    }
     return $columns;
   } //*/
+
+  /** css class: .column-{$column}  **/
+  public function add_custom_post_column($column,$post_id) {
+    if (array_key_exists($column,$this->columns['add'])) {
+      $term = get_post_meta($post_id,$column,true);
+      $tobj = get_term_by('slug',$term,$column);
+      if ($tobj) { echo $tobj->name; }
+      else { echo '--'; }
+    }
+  }
 
   public function remove_custom_post_columns($columns) {
     foreach($this->columns['remove'] as $no_col) {
