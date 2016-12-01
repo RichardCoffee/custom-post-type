@@ -486,13 +486,13 @@ abstract class RC_Custom_Post_Type {
     if (isset($this->columns['add'])) {
       add_filter("manage_edit-{$this->type}_columns",array($this,'add_custom_post_columns'));
       add_filter("manage_edit-{$this->type}_sortable_columns",array($this,'add_custom_post_columns'));
-      if (isset($this->columns['content'])) {
-        if (is_callable(array($this,$this->columns['content']))) {
-          add_action('manage_posts_custom_column',array($this,$this->columns['content']),10,2); }
+      if (isset($this->columns['callback'])) {
+        if (is_callable(array($this,$this->columns['callback']))) {
+          add_action('manage_posts_custom_column',array($this,$this->columns['callback']),10,2); }
         else {
-          $this->logging('columns[content] function name not callable: '.$this->columns['content']); } }
+          $this->logging('columns[callback] function name not callable: '.$this->columns['callback']); } }
       else {
-        add_filter('manage_posts_custom_column',array($this,'add_custom_post_column'),10,2); }
+        add_filter('manage_posts_custom_column',array($this,'display_custom_post_column'),10,2); }
     }
   }
 
@@ -507,8 +507,13 @@ abstract class RC_Custom_Post_Type {
     return $columns;
   } //*/
 
-  /** css class: .column-{$column}  **/
-  public function add_custom_post_column($column,$post_id) {
+  /*
+   *  See:  http://wordpress.stackexchange.com/questions/33885/style-custom-columns-in-admin-panels-especially-to-adjust-column-cell-widths
+   *
+   *  css class: .column-{$column}
+   *
+   */
+  public function display_custom_post_column($column,$post_id) {
     if (array_key_exists($column,$this->columns['add'])) {
       $term = get_post_meta($post_id,$column,true);
       $tobj = get_term_by('slug',$term,$column);

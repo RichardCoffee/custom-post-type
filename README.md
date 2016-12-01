@@ -96,6 +96,34 @@ While defaulting to using standard Wordpress caps, the class can generate unique
 #### Labels
 The class generates a default array of strings for the labels based upon the singular and plural labels.  This array can be altered using the filter action `tcc_post_label_{post-type}`.  See the 'Text domain' and 'Text strings' sections below for related information.
 
+#### List columns
+Custom columns can be added/removed via the plugin.  This can be done utilizing the columns property like so:
+```
+  $this->columns = array('add' => array('taxslug' => __('Header text','text-domain')));
+```
+The display of taxonomies is handled automatically, while you may need to override the internal method, display_custom_post_column, to display other data:
+```
+  $this->columns = array('add' => array('taxslug' => __('Header text','text-domain'),
+                                        'postid'  => __('Post ID','text-domain')));
+
+  public function display_custom_post_column($column,$post_id) {
+    switch($column) {
+      case 'postid':
+        echo $post_id;
+        break;
+      default:
+        parent::display_custom_post_column($column,$post_id);
+    }
+  }
+```
+Optionally, a custom callback can be specified.  It would be used instead of the internal plugin method:
+```
+  $this->columns = array('add' => array( 'index1' => __('Header One','text-domain'),
+                                         'index2' => __('Header Two','text-domain'))
+                         'callback' => 'callable_function');
+```
+To style the column use '.column-{slug}' in your css file.
+
 #### Taxonomies
 After the post type has been created, an action hook is run named 'tcc_custom_post_{post-type}'.  Hook there to run code such as registering a taxonomy.  See the 'Taxonomies' sections below.
 The class provides its own taxonomy_registration() method.  When used, it provides the ability to prevent term deletion for the taxonomy.  There is also a mechanism in place to prevent specified term deletion.  See the 'Term Deletion' section below for slightly more information.
