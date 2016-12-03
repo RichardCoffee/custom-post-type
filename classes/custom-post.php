@@ -22,7 +22,7 @@ abstract class RC_Custom_Post_Type {
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
   protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
-  protected $debug       =  false;      #    used in conjunction with $this->logging
+  protected $debug       =  WP_DEBUG;   #    used in conjunction with $this->logging
   protected $logging     = 'log_entry'; #    assign your own logging function here
 
   protected $caps        = 'post';      #    default is to not create custom capabilities
@@ -83,6 +83,8 @@ abstract class RC_Custom_Post_Type {
         add_filter('pre_get_posts', array($this,'pre_get_posts'),5); }   #  run early - priority 5
       if ($this->tax_omit) {     #  Stop posts with tax term from showing in any query
         add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }  #  run early - priority 6
+      if (is_admin()) {          #  Sortable columns
+        add_filter('pre_get_posts', array($this,'sort_get_posts')); }
       if ($this->sidebar) {
         add_action('widgets_init',array($this,'register_sidebar'),20); } # run late - priority 20
       if ( ! $this->slug_edit) { #  Deny admin ability to edit taxonomy term slugs
@@ -379,8 +381,7 @@ abstract class RC_Custom_Post_Type {
           }
         }
       }
-      if (($submenu) && (method_exists($this,$submenu))) {
-        add_filter('wp_get_nav_menu_items',array($this,$submenu)); }
+      #if (($submenu) && (is_callable($submenu))) { add_filter('wp_get_nav_menu_items',$submenu); }
       if ($nodelete) {
         $this->nodelete[] = $tax;
         if (!has_action('admin_enqueue_scripts', array($this,'stop_term_deletion'))) {
@@ -481,20 +482,23 @@ abstract class RC_Custom_Post_Type {
   # https://yoast.com/dev-blog/custom-post-type-snippets/
 
   private function setup_columns() {
-    if (isset($this->columns['remove'])) {
-      add_filter("manage_edit-{$this->type}_columns",array($this,'remove_custom_post_columns')); }
-    if (isset($this->columns['add'])) {
-      add_filter("manage_edit-{$this->type}_columns",array($this,'add_custom_post_columns'));
-      add_filter("manage_edit-{$this->type}_sortable_columns",array($this,'add_custom_post_columns'));
-      if (isset($this->columns['callback'])) {
-        if (is_callable(array($this,$this->columns['callback']))) {
-          add_action('manage_posts_custom_column',array($this,$this->columns['callback']),10,2); }
-        else {
-          $this->logging('columns[callback] function name not callable: '.$this->columns['callback']); } }
+    if (!empty($this->columns['remove'])) { add_filter("manage_edit-{$this->type}_columns",array($this,'remove_custom_post_columns')); }
+    if (!empty($this->columns['add']))    { add_filter("manage_edit-{$this->type}_columns",array($this,'add_custom_post_columns')); }
+    if (!empty($this->columns['sort']))   { add_filter("manage_edit-{$this->type}_sortable_columns",array($this,'add_custom_post_columns_sortable')); }
+    if (!empty($this->columns['callback'])) {
+      if (is_callable($this->columns['callback'])) {
+        add_action('manage_posts_custom_column',$this->columns['callback'],10,2); }
       else {
-        add_filter('manage_posts_custom_column',array($this,'display_custom_post_column'),10,2); }
-    }
+        $this->logging('columns[callback] function name not callable',$this->columns['callback']); } }
+    else {
+      add_filter('manage_posts_custom_column',array($this,'display_custom_post_column'),10,2); }
   }
+
+  public function remove_custom_post_columns($columns) {
+    foreach($this->columns['remove'] as $no_col) {
+      if (isset($columns[$no_col])) { unset($columns[$no_col]); } }
+    return $columns;
+  } //*/
 
   public function add_custom_post_columns($columns) {
     $place = 'title';
@@ -506,6 +510,31 @@ abstract class RC_Custom_Post_Type {
     }
     return $columns;
   } //*/
+
+  public function add_custom_post_columns_sortable($columns) {
+    $place = 'title';
+    foreach($this->columns['add'] as $key=>$col) {
+      if (!in_array($key,$this->columns['sort'])) continue;
+      if (!isset($columns[$key])) {
+        $columns = array_insert_after( $place, $columns, $key, $key );
+        $place   = $key;
+      }
+    }
+    return $columns;
+  }
+
+  public function sort_get_posts($query) {
+    if (is_admin()) {
+      $screen = get_current_screen();
+      if ($screen->id==="edit-{$this->type}") {
+        $orderby = $query->get( 'orderby');
+        if (in_array($orderby,$this->columns['sort'])) {
+          $query->set('meta_key',$orderby);
+          $query->set('orderby','meta_value');
+        }
+      }
+    }
+  }
 
   /*
    *  See:  http://wordpress.stackexchange.com/questions/33885/style-custom-columns-in-admin-panels-especially-to-adjust-column-cell-widths
@@ -522,11 +551,6 @@ abstract class RC_Custom_Post_Type {
     }
   }
 
-  public function remove_custom_post_columns($columns) {
-    foreach($this->columns['remove'] as $no_col) {
-      if (isset($columns[$no_col])) { unset($columns[$no_col]); } }
-    return $columns;
-  } //*/
 
   /**  Users screen  **/
   # http://wordpress.stackexchange.com/questions/3233/showing-users-post-counts-by-custom-post-type-in-the-admins-user-list
@@ -693,9 +717,7 @@ abstract class RC_Custom_Post_Type {
         $check[] = $this->type;
         $query->set('post_type',$check);
       }
-      $query = apply_filters("cpt_{$this->type}_pre_get_posts",$query);
     }
-    return $query;
   }
 
   public function omit_get_posts($query) {
