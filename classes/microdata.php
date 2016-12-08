@@ -232,12 +232,11 @@ class TCC_Microdata {
   }
 
   public function get_the_archive_title($title) {
-    if (!strpos($title,'itemprop')===false) return $title;
-    #if ($this->called_by('wp_title')) return $title;
-    if (is_author()) {
-      $title = preg_replace('/(<span.*?)(>)/i','$1 itemprop="author"$2',$title);
-    } elseif ($title==__('Archives')) {  #  do not add text domain to this
-      $title = "<span itemprop='headline'>$title</span>";
+    if (strpos($title,'itemprop')===false) {
+      if (is_author()) {
+        $title = preg_replace('/(<span.*?)(>)/i','$1 itemprop="author"$2',$title); }
+      else if ($title==__('Archives')) {  #  do not add text domain to this
+        $title = "<span itemprop='headline'>$title</span>"; }
     }
     return $title;
   }
