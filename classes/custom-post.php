@@ -316,6 +316,7 @@ abstract class RC_Custom_Post_Type {
   /* Taxonomy functions */
 
   protected function taxonomy_labels($single,$plural) {
+		# note: do not use a static here
     $phrases = $this->translated_text();
     $arr = array('name'              => $plural,
                  'singular_name'     => $single,
@@ -337,7 +338,7 @@ abstract class RC_Custom_Post_Type {
                  'no_terms'                   => sprintf($phrases['none'],    $plural),
                  'items_list_navigation'      => sprintf($phrases['navig'],   $plural),
                  'items_list'                 => sprintf($phrases['list'],    $plural));
-    return apply_filters('tcc_taxonomy_labels',$arr);  #  Alternate, more specific, filter: 'tcc_taxonomy_labels_{tax slug}'
+    return apply_filters('tcc_taxonomy_labels',$arr);  #  deprecated
   }
 
   protected function taxonomy_registration($args) {
@@ -352,7 +353,8 @@ abstract class RC_Custom_Post_Type {
     if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;  #  Here too
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
     $labels = $this->taxonomy_labels($single,$plural);
-    $labels = apply_filters('tcc_taxonomy_labels_'.$tax,$labels);  #  Alternate, more general, filter: 'tcc_taxonomy_labels'
+    $labels = apply_filters('tcc_taxonomy_labels_'.$tax,$labels);  #  deprecated
+		$labels = apply_filters("tcc_{$this->type}_{$tax}_labels",$labels);		#  Use this one by choice
 
     $taxargs['labels']  = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
     $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;
@@ -529,7 +531,7 @@ abstract class RC_Custom_Post_Type {
   }
 
   public function sort_get_posts($query) {
-    if (is_admin()) {
+    if (is_admin() && function_exists('get_current_screen')) {  // FIXME
       $screen = get_current_screen();
       if ($screen->id==="edit-{$this->type}") {
         $orderby = $query->get( 'orderby');
