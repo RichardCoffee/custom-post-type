@@ -6,6 +6,8 @@ I have seen quite a few different ways of how people handle custom post types in
 
 The basis for a lot of the code originated from different places on the web.  I have tried to give credit where I can.  My coding style can not be considered 'orthodox' in any way, shape, form, or fashion.
 
+WARNING:  Use a permalink of `/%category%/%post_name%/` otherwise this thing may not work at all...8-(
+
 ## Features
 
 * Provides a base class for easier CPT creation.

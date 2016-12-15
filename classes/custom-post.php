@@ -37,7 +37,7 @@ abstract class RC_Custom_Post_Type {
   protected $menu_position = 6;         # ** position on admin dashboard
 
   protected $rewrite     = array();     #    defaults to: array('slug'=>$this->type));
-  protected $supports    = array('title','editor','author','thumbnail','revisions','comments');
+  protected $supports    = array('title','editor','author','thumbnail','revisions','comments'); // ,'post-formats');
 
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
   protected $js_path     = false;       #    Set this in child if needed
@@ -533,7 +533,7 @@ abstract class RC_Custom_Post_Type {
   public function sort_get_posts($query) {
     if (is_admin() && function_exists('get_current_screen')) {  // FIXME
       $screen = get_current_screen();
-      if ($screen->id==="edit-{$this->type}") {
+      if ($screen && ($screen->id==="edit-{$this->type}")) {
         $orderby = $query->get( 'orderby');
         if (in_array($orderby,$this->columns['sort'])) {
           $query->set('meta_key',$orderby);
