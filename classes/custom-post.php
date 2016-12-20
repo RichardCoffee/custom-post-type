@@ -531,11 +531,11 @@ abstract class RC_Custom_Post_Type {
   }
 
   public function sort_get_posts($query) {
-    if (is_admin() && function_exists('get_current_screen')) {  // FIXME
+    if (is_admin() && function_exists('get_current_screen')) {
       $screen = get_current_screen();
       if ($screen && ($screen->id==="edit-{$this->type}")) {
         $orderby = $query->get( 'orderby');
-        if (in_array($orderby,$this->columns['sort'])) {
+        if (isset($this->columns['sort']) && in_array($orderby,$this->columns['sort'])) {
           $query->set('meta_key',$orderby);
           $query->set('orderby','meta_value');
         }
