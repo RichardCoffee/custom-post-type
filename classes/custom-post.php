@@ -18,7 +18,6 @@ abstract class RC_Custom_Post_Type {
 
   ######  I have marked properties with '**' that I believe people may want to change more often.
 
-  protected $comments    =  false;      # ** boolean:  allow comments
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
   protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
@@ -31,14 +30,16 @@ abstract class RC_Custom_Post_Type {
   protected $columns     =  null;       #    array('remove'=>array()','add'=>array())
 
   protected $has_archive =  false;      #    boolean or string - can be set to the archive template path
+  protected $rewrite     =  array();    #    defaults to: array('slug'=>$this->type));
   protected $templates   =  false;      #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
 
   protected $menu_icon   = 'dashicons-admin-post'; # ** admin dashboard icon
   protected $menu_position = 6;         # ** position on admin dashboard
 
-  protected $rewrite     = array();     #    defaults to: array('slug'=>$this->type));
-  protected $supports    = array('title','editor','author','thumbnail','revisions','comments'); // ,'post-formats');
-
+  protected $comments    = false;       # ** boolean:  allow comments for cpt
+  protected $formats     = false;       # ** boolean:  signifies support for post formats - only useful if the theme supports it
+  protected $supports    = array('title','editor','author','revisions');
+  protected $thumbnail   = true;        # ** boolean:  indicates support for featured image
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
   protected $js_path     = false;       #    Set this in child if needed
   protected $slug_edit   = true;        # ** whether to allow editing of taxonomy slugs in admin screen
@@ -63,20 +64,21 @@ abstract class RC_Custom_Post_Type {
       foreach($data as $prop=>$value) {
         $this->{$prop} = $value;
       }
-#      foreach((array)$this as $key=>$value) {
-#        if (isset($data[$key])) $this->{$key} = $data[$key];
-#      }
       $this->type = (empty($this->type)) ? sanitize_title($this->label) : sanitize_title($this->type);
       add_action('init', array( $this, 'create_post_type'));
       add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
-      add_action('contextual_help', array($this,'contextual_help'), 10, 3 );
+      add_action('contextual_help',       array($this,'contextual_help'), 10, 3 );
+      add_filter('comments_open',         array($this,'comments_limit'),10,2);
+      add_filter('pings_open',            array($this,'comments_limit'),10,2);
       add_filter('post_updated_messages', array($this,'post_type_messages'));
       if ($this->columns) {      #  Add/Remove cpt screen columns
         $this->setup_columns(); }
-      if ($this->comments) {     #  Allow comments for cpt
-        add_filter('comments_open', array($this,'comments_limit'),10,2);
-        add_filter('pings_open',    array($this,'comments_limit'),10,2);
-      }
+      if ($this->comments) {
+        $this->supports[] = 'comments'; }
+      if ($this->thumbnail) {
+        $this->supports[] = 'thumbnail'; }
+      if ($this->formats && current_theme_supports('post-formats') ) {
+        $this->supports[] = 'post-formats'; }
       if ($this->cpt_nodelete) { #  Add nodelete code for builtin taxonomies
         $this->add_builtins(); }
       if ($this->main_blog) {    #  Force cpt in main wp query
