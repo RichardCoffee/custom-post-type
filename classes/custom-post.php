@@ -29,7 +29,7 @@ abstract class RC_Custom_Post_Type {
 
   protected $columns     =  null;       #    array('remove'=>array()','add'=>array())
 
-  protected $has_archive =  false;      #    boolean or string - can be set to the archive template path
+  protected $has_archive =  false;      #    boolean or string - can be set to the archive template path - DEPRECATED - use $this->templates['archive'] instead
   protected $rewrite     =  array();    #    defaults to: array('slug'=>$this->type));
   protected $templates   =  false;      #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
 
@@ -398,19 +398,19 @@ abstract class RC_Custom_Post_Type {
       }
       if (!empty($omit)) {
         $this->omit[$tax] = (empty($this->omit[$tax])) ? $omit : array_merge($this->omit[$tax],$omit);
-        if (!has_filter('pre_get_posts', array($this,'omit_get_posts'))) { add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }
+        if (!has_filter('pre_get_posts', array($this,'omit_get_posts'),6)) { add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }
       }
       add_filter("cpt_{$this->type}_pre_get_posts", function($query) use ($tax) {
         if ($query->is_search()) {
           $value = $query->get($tax);
           if ($value) {
+				#$args = ($tq=$query->get('tax_query')) ? $tq : array();
             $args = $query->get('tax_query');
             $args = ($args) ? $args : array();
             $args[] = array( 'taxonomy'=>$tax, 'field'=>'slug', 'terms'=>$value );
             $query->set('tax_query', $args);
           }
         }
-        return $query;
       } ,11);
     }
   }
@@ -633,7 +633,7 @@ abstract class RC_Custom_Post_Type {
     if (isset($this->templates[$slug])) {
       $template = $this->templates[$slug];
     } elseif (($slug==='archive') && isset($this->has_archive) && is_string($this->has_archive)) {
-      $template = $this->has_archive;
+      $template = $this->has_archive;  #  DEPRECATED - do not use has_archive - use $this->templates['archive'] instead
     } elseif (isset($this->templates['folders'])) {
       foreach((array)$this->templates['folders'] as $folder) {
         $test = $folder."/$slug-{$this->type}.php";
