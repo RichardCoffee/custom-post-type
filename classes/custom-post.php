@@ -716,15 +716,19 @@ abstract class RC_Custom_Post_Type {
 	// https://wordpress.org/support/topic/custom-post-type-posts-not-displayed
 	public function pre_get_posts($query) {
 		if ((!is_admin() && $query->is_main_query() && !($query->is_page())) || $query->is_feed) {
-			$check = $query->get('post_type');
-			if (empty($check)) {
-				$query->set('post_type',array('post',$this->type));
-			} elseif (!((array)$check==$check)) {
-				if ($check!==$this->type) { $query->set('post_type',array($check,$this->type)); }
-			} elseif (!in_array($this->type,$check)) {
-				$check[] = $this->type;
-				$query->set('post_type',$check);
-			}
+			$this->add_post_type($query);
+		}
+	}
+
+	protected function add_post_type($query) {
+		$check = $query->get('post_type');
+		if (empty($check)) {
+			$query->set('post_type',array('post',$this->type));
+		} elseif (!((array)$check==$check)) {
+			if ($check!==$this->type) { $query->set('post_type',array($check,$this->type)); }
+		} elseif (!in_array($this->type,$check)) {
+			$check[] = $this->type;
+			$query->set('post_type',$check);
 		}
 	}
 
