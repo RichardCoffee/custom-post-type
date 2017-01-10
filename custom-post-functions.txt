@@ -1,0 +1,66 @@
+
+  Visibility  Name
+
+  public      __construct($data)
+  public      __destruct()
+  public      __get($name)
+  public      __isset($name)
+
+  /**  Text functions  **/
+  public      contextual_help( $contextual_help, $screen_id, $screen )
+  protected   translate_post_count($count)
+  protected   translated_text()
+
+  /* Create Post Type functions */
+  public      create_post_type()
+  protected   post_type_labels()
+  public      post_type_messages($messages)
+  public      register_sidebar()
+
+  /*  Capabilities  */
+  public      add_caps()
+  private     process_caps($name)
+
+  /* Taxonomy functions */
+  protected   taxonomy_labels($single,$plural)
+  protected   taxonomy_registration($args)
+  private     add_builtins()
+  public      stop_slug_edit()
+
+  /*  Term functions  */
+  public      stop_term_deletion()
+  private     get_term_id($term,$tax)
+
+  /*  Post Admin Column functions/filters  */
+  private     setup_columns()
+  public      remove_custom_post_columns($columns)
+  public      add_custom_post_columns($columns)
+  public      add_custom_post_columns_sortable($columns)
+  public      sort_get_posts($query)
+  public      display_custom_post_column($column,$post_id)
+  public      manage_users_columns($column_headers)
+  public      manage_users_custom_column($column,$column_name,$user_id)
+  private     get_author_post_type_counts()
+
+  /*  Template filters  */
+  public      assign_template($template)
+  private     locate_template($template,$slug)
+
+  /**  Alternate Template filters  **/
+  private     assign_template_filters()
+  public      archive_template($archive_template)
+  public      single_template($single_template)
+
+  /*  Comments  */
+  public      comments_limit($open,$post_id)
+
+  /*  Query modifications  */
+  public      pre_get_posts($query)
+  protected   add_post_type($query)
+  public      omit_get_posts($query)
+
+  /*  Meta box  */
+  public      check_meta_boxes()
+
+  /*  Debugging  */
+  public      logging()

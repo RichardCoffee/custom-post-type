@@ -5,13 +5,15 @@
  *
  *  GitHub:  https://github.com/RichardCoffee/custom-post-type
  *
- *  Copyright 2009-2016, Richard Coffee
+ *  Copyright 2009-2017, Richard Coffee
  *
  */
 
 abstract class RC_Custom_Post_Type {
 
   protected $type     = 'post';  #  'custom_post_type_name'
+
+  #  Pass these as data to __construct function
   protected $label    = 'Post';  #  _x('Custom Post Type','singular form','textdomain')
   protected $plural   = 'Posts'; #  _x('Custom Post Types','plural form','textdomain')
   protected $descrip  = '';      #  __('Custom Post Type Title','textdomain')
@@ -21,16 +23,16 @@ abstract class RC_Custom_Post_Type {
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
   protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
-  protected $debug       =  WP_DEBUG;   #    used in conjunction with $this->logging
-  protected $logging     = 'log_entry'; #    assign your own logging function here
+  protected $debug       =  WP_DEBUG;   #    used in conjunction with $this->logging - DEPRECATED
+  protected $logging     = 'log_entry'; #    assign your own logging function here - DEPRECATED
 
   protected $caps        = 'post';      #    default is to not create custom capabilities
   protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
 
-  protected $columns     =  null;       #    array('remove'=>array()','add'=>array())
+  protected $columns     =  null;       #    array('remove'=>array()','add'=>array()) - see docs
 
   protected $has_archive =  false;      #    boolean or string - can be set to the archive template path - DEPRECATED - use $this->templates['archive'] instead
-  protected $rewrite     =  array();    #    defaults to: array('slug'=>$this->type));
+  protected $rewrite     =  array();    #    defaults to: array('slug'=>$this->type))  FIXME: need function to create taxonomy rewrite rules
   protected $templates   =  false;      #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
 
   protected $menu_icon   = 'dashicons-admin-post'; # ** admin dashboard icon
@@ -41,15 +43,15 @@ abstract class RC_Custom_Post_Type {
   protected $supports    = array('title','editor','author','revisions');
   protected $thumbnail   = true;        # ** boolean:  indicates support for featured image
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
-  protected $js_path     = false;       #    Set this in child if needed
+  protected $js_path     = false;       #    
   protected $slug_edit   = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $tax_list    = array();
   protected $tax_keep    = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
-  protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - FIXME: not yet implemented
 
   #  Experimental
-  protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, or send me a fix
+  protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, any fix appreciated
   protected $sidebar     =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
+  protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - FIXME: not yet fully implemented
 
   #  Important: Do not set these in the child class
   protected static $types = array('posts'=>null);
@@ -58,7 +60,7 @@ abstract class RC_Custom_Post_Type {
   private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
   public function __construct($data) {
-    if ((isset($data['type']) && !post_type_exists($data['type'])) || !post_type_exists($this->type)) {
+    if ((isset($data['type']) && !post_type_exists($data['type'])) || ($this->type && !post_type_exists($this->type))) {
       if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }
       unset($data['cpt_nodelete'],$data['nodelete']);
       foreach($data as $prop=>$value) {
@@ -123,7 +125,6 @@ abstract class RC_Custom_Post_Type {
   /**  Text functions  **/
 
   public function contextual_help( $contextual_help, $screen_id, $screen ) {
-    #$this->logging("contextual help:  $screen_id", $contextual_help);
     if ( $screen->id == $this->type ) {
       if (isset($this->contextual_help)) { $contextual_help = $this->contextual_help; }
     } elseif ( $screen->id == "edit-{$this->type}") {
@@ -133,7 +134,7 @@ abstract class RC_Custom_Post_Type {
   }
 
   protected function translate_post_count($count) {
-    return _nx('%1$s %2$s by this author','%1$s %2$s by this author',$count,'first placeholder is numeric, second should be a noun','tcc-custom-post');
+    return esc_html_nx('%1$s %2$s by this author','%1$s %2$s by this author',$count,'first placeholder is numeric, second should be a noun','tcc-custom-post');
   }
 
   protected function translated_text() {
@@ -155,7 +156,7 @@ abstract class RC_Custom_Post_Type {
                      'filter'    => _x('Filter %s list',       'placeholder is plural form',  'tcc-custom-post'),
                      'insert'    => _x('Insert into %s',       'placeholder is singular form','tcc-custom-post'),
                      'list'      => _x('%s list',              'placeholder is singular form','tcc-custom-post'),
-                     'navig'     => _x('%s list navigation',   'placeholder is plural form',  'tcc-custom-post'),
+                     'list_nav'  => _x('%s list navigation',   'placeholder is plural form',  'tcc-custom-post'),
                      'new'       => _x('New %s',               'placeholder is singular form','tcc-custom-post'),
                      'none'      => _x('No %s',                'placeholder is plural form',  'tcc-custom-post'),
                      'parent'    => _x('Parent %s',            'placeholder is singular form','tcc-custom-post'),
@@ -209,7 +210,6 @@ abstract class RC_Custom_Post_Type {
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
     if ($args['map_meta_cap'])  add_action('admin_init', array($this,'add_caps'));
-    #$this->logging('cpt object',$this);
     #$this->logging('post type settings',$GLOBALS['wp_post_types'][$this->type]);
     foreach($this->supports as $support) {
       #$this->logging("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
@@ -239,8 +239,8 @@ abstract class RC_Custom_Post_Type {
       'remove_featured_image' => sprintf($phrases['feat_rem'],strtolower($this->label)),
       'use_featured_image'    => sprintf($phrases['feat_use'],strtolower($this->label)),
       'menu_name'             => $this->plural,
-      'filter_items_list'     => sprintf($phrases['filter'], $this->plural),
-      'items_list_navigation' => sprintf($phrases['navig'],  $this->plural),
+      'filter_items_list'     => sprintf($phrases['filter'],   $this->plural),
+      'items_list_navigation' => sprintf($phrases['list_nav'], $this->plural),
       'items_list'    => sprintf($phrases['list'],   $this->label),
       'edit'          => sprintf($phrases['edit_p'], $this->plural),
       'view'          => sprintf($phrases['view_p'], $this->plural),
@@ -337,9 +337,9 @@ abstract class RC_Custom_Post_Type {
                  'choose_from_most_used'      => sprintf($phrases['used'],    $plural),
                  'not_found'                  => sprintf($phrases['404'],     $plural),
                  'menu_name'                  => $plural,
-                 'no_terms'                   => sprintf($phrases['none'],    $plural),
-                 'items_list_navigation'      => sprintf($phrases['navig'],   $plural),
-                 'items_list'                 => sprintf($phrases['list'],    $plural));
+                 'no_terms'                   => sprintf($phrases['none'],     $plural),
+                 'items_list_navigation'      => sprintf($phrases['list_nav'], $plural),
+                 'items_list'                 => sprintf($phrases['list'],     $plural));
     return apply_filters('tcc_taxonomy_labels',$arr);  #  deprecated
   }
 
@@ -773,7 +773,7 @@ abstract class RC_Custom_Post_Type {
 
   /*  Debugging  */
 
-  public function logging() {
+  public function logging() {  #  DEPRECATED
     if ($this->debug && isset($this->logging)) {
       $log = $this->logging;
       if (is_array($log) && method_exists($log)) {  #  Method in a different class
