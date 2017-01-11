@@ -41,7 +41,7 @@ if (!function_exists('tcc_options_check')) {
 
 function tcc_plugin_state_check() {
   $state  = tcc_options_check();
-  $plugin = TCC_Plugin_Basic::get_instance();
+  $plugin = TCC_Plugin_Basic::getInstance();
 #  if ($state==='Plugin External') {
 #    add_action('tcc_theme_options_loaded', array($plugin,'initialize'));
 #  } else {

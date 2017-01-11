@@ -4,6 +4,8 @@ if (!class_exists('TCC_Plugin_Basic')) {
 
 abstract class TCC_Plugin_Basic {
 
+	use TCC_Trait_Singleton;
+
   protected $admin   = null;
   public    $dbvers  = '0';
   public    $path    = '';
@@ -17,18 +19,6 @@ abstract class TCC_Plugin_Basic {
         $this->$key = $value;
     }
   }
-
-//get_instance function template
-/*  public static function get_instance($args=array()) {
-    if (self::$instance===null) {
-      if (empty($args)) {
-        tcc_log_entry('Error: no pre-existing instance for TCC_Basic_Plugin',debug_backtrace());
-      } else {
-        self::$instance = new TCC_Basic_Plugin($args);
-      }
-    }
-    return self::$instance;
-  } //*/
 
   // origin: http://php.net/manual/en/language.oop5.overloading.php#object.unset
 /*  public function __call($name,$arguments) {
