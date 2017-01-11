@@ -9,7 +9,7 @@
  *
  */
 
-abstract class RC_Custom_Post_Type {
+abstract class TCC_Post_Custom {
 
   protected $type     = 'post';  #  'custom_post_type_name'
 
@@ -59,7 +59,7 @@ abstract class RC_Custom_Post_Type {
   private $cpt_nodelete = false;       #    if true then implement no deletion policy on builtin taxonomies assigned to this cpt
   private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
-  public function __construct($data) {
+  protected function __construct($data) {
     if ((isset($data['type']) && !post_type_exists($data['type'])) || ($this->type && !post_type_exists($this->type))) {
       if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }
       unset($data['cpt_nodelete'],$data['nodelete']);
@@ -775,14 +775,15 @@ abstract class RC_Custom_Post_Type {
 
   public function logging() {  #  DEPRECATED
     if ($this->debug && isset($this->logging)) {
-      call_user_func_array($this->logging, func_get_args()); /*
-      if (is_array($this->logging) && method_exists($this->logging)) {  #  Method in a different class
-        call_user_func_array($this->logging, func_get_args());
-      } elseif (function_exists($this->logging)) {            #  Function
-        call_user_func_array($this->logging, func_get_args());
-      } elseif (method_exists($this,$this->logging)) {        #  Method in this class
-        call_user_func_array($this->logging, func_get_args());
-      } //*/
+      $log = $this->logging;
+      if (is_array($log) && method_exists($log)) {  #  Method in a different class
+        extract($log,EXTR_PREFIX_INVALID,'logger');
+        foreach (func_get_args() as $message) { $logger_0->$logger_1($message); }
+      } elseif (function_exists($log)) {            #  Function
+        foreach (func_get_args() as $message) { $log($message); }
+      } elseif (method_exists($this,$log)) {        #  Method in this class
+        foreach (func_get_args() as $message) { $this->$log($message); }
+      }
     }
   }
 

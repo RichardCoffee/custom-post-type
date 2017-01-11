@@ -2,11 +2,18 @@
 
 This is a base class for WordPress custom post types.  For something that might be easier to use, try here: https://github.com/pelmered/post-types-creator.  This is -not- a UI, nor is it intended to be.  If you are looking for that, then try here: https://github.com/WebDevStudios/custom-post-type-ui.
 
+Other good resources: [Custom Post Type Permalinks](https://github.com/torounit/custom-post-type-permalinks), [Simple Post Type Permalinks](https://wordpress.org/plugins/simple-post-type-permalinks/)
+
+
 I have seen quite a few different ways of how people handle custom post types in wordpress, but was never really happy with any of them.  They all did what they were designed to, but never really seemed to cover the things that I needed.  So I set out to make my own.  It is still very much a work in progress.  Please drop me a note if you find it useful in your own projects.
 
 The basis for a lot of the code originated from different places on the web.  I have tried to give credit where I can.  My coding style can not be considered 'orthodox' in any way, shape, form, or fashion.
 
 WARNING:  Use a permalink of `/%category%/%post_name%/` otherwise this thing may not work at all...8-(
+
+## Update:
+
+I have started adding plugin components to the repo, working under the assumption that a CPT should always be in a plugin.  I am also going to be splitting out portions of the code into more governable components.  Just about everything is in line for a rewrite.
 
 ## Features
 
