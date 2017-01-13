@@ -33,7 +33,7 @@ abstract class TCC_Plugin_Basic {
 
   // origin: http://php.net/manual/en/language.oop5.overloading.php#object.unset
   public function __get($name) {
-    /if (property_exists($this,$name)) {
+    if (property_exists($this,$name)) {
       return $this->$name;
     }
     $trace = debug_backtrace();
