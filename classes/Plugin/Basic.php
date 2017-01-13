@@ -19,7 +19,7 @@ abstract class TCC_Plugin_Basic {
       if (property_exists($this,$key))
         $this->$key = $value;
     }
-    $this->paths = TCC_Plugin_Paths::get_instance($data);
+    $this->paths = TCC_Plugin_Paths::get_instance($args);
   }
 
   // origin: http://php.net/manual/en/language.oop5.overloading.php#object.unset
