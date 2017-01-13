@@ -1,0 +1,152 @@
+/*  GRID OF TWO   ============================================================================= */
+
+.span_2_of_2 { width: 100%;  }
+.span_1_of_2 { width: 49.2%; }
+
+/*  GRID OF THREE   ============================================================================= */
+
+.span_3_of_3 { width: 100%;  }
+.span_2_of_3 { width: 66.1%; }
+.span_1_of_3 { width: 32.2%; }
+
+/*  GRID OF FOUR   ============================================================================= */
+
+.span_4_of_4 { width: 100%;  }
+.span_3_of_4 { width: 74.6%; }
+.span_2_of_4 { width: 49.2%; }
+.span_1_of_4 { width: 23.8%; }
+
+/*  GRID OF FIVE   ============================================================================= */
+
+.span_5_of_5 { width: 100%;   }
+.span_4_of_5 { width: 79.68%; }
+.span_3_of_5 { width: 59.36%; }
+.span_2_of_5 { width: 39.04%; }
+.span_1_of_5 { width: 18.72%; }
+
+/*  GRID OF SIX   ============================================================================= */
+
+.span_6_of_6 { width: 100%;   }
+.span_5_of_6 { width: 83.06%; }
+.span_4_of_6 { width: 66.13%; }
+.span_3_of_6 { width: 49.2%;  }
+.span_2_of_6 { width: 32.26%; }
+.span_1_of_6 { width: 15.33%; }
+
+/*  GRID OF EIGHT   ============================================================================= */
+
+.span_8_of_8 { width: 100%;  }
+.span_7_of_8 { width: 87.3%; }
+.span_6_of_8 { width: 74.6%; }
+.span_5_of_8 { width: 61.9%; }
+.span_4_of_8 { width: 49.2%; }
+.span_3_of_8 { width: 36.5%; }
+.span_2_of_8 { width: 23.8%; }
+.span_1_of_8 { width: 11.1%; }
+
+/*  GRID OF TWELVE   ============================================================================= */
+
+.span_12_of_12 { width: 100%;   }
+.span_11_of_12 { width: 91.46%; }
+.span_10_of_12 { width: 83%;    }
+.span_9_of_12  { width: 74.54%; }
+.span_8_of_12  { width: 66.08%; }
+.span_7_of_12  { width: 57.62%; }
+.span_6_of_12  { width: 49.16%; }
+.span_5_of_12  { width: 40.7%;  }
+.span_4_of_12  { width: 32.24%; }
+.span_3_of_12  { width: 23.78%; }
+.span_2_of_12  { width: 15.32%; }
+.span_1_of_12  { width: 6.86%;  }
+
+/*  SECTIONS  ============================================================================= */
+
+.section {
+    clear: both;
+    padding: 0px;
+    margin: 0px;
+}
+
+/*  GROUPING  ============================================================================= */
+
+
+.group:before,
+.group:after {
+    content:"";
+    display:table;
+}
+.group:after {
+    clear:both;
+}
+.group {
+    zoom:1; /* For IE 6/7 (trigger hasLayout) */
+}
+
+/*  GRID COLUMN SETUP   ==================================================================== */
+
+.col {
+    display: block;
+    float:left;
+    margin: 1% 0 1% 1.6%;
+}
+
+.span_1_of_6:nth-child(6n+1),
+.col:first-child { margin-left: 0; } /* all browsers except IE6 and lower */
+
+
+/*  REMOVE MARGINS AS ALL GO FULL WIDTH AT 480 PIXELS */
+
+@media only screen and (max-width: 480px) {
+
+  .span_2_of_2 { width: 100%; }
+  .span_1_of_2 { width: 100%; }
+
+  .span_3_of_3 { width: 100%; }
+  .span_2_of_3 { width: 100%; }
+  .span_1_of_3 { width: 100%; }
+
+
+  .span_4_of_4 { width: 100%; }
+  .span_3_of_4 { width: 100%; }
+  .span_2_of_4 { width: 100%; }
+  .span_1_of_4 { width: 100%; }
+
+  .span_5_of_5 { width: 100%; }
+  .span_4_of_5 { width: 100%; }
+  .span_3_of_5 { width: 100%; }
+  .span_2_of_5 { width: 100%; }
+  .span_1_of_5 { width: 100%; }
+
+  .span_6_of_6 { width: 100%; }
+  .span_5_of_6 { width: 100%; }
+  .span_4_of_6 { width: 100%; }
+  .span_3_of_6 { width: 100%; }
+  .span_2_of_6 { width: 100%; }
+  .span_1_of_6 { width: 100%; }
+
+  .span_8_of_8 { width: 100%; }
+  .span_7_of_8 { width: 100%; }
+  .span_6_of_8 { width: 100%; }
+  .span_5_of_8 { width: 100%; }
+  .span_4_of_8 { width: 100%; }
+  .span_3_of_8 { width: 100%; }
+  .span_2_of_8 { width: 100%; }
+  .span_1_of_8 { width: 100%; }
+
+  .span_12_of_12 { width: 100%; }
+  .span_11_of_12 { width: 100%; }
+  .span_10_of_12 { width: 100%; }
+  .span_9_of_12  { width: 100%; }
+  .span_8_of_12  { width: 100%; }
+  .span_7_of_12  { width: 100%; }
+  .span_6_of_12  { width: 100%; }
+  .span_5_of_12  { width: 100%; }
+  .span_4_of_12  { width: 100%; }
+  .span_3_of_12  { width: 100%; }
+  .span_2_of_12  { width: 100%; }
+  .span_1_of_12  { width: 100%; }
+
+  .col { margin: 1% 0 1% 0%; }
+
+}
+

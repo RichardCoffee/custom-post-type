@@ -6,7 +6,7 @@
 
 class TCC_MetaBox_Gallery {
 
-	private $button   = 'Assign/Upload Image'
+	private $button   = 'Assign/Upload Image';
 	private $callback =  null;
 	private $context  = 'normal';
 	private $nonce    = 'gallery_nonce';

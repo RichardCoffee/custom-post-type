@@ -43,7 +43,7 @@ abstract class RC_Custom_Post_Type {
   protected $supports    = array('title','editor','author','revisions');
   protected $thumbnail   = true;        # ** boolean:  indicates support for featured image
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
-  protected $js_path     = false;       #    
+  protected $js_path     = false;       #
   protected $slug_edit   = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $tax_list    = array();
   protected $tax_keep    = array();     #    example: array( 'taxonomy-slug' => array('Term One Name','Term Two Name','term-three-slug') )
