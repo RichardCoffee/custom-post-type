@@ -9,6 +9,7 @@ abstract class TCC_Plugin_Basic {
   protected $admin   = null;
   public    $dbvers  = '0';
   public    $path    = '';
+  public    $paths;  #  TCC_Plugin_Paths object
   public    $plugin  = '';
   protected $tab     = 'about';
   public    $version = '1.0.0';
@@ -18,6 +19,7 @@ abstract class TCC_Plugin_Basic {
       if (property_exists($this,$key))
         $this->$key = $value;
     }
+    $this->paths = TCC_Plugin_Paths::get_instance($data);
   }
 
   // origin: http://php.net/manual/en/language.oop5.overloading.php#object.unset
