@@ -39,11 +39,14 @@ Works with WordPress 4.5.3
 
 This really consists of only three files:
 ```
-  classes/custom-post.php
+  classes/custom-post.php (or classes/Post/Custom, see note)
   js/slug_noedit.js
   js/tax_nodelete.js
 ```
-Simply copy these to their respective location.  That's it.  Take note:  source code supersends any information contained within this document.
+Simply copy these to their respective location.  That's it.  Warning:  source code supersends any information contained within this document.
+
+Note:  tcc_plugin.php has an example of an autoload function, which utilizes the classes/Post/Custom file.
+
 
 ## Usage
 

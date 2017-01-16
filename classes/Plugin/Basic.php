@@ -5,6 +5,7 @@ if (!class_exists('TCC_Plugin_Basic')) {
 abstract class TCC_Plugin_Basic {
 
 	use TCC_Trait_Singleton;
+	use TCC_Trait_Magic;
 
   protected $admin   = null;
   public    $dbvers  = '0';
@@ -22,32 +23,6 @@ abstract class TCC_Plugin_Basic {
     $this->paths = TCC_Plugin_Paths::get_instance($args);
   }
 
-  // origin: http://php.net/manual/en/language.oop5.overloading.php#object.unset
-/*  public function __call($name,$arguments) {
-    if (($name=='get_plugin_template') && (self::$instance)) {
-      tcc_log_entry("Warning: calling $name",$arguments);
-#      $slug = 
-#      $args = 
-#      return self::$instance->get_plugin_template($slug,$args);
-    }
-    return null;
-  } //*/
-
-  // origin: http://php.net/manual/en/language.oop5.overloading.php#object.unset
-  public function __get($name) {
-    if (property_exists($this,$name)) {
-      return $this->$name;
-    }
-    $trace = debug_backtrace();
-    log_entry('Error:  invalid property',$trace);
-    return null;
-  }
-
-  // origin: http://php.net/manual/en/language.oop5.overloading.php#object.unset
-  public function __isset($name) {
-    return isset($this->$name);
-  }
-
   public function add_actions() { }
 
   public function add_filters() {
@@ -57,11 +32,7 @@ abstract class TCC_Plugin_Basic {
 
   /**  General functions  **/
 
-  abstract public function enqueue_scripts(); /* {
-    wp_register_script('tcc-collapse',$url."/js/collapse.js",   array('jquery'),false,true);
-    wp_register_script('tcc-library', $url."/js/library.js",null,false,true);
-    do_action('tcc_enqueue_scripts');
-  } */
+  abstract public function enqueue_scripts();
 
 
   /**  Template functions **/
@@ -86,7 +57,7 @@ abstract class TCC_Plugin_Basic {
       $found = $this->path."templates/$slug.php";
     } else {
       $string = _x('WARNING: No template found for %s','placeholder is a file name','tcc-plugin');
-      tcc_log_entry(sprintf($string,$slug));
+      log_entry(sprintf($string,$slug));
     }
     if ($found) {
       if ($return) {

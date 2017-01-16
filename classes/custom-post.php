@@ -23,8 +23,8 @@ abstract class RC_Custom_Post_Type {
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
   protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
-  protected $debug       =  WP_DEBUG;   #    used in conjunction with $this->logging - DEPRECATED
-  protected $logging     = 'log_entry'; #    assign your own logging function here - DEPRECATED
+  protected $debug       =  WP_DEBUG;   #    used in conjunction with $this->logging
+  protected $logging     = 'log_entry'; #    assign your own logging function here
 
   protected $caps        = 'post';      #    default is to not create custom capabilities
   protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
@@ -343,7 +343,7 @@ abstract class RC_Custom_Post_Type {
     return apply_filters('tcc_taxonomy_labels',$arr);  #  deprecated
   }
 
-  protected function taxonomy_registration($args) {
+  protected function taxonomy_registration($args) {  #  FIXME:  overly complicated - simplify
     $defs = array('admin'=>false,'submenu'=>false,'nodelete'=>false,'func'=>null);
     $args = wp_parse_args($args,$defs);
     extract($args);  #  see README.md for extracted variables list
@@ -356,7 +356,7 @@ abstract class RC_Custom_Post_Type {
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
     $labels = $this->taxonomy_labels($single,$plural);
     $labels = apply_filters('tcc_taxonomy_labels_'.$tax,$labels);  #  deprecated
-		$labels = apply_filters("tcc_{$this->type}_{$tax}_labels",$labels);		#  Use this one by choice
+    $labels = apply_filters("tcc_{$this->type}_{$tax}_labels",$labels);		#  Use this one by choice
 
     $taxargs['labels']  = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
     $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;
@@ -371,12 +371,8 @@ abstract class RC_Custom_Post_Type {
       if (empty($current)) {
         $defs = array();
         if (empty($terms)) {
-          $func = (is_null($func)) ? "default_$tax" : $func;
-          if ($func) {
-            if (is_array($func) && method_exists($func[0],$func[1])) { non_function(); } // FIXME?
-            elseif (method_exists($this,$func)) { $defs = $this->$func(); }
-            elseif (function_exists($func))     { $defs = $func(); }
-          }
+          $func = (is_null($func)) ? array($this,"default_$tax") : $func;
+          if ($func) { $defs = call_user_func($func); }
         } else {
           $defs = $terms;
         }
@@ -773,17 +769,10 @@ abstract class RC_Custom_Post_Type {
 
   /*  Debugging  */
 
-  public function logging() {  #  DEPRECATED
-    if ($this->debug && isset($this->logging)) {
-      call_user_func_array($this->logging, func_get_args()); /*
-      if (is_array($this->logging) && method_exists($this->logging)) {  #  Method in a different class
-        call_user_func_array($this->logging, func_get_args());
-      } elseif (function_exists($this->logging)) {            #  Function
-        call_user_func_array($this->logging, func_get_args());
-      } elseif (method_exists($this,$this->logging)) {        #  Method in this class
-        call_user_func_array($this->logging, func_get_args());
-      } //*/
-    }
-  }
+	public function logging() {
+		if ( $this->debug && isset( $this->logging ) ) {
+			call_user_func_array( $this->logging, func_get_args() );
+		}
+	}
 
 }
