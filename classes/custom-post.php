@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  abstract class for WordPress custom post types
  *
@@ -8,6 +7,8 @@
  *  Copyright 2009-2017, Richard Coffee
  *
  */
+
+defined( 'ABSPATH' ) || exit;
 
 abstract class RC_Custom_Post_Type {
 

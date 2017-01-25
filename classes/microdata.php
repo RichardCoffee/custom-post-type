@@ -23,6 +23,8 @@
  *
  */
 
+defined( 'ABSPATH' ) || exit;
+
 if (!function_exists('microdata')) {
   function microdata() {
     return TCC_Microdata::get_instance();
@@ -295,6 +297,7 @@ class TCC_Microdata {
 
   public function email_format($email) {
     if (!strpos($email,'itemprop')===false) return $email;
+    $email = sanitize_email($email);
     return "<a href='mailto:$email' itemprop='email'>$email</a>";
   }
 

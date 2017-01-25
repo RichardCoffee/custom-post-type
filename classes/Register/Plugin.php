@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 if (!class_exists('TCC_Register_Plugin')) {
 
 class TCC_Register_Plugin {

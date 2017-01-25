@@ -1,15 +1,11 @@
 <?php
 
-if (!class_exists('TCC_Plugin_Basic')) {
-
 abstract class TCC_Plugin_Basic {
 
-	use TCC_Trait_Singleton;
 	use TCC_Trait_Magic;
 
   protected $admin   = null;
   public    $dbvers  = '0';
-  public    $path    = '';
   public    $paths;  #  TCC_Plugin_Paths object
   public    $plugin  = '';
   protected $tab     = 'about';
@@ -36,37 +32,6 @@ abstract class TCC_Plugin_Basic {
 
 
   /**  Template functions **/
-
-  public function get_plugin_template($slug,$args=array()) {
-    $found  = '';
-    $return = false;
-    if ($args) {
-      $args = wp_parse_args($args);
-      extract($args,EXTR_IF_EXISTS);
-    }
-    $prefix = "/template-parts";
-    if (file_exists(get_stylesheet_directory().$prefix."/$slug.php")) {
-      $found = get_stylesheet_directory().$prefix."/$slug.php";
-    } else if (file_exists(get_stylesheet_directory()."/$slug.php")) {
-      $found = get_stylesheet_directory()."/$slug.php";
-    } else if (file_exists(get_template_directory().$prefix."/$slug.php")) {
-      $found = get_template_directory().$prefix."/$slug.php";
-    } else if (file_exists(get_template_directory()."/$slug.php")) {
-      $found = get_template_directory()."/$slug.php";
-    } else if (file_exists($this->path."templates/$slug.php")) {
-      $found = $this->path."templates/$slug.php";
-    } else {
-      $string = _x('WARNING: No template found for %s','placeholder is a file name','tcc-plugin');
-      log_entry(sprintf($string,$slug));
-    }
-    if ($found) {
-      if ($return) {
-        return $found;
-      } else {
-        include($found);
-      }
-    }
-  }
 
   public function get_stylesheet( $file = 'tcc-plugin.css' ) {
     if ( file_exists( get_stylesheet_directory() . '/' . $file ) )
@@ -145,5 +110,3 @@ abstract class TCC_Plugin_Basic {
 
 
 }
-
-} # class_exists

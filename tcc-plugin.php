@@ -12,6 +12,13 @@ License: GPLv2
 */
 
 defined('ABSPATH') || exit;
+/*
+#	https://github.com/helgatheviking/Nav-Menu-Roles/blob/master/nav-menu-roles.php
+if ( ! defined('ABSPATH') || ! function_exists( 'is_admin' ) ) { // FIXME:  redundancy?
+	header( 'Status: 403 Forbidden' );
+	header( 'HTTP/1.1 403 Forbidden' );
+	exit();
+} //*/
 
 define('TCC_PLUGIN_FILE', __FILE__ );
 define('TCC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

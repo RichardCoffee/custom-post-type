@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 # [gallery link="file" size="medium" ids="271,272,273,274,275,276,277,278,279,280,281,282,283"]
 
 class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {

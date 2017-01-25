@@ -4,6 +4,8 @@
  *
  */
 
+defined( 'ABSPATH' ) || exit;
+
 class TCC_MetaBox_Gallery {
 
 	private $add_meta =  null;
