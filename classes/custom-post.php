@@ -28,12 +28,12 @@ abstract class RC_Custom_Post_Type {
   protected $logging     = 'log_entry'; #    assign your own logging function here
 
   protected $caps        = 'post';      #    default is to not create custom capabilities
-  protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - FIXME: allow array of roles
+  protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - TODO: allow array of roles
 
   protected $columns     =  null;       #    array('remove'=>array()','add'=>array()) - see docs
 
   protected $has_archive =  false;      #    boolean or string - can be set to the archive template path - DEPRECATED - use $this->templates['archive'] instead
-  protected $rewrite     =  array();    #    defaults to: array('slug'=>$this->type))  FIXME: need function to create taxonomy rewrite rules
+  protected $rewrite     =  array();    #    defaults to: array('slug'=>$this->type))  TODO: add function to create taxonomy rewrite rules
   protected $templates   =  false;      #    example: array( 'single' => WP_PLUGIN_DIR.'/plugin_dir/templates/single-{cpt-slug}.php' )
 
   protected $menu_icon   = 'dashicons-admin-post'; # ** admin dashboard icon
@@ -43,7 +43,7 @@ abstract class RC_Custom_Post_Type {
   protected $formats     = false;       # ** boolean:  signifies support for post formats - only useful if the theme supports it
   protected $supports    = array('title','editor','author','revisions');
   protected $thumbnail   = true;        # ** boolean:  indicates support for featured image
-  protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() FIXME: possible auto call of $this->taxonomy_registration()
+  protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() TODO: possible auto call of $this->taxonomy_registration()
   protected $js_path     = false;       #
   protected $slug_edit   = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $tax_list    = array();
@@ -295,7 +295,7 @@ abstract class RC_Custom_Post_Type {
   #  http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
   public function add_caps() {
     $roles = array('contributor','author','editor','administrator');
-    if ($this->role_caps==='admin') $roles = array('administrator'); // FIXME: provide for custom roles
+    if ($this->role_caps==='admin') $roles = array('administrator'); // TODO: provide for custom roles
     foreach($roles as $role) {
       $this->process_caps($role); }
   }
@@ -379,7 +379,7 @@ abstract class RC_Custom_Post_Type {
           $defs = $terms;
         }
         if ($defs) {
-          foreach($defs as $key=>$term) { // FIXME:  provide for description
+          foreach($defs as $key=>$term) { // TODO:  provide for description
             if (is_numeric($key)) {
               wp_insert_term($term,$tax);
             } else {
@@ -656,10 +656,10 @@ abstract class RC_Custom_Post_Type {
     }
     if (!empty($this->templates['archive'])) {
       add_filter('archive_template', array($this,'archive_template'));
-    } /*  FIXME:  Test this construct
+    } /*  TODO:  Test this construct
     foreach($this->templates as $key=>$template) {
       if ($key==='folders') {
-        // FIXME:  this needs to be handled
+        // TODO:  this needs to be handled
         continue;
       }
       add_filter("{$key}_template", function($mytemplate) use ($key) { // FIXME:  does it need to use $this?
@@ -698,7 +698,7 @@ abstract class RC_Custom_Post_Type {
         if ((isset($this->comments)) && ($this->comments)) {
           if (is_bool($this->comments)) {
             $open = $this->comments;
-          } else { // FIXME:  support numeric values
+          } else { // TODO:  support numeric values
 #            $postime = get_the_time('U', $post_id);
              $this->logging("WARNING: Numeric values for {$this->type}->comments is not yet supported.");
           }

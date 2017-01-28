@@ -65,4 +65,4 @@ class TCC_Plugin_Paths {
 	}
 }
 
-if (!class_exists('Paths')) { class_alias('TCC_Plugin_Paths','Paths'); }
+class_alias('TCC_Plugin_Paths','Paths');
