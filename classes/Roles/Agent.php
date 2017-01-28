@@ -27,9 +27,11 @@ class TCC_Roles_Agent {
                  'education'      => __('Education One', 'tcc-real-estate'),
                  'edu_two'        => __('Education Two', 'tcc-real-estate'),
                  'edu_three'      => __('Education Three', 'tcc-real-estate'),
+                 #  TODO:  allow for variable number
                  'certifications' => __('Certifications / Affiliations', 'tcc-real-estate'),
-                 'certi_two'      => __('Certifications Two', 'tcc-real-estate'),
-                 'certi_three'    => __('Certifications Three', 'tcc-real-estate'),
+                 'certi_two'      => __('Certs / Affiliations Two', 'tcc-real-estate'),
+                 'certi_three'    => __('Certs / Affiliations Three', 'tcc-real-estate'),
+                 #  TODO:  allow for variable number
                  'languages'      => __('Language One', 'tcc-real-estate'),
                  'lang_two'       => __('Language Two', 'tcc-real-estate'),
                  'lang_three'     => __('Language Three', 'tcc-real-estate'),

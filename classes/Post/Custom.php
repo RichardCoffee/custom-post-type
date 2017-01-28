@@ -305,12 +305,12 @@ abstract class TCC_Post_Custom {
 		#$this->logging('user role',$role);
 		$sing = sanitize_title($this->label);
 		$plur = sanitize_title($this->plural);
-		$caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
-		$auth = array("delete_published_$plur","edit_published_$plur","publish_$plur");
-		$edit = array("delete_others_$plur","delete_private_$plur","edit_others_$plur","edit_private_$plur","read_private_$plur");
-		if (in_array( $role, apply_filters( "{$this->type}_auth_caps", array( 'author', 'editor', 'administrator' ) ) ) ) {
+		$caps = array( "delete_$sing", "edit_$sing", "read_$sing", "delete_$plur", "edit_$plur");
+		$auth = array( "delete_published_$plur", "edit_published_$plur", "publish_$plur");
+		$edit = array( "delete_others_$plur", "delete_private_$plur", "edit_others_$plur", "edit_private_$plur", "read_private_$plur" );
+		if ( in_array( $role, apply_filters( "{$this->type}_auth_caps", array( 'author', 'editor', 'administrator' ) ) ) ) {
 			$caps = array_unique( array_merge( $caps, $auth ) ); }
-		if (in_array($role, apply_filters( "{$this->type}_edit_caps", array( 'editor', 'administrator' ) ) ) {
+		if ( in_array( $role, apply_filters( "{$this->type}_edit_caps", array( 'editor', 'administrator' ) ) ) ) {
 			$caps = array_unique( array_merge( $caps, $edit ) ); }
 		foreach($caps as $cap) {
 			$role->add_cap($cap); }
