@@ -24,7 +24,7 @@ abstract class TCC_Post_Custom {
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
   protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
-  protected $debug       =  WP_DEBUG;   #    used in conjunction with $this->logging
+  protected $debug       =  false;      #    used in conjunction with $this->logging
   protected $logging     = 'log_entry'; #    assign your own logging function here
 
   protected $caps        = 'post';      #    default is to not create custom capabilities
@@ -61,6 +61,7 @@ abstract class TCC_Post_Custom {
   private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
   protected function __construct($data) {
+    $this->debug = WP_DEBUG;
     if ((isset($data['type']) && !post_type_exists($data['type'])) || ($this->type && !post_type_exists($this->type))) {
       if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }
       unset($data['cpt_nodelete'],$data['nodelete']);
