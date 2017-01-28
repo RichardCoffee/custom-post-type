@@ -201,9 +201,9 @@ abstract class TCC_Post_Custom {
         'menu_position'     => $this->menu_position,
         'menu_icon'         => $this->menu_icon,
         'capability_type'   => (isset($this->capability_type)) ? $this->capability_type : (empty($this->caps)) ? $caps : $this->caps,
-        'map_meta_cap'      => (isset($this->map_meta_cap))    ? $this->map_meta_cap : true,
-        'hierarchical'      => (isset($this->hierarchical))    ? $this->hierarchical : false,
-        'query_var'         => (isset($this->query_var))       ? $this->query_var    : false,
+        'map_meta_cap'      => (isset($this->map_meta_cap))    ? $this->map_meta_cap    : true,
+        'hierarchical'      => (isset($this->hierarchical))    ? $this->hierarchical    : false,
+        'query_var'         => (isset($this->query_var))       ? $this->query_var       : false,
         'supports'          => $this->supports,
         'taxonomies'        => $this->taxonomies,
         'has_archive'       => (isset($this->has_archive)) ? $this->has_archive : $this->type,
@@ -294,27 +294,27 @@ abstract class TCC_Post_Custom {
   #  This only gets run if map_meta_caps is true
   #  http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
   public function add_caps() {
-    $roles = array('contributor','author','editor','administrator');
+    $roles = apply_filters("{$this->type}_add_caps", array( 'contributor', 'author', 'editor', 'administrator' ) );
     if ($this->role_caps==='admin') $roles = array('administrator'); // TODO: provide for custom roles
     foreach($roles as $role) {
       $this->process_caps($role); }
   }
 
-  private function process_caps($name) {
-    $role = get_role($name);
-    #$this->logging('user role',$role);
-    $sing = sanitize_title($this->label);
-    $plur = sanitize_title($this->plural);
-    $caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
-    $auth = array("delete_published_$plur","edit_published_$plur","publish_$plur");
-    $edit = array("delete_others_$plur","delete_private_$plur","edit_others_$plur","edit_private_$plur","read_private_$plur");
-    if (in_array($role,array('author','editor','administrator'))) {
-      $caps = array_merge($caps,$auth); }
-    if (in_array($role,array('editor','administrator'))) {
-      $caps = array_merge($caps,$edit); }
-    foreach($caps as $cap) {
-      $role->add_cap($cap); }
-  }
+	private function process_caps($name) {
+		$role = get_role($name);
+		#$this->logging('user role',$role);
+		$sing = sanitize_title($this->label);
+		$plur = sanitize_title($this->plural);
+		$caps = array("delete_$sing","edit_$sing","read_$sing","delete_$plur","edit_$plur");
+		$auth = array("delete_published_$plur","edit_published_$plur","publish_$plur");
+		$edit = array("delete_others_$plur","delete_private_$plur","edit_others_$plur","edit_private_$plur","read_private_$plur");
+		if (in_array( $role, apply_filters( "{$this->type}_auth_caps", array( 'author', 'editor', 'administrator' ) ) ) ) {
+			$caps = array_unique( array_merge( $caps, $auth ) ); }
+		if (in_array($role, apply_filters( "{$this->type}_edit_caps", array( 'editor', 'administrator' ) ) ) {
+			$caps = array_unique( array_merge( $caps, $edit ) ); }
+		foreach($caps as $cap) {
+			$role->add_cap($cap); }
+	}
 
 
   /* Taxonomy functions */
@@ -351,7 +351,7 @@ abstract class TCC_Post_Custom {
     extract($args);  #  see README.md for extracted variables list
     if (empty($tax))     return;
     if (empty($taxargs)) $taxargs = array();
-
+    // TODO: clean this crap up
     if (empty($single) && empty($taxargs['labels']['singular_name'])) return;  #  Notice the silent return
     $single = (isset($taxargs['labels']['singular_name'])) ? $taxargs['labels']['singular_name'] : $single;
     if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;  #  Here too
@@ -402,9 +402,9 @@ abstract class TCC_Post_Custom {
         if ($query->is_search()) {
           $value = $query->get($tax);
           if ($value) {
-				#$args = ($tq=$query->get('tax_query')) ? $tq : array();
-            $args = $query->get('tax_query');
-            $args = ($args) ? $args : array();
+            $args = ($tq=$query->get('tax_query')) ? $tq : array();
+            #$args = $query->get('tax_query');
+            #$args = ($args) ? $args : array();
             $args[] = array( 'taxonomy'=>$tax, 'field'=>'slug', 'terms'=>$value );
             $query->set('tax_query', $args);
           }
