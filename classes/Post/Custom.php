@@ -24,11 +24,11 @@ abstract class TCC_Post_Custom {
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
   protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
-  protected $debug       =  false;      #    used in conjunction with $this->logging
+  protected $debug       =  false;      #    used in conjunction with $this->logging - do not declare this property in child
   protected $logging     = 'log_entry'; #    assign your own logging function here
 
   protected $caps        = 'post';      #    default is to not create custom capabilities
-  protected $role_caps   = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - TODO: allow array of roles
+  protected $role        = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - TODO: allow array of roles
 
   protected $columns     =  null;       #    array('remove'=>array()','add'=>array()) - see docs
 
@@ -51,7 +51,6 @@ abstract class TCC_Post_Custom {
 
   #  Experimental
   protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, any fix appreciated
-  protected $sidebar     =  false;      #    set to true to register sidebar with default of array('id'=>$this->type,'name'=>$this->label).
   protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - FIXME: not yet fully implemented
 
   #  Important: Do not set these in the child class
@@ -63,47 +62,67 @@ abstract class TCC_Post_Custom {
   protected function __construct($data) {
     $this->debug = WP_DEBUG;
     if ((isset($data['type']) && !post_type_exists($data['type'])) || ($this->type && !post_type_exists($this->type))) {
-      if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }
-      unset($data['cpt_nodelete'],$data['nodelete']);
+      if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }  //  FIXME
+      unset($data['cpt_nodelete'],$data['nodelete']);                //  FIXME
       foreach($data as $prop=>$value) {
         $this->{$prop} = $value;
       }
+
+      #  force value for cpt type
       $this->type = (empty($this->type)) ? sanitize_title($this->label) : sanitize_title($this->type);
-      add_action('init', array( $this, 'create_post_type'));
-      add_action('add_meta_boxes_'.$this->type, array($this,'check_meta_boxes'));
-      add_action('contextual_help',       array($this,'contextual_help'), 10, 3 );
-      add_filter('comments_open',         array($this,'comments_limit'),10,2);
-      add_filter('pings_open',            array($this,'comments_limit'),10,2);
-      add_filter('post_updated_messages', array($this,'post_type_messages'));
-      if ($this->columns) {      #  Add/Remove cpt screen columns
-        $this->setup_columns(); }
-      if ($this->comments) {
-        $this->supports[] = 'comments'; }
-      if ($this->thumbnail) {
-        $this->supports[] = 'thumbnail'; }
-      if ($this->formats && current_theme_supports('post-formats') ) {
-        $this->supports[] = 'post-formats'; }
-      if ($this->cpt_nodelete) { #  Add nodelete code for builtin taxonomies
-        $this->add_builtins(); }
-      if ($this->main_blog) {    #  Force cpt in main wp query
-        add_filter('pre_get_posts', array($this,'pre_get_posts'),5); }   #  run early - priority 5
-      if ($this->tax_omit) {     #  Stop posts with tax term from showing in any query
-        add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }  #  run early - priority 6
-      if (is_admin()) {          #  Sortable columns
-        add_filter('pre_get_posts', array($this,'sort_get_posts')); }
-      if ($this->sidebar) {
-        add_action('widgets_init',array($this,'register_sidebar'),20); } # run late - priority 20
-      if ( ! $this->slug_edit) { #  Deny admin ability to edit taxonomy term slugs
-        add_action('admin_enqueue_scripts',array($this,'stop_slug_edit')); }
-      if ($this->templates) {    #  Handle templates
-        add_filter('template_include', array($this,'assign_template')); }
-      if ($this->user_col) {     #  Add count column to Users screen
-        add_action('manage_users_columns',array($this,'manage_users_columns'));
-        add_action('manage_users_custom_column',array($this,'manage_users_custom_column'),10,3);
+
+      #  Actions
+      add_action( 'init',                  array( $this, 'create_post_type' ) );
+      add_action( 'add_meta_boxes_'.$this->type, array( $this, 'check_meta_boxes' ) );
+      add_action( 'contextual_help',       array( $this, 'contextual_help' ), 10, 3 );
+
+      #  Filters
+      add_filter( 'comments_open',         array( $this, 'comments_limit' ), 10, 2 );
+      add_filter( 'map_meta_cap',          array( $this, 'map_meta_cap'),    10, 4 );
+      add_filter( 'pings_open',            array( $this, 'comments_limit' ), 10, 2 );
+      add_filter( 'post_updated_messages', array( $this, 'post_type_messages' ) );
+      add_filter( 'wpseo_metabox_prio',    function ($arg) { return 'low'; } );
+
+      #  What will the cpt support?
+      if ($this->comments)  { $this->supports[] = 'comments'; }
+      if ($this->thumbnail) { $this->supports[] = 'thumbnail'; }
+      if ($this->formats && current_theme_supports('post-formats') ) { $this->supports[] = 'post-formats'; }
+
+      #  handle custom roles
+      if ( $this->role !== 'normal' ) {
+        add_filter( "{$this->type}_add_roles",    function ($arg) { return array_unique( array_merge( $arg, array( $this->role ) ) ); } );
+        add_filter( "{$this->type}_author_roles", function ($arg) { return array_unique( array_merge( $arg, array( $this->role ) ) ); } );
       }
+
+      #  Add nodelete code for builtin taxonomies
+      if ($this->cpt_nodelete) { $this->add_builtins(); }
+
+      #  Force cpt in main wp query
+      if ($this->main_blog) {    add_filter('pre_get_posts', array($this,'pre_get_posts'),5); }   #  run early - priority 5
+
+      #  Stop posts with tax term from showing in any query
+      if ($this->tax_omit) {     add_filter('pre_get_posts', array($this,'omit_get_posts'),6); }  #  run early - priority 6
+
+      #  Deny admin ability to edit taxonomy term slugs
+      if ( ! $this->slug_edit) { add_action('admin_enqueue_scripts',array($this,'stop_slug_edit')); }
+
+      #  Handle templates
+      if ($this->templates) {    add_filter('template_include', array($this,'assign_template')); }
+
+      #  Add/Remove cpt screen columns
+      if ($this->columns) {      $this->setup_columns(); }
+
+      #  Sortable columns
+      if (is_admin()) {          add_filter('pre_get_posts', array($this,'sort_get_posts')); }
+
+      #  Add count column to Users screen
+      if ($this->user_col) {     add_action('manage_users_columns',array($this,'manage_users_columns'));
+                                 add_action('manage_users_custom_column',array($this,'manage_users_custom_column'),10,3); }
+
       if (!isset(static::$types[$this->type])) {
         static::$types[$this->type] = $this;
       }
+
     }
   }
 
@@ -191,7 +210,6 @@ abstract class TCC_Post_Custom {
 
   public function create_post_type() {
     if (empty($this->rewrite) || empty($this->rewrite['slug'])) { $this->rewrite['slug'] = $this->type; }
-    $caps = array( sanitize_title($this->label), sanitize_title($this->plural) ); # Note: method add_caps
     $args = array(
         'label'             => $this->plural,
         'labels'            => $this->post_type_labels(),
@@ -200,7 +218,6 @@ abstract class TCC_Post_Custom {
         'show_in_admin_bar' => (isset($this->show_in_admin_bar)) ? $this->show_in_admin_bar : false,
         'menu_position'     => $this->menu_position,
         'menu_icon'         => $this->menu_icon,
-        'capability_type'   => (isset($this->capability_type)) ? $this->capability_type : (empty($this->caps)) ? $caps : $this->caps,
         'map_meta_cap'      => (isset($this->map_meta_cap))    ? $this->map_meta_cap    : true,
         'hierarchical'      => (isset($this->hierarchical))    ? $this->hierarchical    : false,
         'query_var'         => (isset($this->query_var))       ? $this->query_var       : false,
@@ -208,14 +225,20 @@ abstract class TCC_Post_Custom {
         'taxonomies'        => $this->taxonomies,
         'has_archive'       => (isset($this->has_archive)) ? $this->has_archive : $this->type,
         'rewrite'           => $this->rewrite);
+    if ( $this->caps !== 'post' ) {
+      $args['capability_type'] = $this->type;
+      $args['capabilities']    = $this->map_capabilities();
+    }
     $args = apply_filters('tcc_register_post_'.$this->type,$args);
+    #$this->logging( $args, $this->caps );
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
-    if ($args['map_meta_cap'])  add_action('admin_init', array($this,'add_caps'));
-    #$this->logging('post type settings',$GLOBALS['wp_post_types'][$this->type]);
-    foreach($this->supports as $support) {
-      #$this->logging("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
-    }
+    $cpt = get_post_type_object( $this->type );
+    #$this->logging( $args, $cpt );
+    if ($cpt->map_meta_cap)  add_action('admin_init', array($this,'add_caps'));
+    /*foreach($this->supports as $support) {
+      $this->logging("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
+    } //*/
   }
 
   protected function post_type_labels() {
@@ -281,39 +304,103 @@ abstract class TCC_Post_Custom {
     return apply_filters('tcc_post_type_messages',$messages);
   }
 
-  public function register_sidebar() {
-   #$this->logging('register sidebar');
-    $sidebar = array('id' => $this->type, 'name' => $this->label);
-    if (is_array($this->sidebar)) $sidebar = array_merge($sidebar,$this->sidebar);
-    register_sidebar($sidebar);
-  }
 
+	/*  Capabilities  */
 
-  /*  Capabilities  */
+	protected function map_basic_caps() {
+		return array ( 'sing' => ( empty( $this->capability_type[0] ) ) ? sanitize_title( $this->label )  : $this->capability_type[0],
+		               'plur' => ( empty( $this->capability_type[1] ) ) ? sanitize_title( $this->plural ) : $this->capability_type[1] );
+	}
 
-  #  This only gets run if map_meta_caps is true
-  #  http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
-  public function add_caps() {
-    $roles = apply_filters("{$this->type}_add_caps", array( 'contributor', 'author', 'editor', 'administrator' ) );
-    if ($this->role_caps==='admin') $roles = array('administrator'); // TODO: provide for custom roles
-    foreach($roles as $role) {
-      $this->process_caps($role); }
-  }
+	#	http://justintadlock.com/archives/2010/07/10/meta-capabilities-for-custom-post-types
+	protected function map_capabilities( ) {
+		$base = $this->map_basic_caps();
+		extract($base);  #  extracts as $sing and $plur
+		$caps = array(
+			'publish_posts' => 'publish_'.$plur,
+			'edit_posts' => 'edit_'.$plur,
+			'edit_others_posts' => 'edit_others_'.$plur,
+			'delete_posts' => 'delete_'.$plur,
+			'delete_others_posts' => 'delete_others_'.$plur,
+			'read_private_posts' => 'read_private_'.$plur,
+			'edit_post' => 'edit_'.$sing,
+			'delete_post' => 'delete_'.$sing,
+			'read_post' => 'read_'.$sing,
+			);
+		#$this->logging( $caps );
+		return $caps;
+	}
 
-	private function process_caps($name) {
+	#	http://justintadlock.com/archives/2010/07/10/meta-capabilities-for-custom-post-types
+	public function map_meta_cap( $caps, $cap, $user_id, $args ) {
+		if ( $this->caps !== 'post' ) {
+			$base = $this->map_capabilities();
+			#$this->logging($base);
+
+			#	If editing, deleting, or reading cpt, get the post and post type object.
+			if ( in_array( $cap, array( $base['edit_post'], $base['delete_post'], $base['read_post'] ) ) ) {
+				$post = get_post( $args[0] );
+				$post_type = get_post_type_object( $post->post_type );
+				#	Set an empty array for the caps.
+				$caps = array();
+			}
+			#	If editing cpt, assign the required capability.
+			if ( $cap === $base['edit_post'] ) {
+				if ( $user_id === $post->post_author ) {
+					$caps[] = $post_type->cap->edit_posts;
+				} else {
+					$caps[] = $post_type->cap->edit_others_posts;
+				}
+			#	If deleting cpt, assign the required capability.
+			} else if ( $cap === $base['delete_post'] ) {
+				if ( $user_id == $post->post_author ) {
+					$caps[] = $post_type->cap->delete_posts;
+				} else {
+					$caps[] = $post_type->cap->delete_others_posts;
+				}
+			#	If reading a private cpt, assign the required capability.
+			} else if ( $cap === $base['read_post'] ) {
+				if ( $post->post_status !== 'private' ) {
+					$caps[] = 'read';
+				} else if ( $user_id === $post->post_author ) {
+					$caps[] = 'read';
+				} else {
+					$caps[] = $post_type->cap->read_private_posts;
+				}
+			} //*/
+		}
+		#	Return the capabilities required by the user.
+		return $caps;
+	} //*/
+
+	#	This only gets run if map_meta_caps is true
+	#	http://stackoverflow.com/questions/18324883/wordpress-custom-post-type-capabilities-admin-cant-edit-post-type
+	public function add_caps() {
+		$all_roles    = apply_filters( "{$this->type}_add_roles",    array( 'contributor', 'author', 'editor', 'administrator' ) );
+		$author_roles = apply_filters( "{$this->type}_author_roles", array( 'author', 'editor', 'administrator' ) );
+		$editor_roles = apply_filters( "{$this->type}_editor_roles", array( 'author', 'editor', 'administrator' ) );
+		#this->logging('roles',$roles);
+		if ( $this->role === 'admin' ) {
+			$roles = array( 'administrator' ); }
+		foreach( $all_roles as $role ) {
+			$this->process_caps( $role, $author_roles, $editor_roles ); }
+	}
+
+	private function process_caps( $name, $author_roles, $editor_roles ) {
 		$role = get_role($name);
-		#$this->logging('user role',$role);
-		$sing = sanitize_title($this->label);
-		$plur = sanitize_title($this->plural);
-		$caps = array( "delete_$sing", "edit_$sing", "read_$sing", "delete_$plur", "edit_$plur");
+		#$this->logging('user role:  '.$name,$role);
+		$base = $this->map_basic_caps();
+		extract($base);  #  extracts as $sing and $plur
+		$caps = array( /*"delete_$sing", "edit_$sing", "read_$sing",*/ "delete_$plur", "edit_$plur");
 		$auth = array( "delete_published_$plur", "edit_published_$plur", "publish_$plur");
 		$edit = array( "delete_others_$plur", "delete_private_$plur", "edit_others_$plur", "edit_private_$plur", "read_private_$plur" );
-		if ( in_array( $role, apply_filters( "{$this->type}_auth_caps", array( 'author', 'editor', 'administrator' ) ) ) ) {
+		if ( in_array( $role, $author_roles ) ) {
 			$caps = array_unique( array_merge( $caps, $auth ) ); }
-		if ( in_array( $role, apply_filters( "{$this->type}_edit_caps", array( 'editor', 'administrator' ) ) ) ) {
+		if ( in_array( $name, $editor_roles ) ) {
 			$caps = array_unique( array_merge( $caps, $edit ) ); }
 		foreach($caps as $cap) {
 			$role->add_cap($cap); }
+		#$this->logging('role:  '.$name, $caps,$auth,$edit,get_role($name));
 	}
 
 
@@ -342,7 +429,7 @@ abstract class TCC_Post_Custom {
                  'no_terms'                   => sprintf($phrases['none'],     $plural),
                  'items_list_navigation'      => sprintf($phrases['list_nav'], $plural),
                  'items_list'                 => sprintf($phrases['list'],     $plural));
-    return apply_filters('tcc_taxonomy_labels',$arr);  #  deprecated
+    return $arr;
   }
 
   protected function taxonomy_registration($args) {  #  FIXME:  overly complicated - simplify
@@ -357,7 +444,6 @@ abstract class TCC_Post_Custom {
     if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;  #  Here too
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
     $labels = $this->taxonomy_labels($single,$plural);
-    $labels = apply_filters('tcc_taxonomy_labels_'.$tax,$labels);  #  deprecated
     $labels = apply_filters("tcc_{$this->type}_{$tax}_labels",$labels);		#  Use this one by choice
 
     $taxargs['labels']  = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
