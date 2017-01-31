@@ -64,5 +64,3 @@ class TCC_Plugin_Paths {
 		}
 	}
 }
-
-class_alias('TCC_Plugin_Paths','Paths');
