@@ -10,14 +10,14 @@ class TCC_Plugin_Paths {
 	use TCC_Trait_Magic;
 	use TCC_Trait_Singleton;
 
-	public function __construct($args) {
-		foreach ($args as $key=>$arg) {
-			if (property_exists($this,$key)) {
+	public function __construct( $args ) {
+		foreach ( $args as $key => $arg ) {
+			if ( property_exists( $this, $key ) ) {
 				$this->$key = $arg; }
 		}
 	}
 
-	public static function url($file='') {
+	public static function url( $file = '' ) {
 		return self::$instance->url . $file;
 	}
 
@@ -28,32 +28,24 @@ class TCC_Plugin_Paths {
 
 	/**  Template functions  **/
 
-	public function add_plugin_template($slug,$text) {
-		require_once($path.'classes/pagetemplater.php');
+	public function add_plugin_template( $slug, $text ) {
+		require_once( $this->dir . 'classes/pagetemplater.php' );
 		$pager = PageTemplater::get_instance();
 		$pager->add_project_template( $slug, $text, $this->dir );
 	}
 
-	public function get_plugin_template($slug,$args=array()) {
-		$found  = '';
-		$return = false;
-		if ($args) {
-			$args = wp_parse_args($args);
-			extract($args,EXTR_IF_EXISTS);
-		}
-		if (file_exists(get_stylesheet_directory().$this->templates."/$slug.php")) {
-			$found = get_stylesheet_directory().$this->templates."/$slug.php";
-		} else if (file_exists(get_stylesheet_directory()."/$slug.php")) {
-			$found = get_stylesheet_directory()."/$slug.php";
-		} else if (file_exists(get_template_directory().$this->templates."/$slug.php")) {
-			$found = get_template_directory().$this->templates."/$slug.php";
-		} else if (file_exists(get_template_directory()."/$slug.php")) {
-			$found = get_template_directory()."/$slug.php";
-		} else if (file_exists($this->dir.$this->templates."/$slug.php")) {
-			$found = $this->dir.$this->templates."/$slug.php";
-		} else {
-			$string = _x('WARNING: No template found for %s','placeholder is a file name','tcc-plugin');
-			log_entry(sprintf($string,$slug));
+	public function get_plugin_template( $slug, $return = false ) {
+		$found = '';
+		$stylesheet = get_stylesheet_directory();
+		$template   = get_template_directory();
+		$search = array( $stylesheet.$this->templates, $stylesheet,
+		                 $template . $this->templates, $template,
+		                 $this->dir. $this->templates);
+		foreach( $search as $path ) {
+			if ( file_exists( "$path/$slug.php" ) ) {
+				$found = "$path/$slug.php";
+				break;
+			}
 		}
 		if ($found) {
 			if ($return) {
