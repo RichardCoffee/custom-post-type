@@ -22,7 +22,6 @@ abstract class RC_Custom_Post_Type {
   ######  I have marked properties with '**' that I believe people may want to change more often.
 
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
-  protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
   protected $debug       =  false;      #    used in conjunction with $this->logging - do not declare this property in child
   protected $logging     = 'log_entry'; #    assign your own logging function here
@@ -31,6 +30,7 @@ abstract class RC_Custom_Post_Type {
   protected $role        = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - TODO: allow array of roles
 
   protected $columns     =  null;       #    array('remove'=>array()','add'=>array()) - see docs
+  protected $user_col    =  false;      # ** set to true to add a count column for this CPT to the admin users screen
 
   protected $has_archive =  false;      #    boolean or string - can be set to the archive template path - DEPRECATED - use $this->templates['archive'] instead
   protected $rewrite     =  array();    #    defaults to: array('slug'=>$this->type))  TODO: add function to create taxonomy rewrite rules
@@ -51,7 +51,7 @@ abstract class RC_Custom_Post_Type {
 
   #  Experimental
   protected $cap_suffix  =  array();    #    can be used to assign custom suffix for capabilities.  buggy - don't use this, any fix appreciated
-  protected $tax_omit    = array();     #    taxonomy terms to omit from normal queries - FIXME: not yet fully implemented
+  protected $tax_omit    =  array();    #    taxonomy terms to omit from normal queries - FIXME: not yet fully implemented
 
   #  Important: Do not set these in the child class
   protected static $types = array('posts'=>null);
@@ -78,7 +78,7 @@ abstract class RC_Custom_Post_Type {
 
       #  Filters
       add_filter( 'comments_open',         array( $this, 'comments_limit' ), 10, 2 );
-      add_filter( 'map_meta_cap',          array( $this, 'map_meta_cap'),    10, 4 );
+      #add_filter( 'map_meta_cap',          array( $this, 'map_meta_cap'),    10, 4 );
       add_filter( 'pings_open',            array( $this, 'comments_limit' ), 10, 2 );
       add_filter( 'post_updated_messages', array( $this, 'post_type_messages' ) );
       add_filter( 'wpseo_metabox_prio',    function ($arg) { return 'low'; } );
@@ -226,8 +226,8 @@ abstract class RC_Custom_Post_Type {
         'has_archive'       => (isset($this->has_archive)) ? $this->has_archive : $this->type,
         'rewrite'           => $this->rewrite);
     if ( $this->caps !== 'post' ) {
-      $args['capability_type'] = $this->type;
-      $args['capabilities']    = $this->map_capabilities();
+      #$args['capability_type'] = $this->type;
+      #$args['capabilities']    = $this->map_capabilities();
     }
     $args = apply_filters('tcc_register_post_'.$this->type,$args);
     #$this->logging( $args, $this->caps );
@@ -508,6 +508,18 @@ abstract class RC_Custom_Post_Type {
     if (!has_action('admin_enqueue_scripts', array($this,'stop_term_deletion'))) {
       add_action('admin_enqueue_scripts', array($this,'stop_term_deletion')); }
   }
+
+	public function get_taxonomy_label( $tax = '', $label = '' ) {
+		$return = "Taxonomy '$tax' not found";
+		if ($tax && taxonomy_exists($tax) ) {
+			$labels = get_taxonomy($tax)->labels;
+			if ( ! empty( $labels ) && ! empty( $labels->$label ) ) {
+				$return = $labels->$label;
+			}
+			$return = "$tax label '$label' not found";
+		}
+		return $return;
+	}
 
   public function stop_slug_edit() {
     $screen = get_current_screen();
@@ -822,10 +834,13 @@ abstract class RC_Custom_Post_Type {
         if ((!$query->is_page()) || (is_feed())) {
           $check = $query->get('post_type');
           if (in_array($this->type,(array)$check)) {
-            foreach($this->tax_omit as $tax) {
+            foreach($this->tax_omit as $tax => $data) {
               $terms = array();
               foreach($tax as $term) {
-                $terms[] = $this->get_term_id($term,$tax);
+                $term_id = $this->get_term_id( $term, $tax );
+                if ( $term_id ) {
+                  $terms[] = $term_id;
+                }
               }
               $omit = '-'.implode(',-',$terms);
               if ($tax=='category') {
@@ -863,4 +878,13 @@ abstract class RC_Custom_Post_Type {
 		}
 	}
 
+}
+
+if ( ! function_exists('esc_html_nx') ) {
+	#	wp_includes/i10n.php#_nx
+	function esc_html_nx( $single, $plural, $number, $context, $domain = 'default' ) {
+		$translations = get_translations_for_domain( $domain );
+		$translation  = $translations->translate_plural( $single, $plural, $number, $context );
+		return esc_html( apply_filters( 'ngettext_with_context', $translation, $single, $plural, $number, $context, $domain ) );
+	}
 }

@@ -1,19 +1,21 @@
 <?php
 
-if (!class_exists('TCC_Roles_Agent')) {
+if (!class_exists('TCC_Role_Agent')) {
 
-class TCC_Roles_Agent {
+class TCC_Role_Agent {
 
   private $fields = array();
 
-  public function __construct() {
+	use TCC_Trait_Singleton;
+
+  protected function __construct() {
     if (is_admin()) {
       add_filter('user_contactmethods',     array($this,'user_contactmethods'));
       add_action('personal_options',        array($this,'personal_options'),9);
       add_action('personal_options_update', array($this,'save_agent_information'));
       add_action('edit_user_profile_update',array($this,'save_agent_information'));
     }
-    add_filter('author_rewrite_rules',array($this,'author_rewrite_rules'));
+    add_filter('author_rewrite_rules',array($this,'agent_rewrite_rules'));
     add_filter('query_vars',          array($this,'query_vars'));
     add_filter('template_include',    array($this,'template_include'));
     $this->fields = $this->get_field_titles();
@@ -45,7 +47,7 @@ class TCC_Roles_Agent {
 
   /**  Agent template  **/
 
-  public function author_rewrite_rules($current) {
+  public function agent_rewrite_rules($current) {
     $rules = array(array('regex'    => 'agent/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$',
                          'redirect' => 'index.php?author_name=$matches[1]&agent=true&feed=$matches[2]'),
                    array('regex'    => 'agent/([^/]+)/(feed|rdf|rss|rss2|atom)/?$',
