@@ -39,9 +39,9 @@ class TCC_MetaBox_Gallery {
 		$this->add_meta = (empty($this->add_meta)) ? "add_meta_boxes_{$this->type}" : $this->add_meta;
 		$this->div_id   = "{$this->type}-gallery";
 		$this->nonce    = "{$this->type}_gallery_nonce";
-		add_action( $this->add_meta,          array( $this, 'add_meta_boxes' ) );
-		add_action( 'admin_enqueue_scripts',  array( $this, 'admin_enqueue_scripts' ), 11 );  #  run later
-		add_action( 'save_post_'.$this->type, array( $this, 'save_meta_boxes' ) );
+		add_action( $this->add_meta,           array( $this, 'add_meta_boxes' ) );
+		add_action( 'admin_enqueue_scripts',   array( $this, 'admin_enqueue_scripts' ), 11 );  #  run later
+		add_action( "save_post_{$this->type}", array( $this, 'save_meta_boxes' ) );
 	}
 
 	public function add_meta_boxes() {
@@ -101,24 +101,24 @@ class TCC_MetaBox_Gallery {
 		return $images;
 	}
 
-	public function save_meta_boxes($postID) {
-		remove_action('save_post_'.$this->type, array($this,'save_meta_boxes')); # prevent recursion
-		if (!isset( $_POST[$this->nonce] ))            return;
-		if (!current_user_can( 'edit_post', $postID )) return;
-		if ( wp_is_post_autosave( $postID ))           return;
-		if ( wp_is_post_revision( $postID ))           return;
-		if (!wp_verify_nonce( $_POST[ $this->nonce ], basename(__FILE__) ) ) return;
+	public function save_meta_boxes( $postID ) {
+		remove_action( "save_post_{$this->type}", array( $this, 'save_meta_boxes' ) ); # prevent recursion
+		if ( ! isset( $_POST[ $this->nonce ] ) )          return;
+		if ( ! current_user_can( 'edit_post', $postID ) ) return;
+		if ( wp_is_post_autosave( $postID ) )             return;
+		if ( wp_is_post_revision( $postID ) )             return;
+		if ( ! wp_verify_nonce( $_POST[ $this->nonce ], basename(__FILE__) ) ) return;
 		$incoming = $_POST;
-		if (!empty( $incoming[$this->field] )) {
-			foreach( $incoming[$this->field] as $imageID ) {
-				$check = intval($imageID,10);
-				if ($check) { wp_update_post( array( 'ID'=>$check, 'post_parent'=>$postID ) ); }
+		if ( ! empty( $incoming[ $this->field ] ) ) {
+			foreach( $incoming[ $this->field ] as $imageID ) {
+				$check = intval( $imageID, 10 );
+				if ( $check ) { wp_update_post( array( 'ID'=>$check, 'post_parent'=>$postID ) ); }
 			}
 		}
-		if (!empty( $incoming['delete_image'] )) {
+		if ( ! empty( $incoming['delete_image'] ) ) {
 			foreach( $incoming['delete_image'] as $deleteID ) {
-				$check = intval($deleteID,10);
-				if ($check) { wp_delete_post( $check ); }
+				$check = intval( $deleteID, 10 );
+				if ( $check ) { wp_delete_post( $check ); }
 			}
 		}
 	}

@@ -73,7 +73,7 @@ abstract class TCC_Post_Custom {
 
       #  Actions
       add_action( 'init',                  array( $this, 'create_post_type' ) );
-      add_action( 'add_meta_boxes_'.$this->type, array( $this, 'check_meta_boxes' ) );
+      add_action( "add_meta_boxes_{$this->type}", array( $this, 'check_meta_boxes' ) );
       add_action( 'contextual_help',       array( $this, 'contextual_help' ), 10, 3 );
 
       #  Filters
@@ -229,7 +229,7 @@ abstract class TCC_Post_Custom {
       #$args['capability_type'] = $this->type;
       #$args['capabilities']    = $this->map_capabilities();
     }
-    $args = apply_filters('tcc_register_post_'.$this->type,$args);
+    $args = apply_filters("tcc_register_post_{$this->type}",$args);
     #$this->logging( $args, $this->caps );
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
