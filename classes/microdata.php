@@ -218,7 +218,7 @@ class TCC_Microdata {
 	public function get_post_time( $time, $format, $gmt ) {
 		if ( strpos( $time, 'itemprop' ) === false ) {
 			$date_time = DateTime::createFromFormat( $format, $time );
-			if ( $date_time ) }
+			if ( $date_time ) {
 				$date = $date_time->format( 'Y-m-d H:i:s' );
 				$time = '<time itemprop="datePublished" datetime="' . $date . '">' . $time . '</time>';
 			}
