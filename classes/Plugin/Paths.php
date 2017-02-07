@@ -2,27 +2,20 @@
 
 class TCC_Plugin_Paths {
 
-	private $dir;
-	private $templates = '/template-parts/';
-	private $url;
-	private $version;
+	protected $file;
+	protected $dir;
+	protected $pages = '/page-templates/';
+	protected $parts = '/template-parts/';
+	protected $url;
+	protected $version;
 
 	use TCC_Trait_Magic;
-	use TCC_Trait_Singleton;
 
 	public function __construct( $args ) {
 		foreach ( $args as $key => $arg ) {
 			if ( property_exists( $this, $key ) ) {
 				$this->$key = $arg; }
 		}
-	}
-
-	public static function url( $file = '' ) {
-		return self::$instance->url . $file;
-	}
-
-	public static function version() {
-		return self::$instance->version;
 	}
 
 
@@ -34,25 +27,25 @@ class TCC_Plugin_Paths {
 		$pager->add_project_template( $slug, $text, $this->dir );
 	}
 
-	public function get_plugin_template( $slug, $return = false ) {
-		$found = '';
-		$stylesheet = get_stylesheet_directory();
-		$template   = get_template_directory();
-		$search = array( $stylesheet.$this->templates, $stylesheet,
-		                 $template . $this->templates, $template,
-		                 $this->dir. $this->templates);
-		foreach( $search as $path ) {
-			if ( file_exists( "$path/$slug.php" ) ) {
-				$found = "$path/$slug.php";
-				break;
-			}
+	public function get_plugin_file_path( $slug ) {
+		$theme_check = get_theme_file_path( $slug );
+		if ( file_exists( $theme_check ) ) {
+			$file_path = $theme_check;
+		} else {
+			$file_path = plugins_dir( $file );
 		}
-		if ($found) {
-			if ($return) {
-				return $found;
-			} else {
-				include($found);
-			}
-		}
+		return $file_path;
 	}
+
+	public function get_plugin_file_uri( $file ) {
+		$theme_check = get_theme_file_path( $slug );
+		if ( file_exists( $theme_check ) ) {
+			$file_path = get_theme_file_uri( $slug );
+		} else {
+			$file_path = plugins_url( $file );
+		}
+		return $file_path;
+	}
+
+
 }

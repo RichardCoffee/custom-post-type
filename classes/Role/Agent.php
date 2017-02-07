@@ -25,23 +25,23 @@ class TCC_Role_Agent {
   /**  Agent field info  **/
 
   private function get_field_titles() {
-    return array('job_title'      => __('Job Title', 'tcc-real-estate'),
-                 'education'      => __('Education One', 'tcc-real-estate'),
-                 'edu_two'        => __('Education Two', 'tcc-real-estate'),
-                 'edu_three'      => __('Education Three', 'tcc-real-estate'),
+    return array('job_title'      => __('Job Title', 'tcc-fluid'),
+                 'education'      => __('Education One', 'tcc-fluid'),
+                 'edu_two'        => __('Education Two', 'tcc-fluid'),
+                 'edu_three'      => __('Education Three', 'tcc-fluid'),
                  #  TODO:  allow for variable number
-                 'certifications' => __('Certifications / Affiliations', 'tcc-real-estate'),
-                 'certi_two'      => __('Certs / Affiliations Two', 'tcc-real-estate'),
-                 'certi_three'    => __('Certs / Affiliations Three', 'tcc-real-estate'),
+                 'certifications' => __('Certifications / Affiliations', 'tcc-fluid'),
+                 'certi_two'      => __('Certs / Affiliations Two', 'tcc-fluid'),
+                 'certi_three'    => __('Certs / Affiliations Three', 'tcc-fluid'),
                  #  TODO:  allow for variable number
-                 'languages'      => __('Language One', 'tcc-real-estate'),
-                 'lang_two'       => __('Language Two', 'tcc-real-estate'),
-                 'lang_three'     => __('Language Three', 'tcc-real-estate'),
-                 'telephone'      => __('Telephone','tcc-real-estate'),
-                 'facebook'       => __('Facebook username', 'tcc-real-estate'),
-                 'twitter'        => __('Twitter handle',  'tcc-real-estate'),
-                 'linkedin'       => __('LinkedIN Profile', 'tcc-real-estate'),
-                 'website_image'  => __('Website Image', 'tcc-real-estate'));
+                 'languages'      => __('Language One', 'tcc-fluid'),
+                 'lang_two'       => __('Language Two', 'tcc-fluid'),
+                 'lang_three'     => __('Language Three', 'tcc-fluid'),
+                 'telephone'      => __('Telephone','tcc-fluid'),
+                 'facebook'       => __('Facebook username', 'tcc-fluid'),
+                 'twitter'        => __('Twitter handle',  'tcc-fluid'),
+                 'linkedin'       => __('LinkedIN Profile', 'tcc-fluid'),
+                 'website_image'  => __('Website Image', 'tcc-fluid'));
   }
 
 
@@ -125,8 +125,8 @@ class TCC_Role_Agent {
             <label for="website_image"><?php echo $this->fields['website_image']; ?></label>
           </th>
           <td>
-            <div data-title='<?php _e('Assign/Upload Image','tcc-theme-options'); ?>' data-button='<?php _e('Assign Image','tcc-theme-options'); ?>'>
-              <button class='tcc-image'><?php _e('Assign Image','tcc-theme-options'); ?></button>
+            <div data-title='<?php _e('Assign/Upload Image','tcc-fluid'); ?>' data-button='<?php _e('Assign Image','tcc-fluid'); ?>'>
+              <button class='tcc-image'><?php _e('Assign Image','tcc-fluid'); ?></button>
               <input type='hidden' name='website_image' value='<?php echo esc_url($url); ?>' />
               <div>
                 <img class='tcc-image-size' src='<?php echo esc_url($url); ?>'>
