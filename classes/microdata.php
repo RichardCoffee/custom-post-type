@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
 
 if (!function_exists('microdata')) {
   function microdata() {
-    return TCC_Microdata::get_instance();
+    return TCC_Microdata::instance();
   }
 }
 
@@ -41,7 +41,7 @@ class TCC_Microdata {
     $this->filters();
   }
 
-  public static function get_instance() {
+  public static function instance() {
     if (self::$instance===null) {
       self::$instance = new TCC_Microdata();
     }

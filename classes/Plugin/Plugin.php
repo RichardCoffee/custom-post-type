@@ -1,6 +1,6 @@
 <?php
 
-abstract class TCC_Plugin_Basic {
+abstract class TCC_Plugin_Plugin {
 
 	use TCC_Trait_Magic;
 	use TCC_Trait_ParseArgs;
@@ -20,6 +20,8 @@ abstract class TCC_Plugin_Basic {
 		$this->state = $this->state_check();
 	}
 
+	abstract public function initialize();
+
 	public function add_actions() {
 	}
 
@@ -34,9 +36,9 @@ abstract class TCC_Plugin_Basic {
 
 	public function state_check() {
 		#	silly way of doing this
-		defined('TCC_STATE_ALONE')  || define( 'TCC_STATE_ALONE',  'Stand Alone' );
-		defined('TCC_STATE_PLUGIN') || define( 'TCC_STATE_PLUGIN', 'Plugin External' );
-		defined('TCC_STATE_THEME')  || define( 'TCC_STATE_THEME',  'Theme Internal' );
+		defined('TCC_STATE_ALONE')  || define( 'TCC_STATE_ALONE',  'Stand Alone' );     #  Stand Alone
+		defined('TCC_STATE_PLUGIN') || define( 'TCC_STATE_PLUGIN', 'Plugin External' ); #  Using Theme Options plugin
+		defined('TCC_STATE_THEME')  || define( 'TCC_STATE_THEME',  'Theme Internal' );  #  Using Fluidity internal options
 		$state = TCC_STATE_ALONE;
 		if ( ! function_exists( 'is_plugin_active' ) ) { include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); }
 		if ( is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) )       { $state = TCC_STATE_PLUGIN; }

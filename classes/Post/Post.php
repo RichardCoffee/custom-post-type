@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class TCC_Post_Custom {
+abstract class TCC_Post_Post {
 
   protected $type     = 'post';  #  'custom_post_type_name'
 

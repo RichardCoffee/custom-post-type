@@ -1,25 +1,35 @@
 <?php
 
-if (!class_exists('TCC_Role_Agent')) {
-
 class TCC_Role_Agent {
 
-  private $fields = array();
+	private $fields = array();
 
 	use TCC_Trait_Singleton;
 
-  protected function __construct() {
-    if (is_admin()) {
-      add_filter('user_contactmethods',     array($this,'user_contactmethods'));
-      add_action('personal_options',        array($this,'personal_options'),9);
-      add_action('personal_options_update', array($this,'save_agent_information'));
-      add_action('edit_user_profile_update',array($this,'save_agent_information'));
-    }
-    add_filter('author_rewrite_rules',array($this,'agent_rewrite_rules'));
-    add_filter('query_vars',          array($this,'query_vars'));
-    add_filter('template_include',    array($this,'template_include'));
-    $this->fields = $this->get_field_titles();
-  }
+	protected function __construct() {
+		if ( is_admin() ) {
+			add_filter( 'user_contactmethods',      array( $this, 'user_contactmethods' ) );
+			add_action( 'personal_options',         array( $this, 'personal_options' ), 9 );
+			add_action( 'personal_options_update',  array( $this, 'save_agent_information' ) );
+			add_action( 'edit_user_profile_update', array( $this, 'save_agent_information' ) );
+		}
+		if ( tcc_estate( 'register' ) === 'agents' ) {
+			#add_filter( 'edit_profile_url',       array( $this, 'edit_profile_url' ), 10, 3 );
+			add_filter( 'tcc_login_username',     array( $this, 'login_prefix' ) );
+			add_filter( 'tcc_login_password',     array( $this, 'login_prefix' ) );
+			add_filter( 'tcc_login_widget_title', array( $this, 'login_prefix' ) );
+		}
+		add_filter( 'author_rewrite_rules', array( $this, 'agent_rewrite_rules' ) );
+		add_filter( 'query_vars',           array( $this, 'query_vars' ) );
+		add_filter( 'template_include',     array( $this, 'template_include' ) );
+		$this->fields = $this->get_field_titles();
+	}
+
+	public function login_prefix( $input ) {
+		$title  = _x( 'Agent', 'noun - user role, prefixed to login placeholder string', 'tcc-fluid' );
+		$format = _x( '%1$s %2$s', '1 - noun serving as an adjective, 2 - primary noun', 'tcc-fluid' );
+		return sprintf( $format, $title, $input );
+	}
 
 
   /**  Agent field info  **/
@@ -83,15 +93,17 @@ class TCC_Role_Agent {
 
   /**  Agent Profile functions  **/
 
-  public function user_contactmethods($profile_fields,$user=null) {
-    if (!$user || in_array('agent',$user->roles)) {
-      $fields = array('telephone','facebook','twitter','linkedin');
-      foreach($fields as $field) {
-        if (!isset($profile_fields[$field])) $profile_fields[$field] = $this->fields[$field];
-      }
-    }
-    return $profile_fields;
-  }
+	public function user_contactmethods( $profile_fields, $user = null ) {
+		if ( $user && in_array( 'agent', $user->roles ) ) {
+			$fields = array( 'telephone', 'facebook', 'twitter', 'linkedin' );
+			foreach( $fields as $field ) {
+				if ( ! isset( $profile_fields[ $field ] ) ) {
+					$profile_fields[ $field ] = $this->fields[ $field ];
+				}
+			}
+		}
+		return $profile_fields;
+	}
 
   public function personal_options($user) {
     if (in_array('agent',$user->roles)) {
@@ -139,7 +151,6 @@ class TCC_Role_Agent {
   }
 
   public function save_agent_information($user_id) {
-#tcc_log_entry($_POST);
     foreach($this->fields as $field=>$title) {
 #error_log("field: $field");
       if (isset($_POST[$field])) {
@@ -149,7 +160,5 @@ class TCC_Role_Agent {
       update_user_meta($user_id,'website_image',sanitize_text_field($_POST['website_image'])); } //*/
   }
 
-
-}
 
 }
