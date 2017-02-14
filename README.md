@@ -9,11 +9,11 @@ I have seen quite a few different ways of how people handle custom post types in
 
 The basis for a lot of the code originated from different places on the web.  I have tried to give credit where I can.  My coding style can not be considered 'orthodox' in any way, shape, form, or fashion.
 
-WARNING:  Use a permalink of `/%category%/%post_name%/` otherwise this thing may not work at all...8-(
+WARNING:  Use a permalink of `/%category%/%post_name%/` otherwise this thing may not work at all...8-(  It is something I am working on.  Patches welcome.
 
 ## Update:
 
-I have started adding plugin components to the repo, working under the assumption that a CPT should always be in a plugin.  I am also going to be splitting out portions of the code into more governable components.  Just about everything is in line for a rewrite.
+I have started adding plugin components to the repo, working under the assumption that a CPT should always be in a plugin.  I also plan on splitting out portions of the code into more governable components.  Just about everything is in line for a rewrite.
 
 ## Features
 
@@ -21,7 +21,6 @@ I have started adding plugin components to the repo, working under the assumptio
 * Control whether the CPT show ups on the Blog page along with regular posts.
 * Assign custom 'single'/'archive' templates for displaying the CPT.
 * Assign a folder, or list of folders to look for templates in.
-* Add a sidebar for the CPT.
 * Show a column on the admin Users screen, providing an author count.
 * Add taxonomy columns to CPT admin dashboard.
 * Stop a user from deleting a custom taxonomy term, either permanently or if in use.
@@ -45,7 +44,7 @@ This really consists of only three files:
 ```
 Simply copy these to their respective location.  That's it.  Warning:  source code supersends any information contained within this document.
 
-Note:  tcc_plugin.php has an example of an autoload function, which utilizes the classes/Post/Custom file.
+Note:  tcc_plugin.php has an example of an autoload function, which utilizes the classes/Post/Post.php file.  Hmmm, that file is, well, old.
 
 
 ## Usage
@@ -91,7 +90,7 @@ class Property extends RC_Custom_Post_Type {
     add_filter( 'tcc_register_post_property',   array( $this, 'register_property'));
   }
 
-  public function register_property($args) {
+  public function register_property( $args ) {
     $args['show_in_nav_menus'] = false;
     return $args;
   }
@@ -162,6 +161,8 @@ the method translated_text() provides default strings for both cpt and taxonomy 
 
 ## Taxonomies
 
+Frankly, this is kind of a mess.  It is on my TODO list.
+
 $this->taxonomy_registration($args)
 
 $args must be either an associative array or a string.  If it is a string then it must be parsable by the WordPress [wp_parse_args()](http://codex.wordpress.org/Function_Reference/wp_parse_args) function.  Accepted arguments are:
@@ -189,4 +190,4 @@ omit     => array --- array of terms not to display in searches. ie:  if a post 
 
 # Change Log
 
-No formal release yet.  Code still subject to change without notice.
+No formal release yet.  Code still subject to change without notice.  If anyone uses this, please let me know, and I will start being more structured in a release schedule.
