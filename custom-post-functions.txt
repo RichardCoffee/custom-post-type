@@ -15,7 +15,6 @@
   public      create_post_type()
   protected   post_type_labels()
   public      post_type_messages($messages)
-  public      register_sidebar()
 
   /*  Capabilities  */
   public      add_caps()

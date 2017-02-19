@@ -882,6 +882,7 @@ abstract class RC_Custom_Post_Type {
 
 if ( ! function_exists('esc_html_nx') ) {
 	#	wp_includes/i10n.php#_nx
+	#	no idea why wordpress devs flatly refuse to create a function like this
 	function esc_html_nx( $single, $plural, $number, $context, $domain = 'default' ) {
 		$translations = get_translations_for_domain( $domain );
 		$translation  = $translations->translate_plural( $single, $plural, $number, $context );

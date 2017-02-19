@@ -36,7 +36,7 @@ class TCC_MetaBox_Gallery {
 		$this->m_button = esc_html__( 'Assign Image', 'tcc-fluid' );
 		$this->m_title  = esc_html__( 'Assign/Upload Gallery Image', 'tcc-fluid' );
 		$this->title    = esc_html__( 'Image Gallery', 'tcc-fluid' );
-		$this->parse_args_all( $args );
+		$this->parse_all_args( $args );
 		$this->add_meta = ( $this->add_meta ) ? $this->add_meta : "add_meta_boxes_{$this->type}";
 		$this->div_id   = "{$this->type}-gallery";
 		$this->nonce    = "{$this->type}_gallery_nonce";
