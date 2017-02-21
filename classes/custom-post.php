@@ -1,10 +1,23 @@
 <?php
-/*
- *  abstract class for WordPress custom post types
+/**
+ * Custom Post Types
  *
- *  GitHub:  https://github.com/RichardCoffee/custom-post-type
+ * @package     Fluidity/Post/Post
+ * @author      Richard Coffee
+ * @copyright   2009-2017, RTC Enterprises DBA
+ * @license     GPL-2.0+
  *
- *  Copyright 2009-2017, Richard Coffee
+ * @wordpress-plugin
+ * Description: abstract class for WordPress custom post types
+ * Version:     2.0.0
+ * Author:      Richard Coffee
+ * AuthorURI:   richard.coffee@rtcenterprises.net
+ * Text Domain: tcc-custom-post
+ * Domain Path: /locales
+ * License:     GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * GitHub:      https://github.com/RichardCoffee/custom-post-type
  *
  */
 
