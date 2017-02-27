@@ -20,7 +20,7 @@ trait TCC_Trait_Magic {
 			$return = $this->$string;
 		}
 		if ( ! $return ) {
-			log_entry( 'unknown method called:  ' . $string, 'dump' );
+			log_entry( 'unknown method called:  ' . $string, 'stack' );
 		}
 		return $return;
 	}
