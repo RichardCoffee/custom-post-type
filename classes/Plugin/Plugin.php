@@ -4,7 +4,7 @@ abstract class TCC_Plugin_Plugin {
 
 	protected $admin   = null;
 	public    $dbvers  = '0';
-	public    $paths;  = null;  #  TCC_Plugin_Paths object
+	public    $paths   = null;  #  TCC_Plugin_Paths object
 	public    $plugin  = '';
 	protected $setting = '';    #  settings link
 	protected $state   = '';
@@ -13,20 +13,19 @@ abstract class TCC_Plugin_Plugin {
 
 	use TCC_Trait_Magic;
 	use TCC_Trait_ParseArgs;
-	use TCC_Trait_Singleton;
 
 	protected function __construct( $args = array() ) {
 		if ( isset( $args['file'] ) ) {
 			$data = get_file_data( $args['file'], array( 'ver' => 'Version' ) );
 			$defaults = array(
-				'dir'    => plugin_dir_path( $args['file'] ),
-				'plugin' => dirname( plugin_basename( $args['file'] ) ),
-				'url'    => plugin_dir_url( $args['file'] ),
-				'version' = $data['ver'];
+				'dir'     => plugin_dir_path( $args['file'] ),
+				'plugin'  => dirname( plugin_basename( $args['file'] ) ),
+				'url'     => plugin_dir_url( $args['file'] ),
+				'version' => $data['ver'],
 			);
 			$args = array_merge( $defaults, $args );
 			$this->parse_args( $args );
-			$this->paths = new TCC_Plugin_Paths( $args );
+			$this->paths = TCC_Plugin_Paths::get_instance( $args );
 			$this->state = $this->state_check();
 			$this->schedule_initialize();
 		} else {
@@ -57,7 +56,7 @@ abstract class TCC_Plugin_Plugin {
 
 	protected function schedule_initialize() {
 		switch ( $this->state ) {
-			case 'plugin':
+			case 'plugin': # Deprecated, theme options is no longer a plugin
 				add_action( 'tcc_theme_options_loaded', array( $this, 'initialize' ) );
 				break;
 			case 'alone':

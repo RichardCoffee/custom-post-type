@@ -10,12 +10,12 @@ class TCC_Plugin_Paths {
 	protected $version;
 
 	use TCC_Trait_Magic;
+	use TCC_Trait_ParseArgs;
+	use TCC_Trait_Singleton;
 
-	public function __construct( $args ) {
-		foreach ( $args as $key => $arg ) {
-			if ( property_exists( $this, $key ) ) {
-				$this->$key = $arg; }
-		}
+	protected function __construct( $args ) {
+		$this->parse_args( $args );
+		$this->dir = trailingslashit( $this->dir );
 	}
 
 	/**  Template functions  **/
@@ -26,25 +26,26 @@ class TCC_Plugin_Paths {
 		$pager->add_project_template( $slug, $text, $this->dir );
 	}
 
-	public function get_plugin_file_path( $slug ) {
+	public function get_plugin_file_path( $file ) {
 		$file_path   = false;
-		$theme_check = get_theme_file_path( $slug );
-		if ( file_exists( $theme_check ) ) {
+		$theme_check = get_theme_file_path( $file );
+		if ( $theme_check && file_exists( $theme_check ) ) {
 			$file_path = $theme_check;
-		} else if ( file_exists( WP_PLUGIN_DIR . '/'. $slug ) ) {
-			$file_path = WP_PLUGIN_DIR . '/'. $slug;
+		} else if ( file_exists( $this->dir . $file ) ) {
+			$file_path = $this->dir . $file;
 		}
 		return $file_path;
 	}
 
 	public function get_plugin_file_uri( $file ) {
-		$theme_check = get_theme_file_path( $slug );
+		$file_uri    = false;
+		$theme_check = get_theme_file_path( $file );
 		if ( file_exists( $theme_check ) ) {
-			$file_path = get_theme_file_uri( $slug );
+			$file_uri = get_theme_file_uri( $file );
 		} else {
-			$file_path = plugins_url( $file, $this->file );
+			$file_uri = plugins_url( $file, $this->file );
 		}
-		return $file_path;
+		return $file_uri;
 	}
 
 

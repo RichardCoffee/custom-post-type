@@ -6,13 +6,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class TCC_MetaBox_Gallery {
+class TCC_MetaBox_Gallery extends TCC_MetaBox_MetaBox {
 
-	protected $add_meta =  null;
 	protected $button   = 'Assign/Upload Image';
-	protected $callback =  null;
 	protected $confirm  = 'Remove this image?';
-	protected $context  = 'normal';
 	protected $div_css  = 'section group gallery-images';
 	protected $div_id   = 'post-gallery';
 	protected $div_img  = 'col span_1_of_4 meta-image';
@@ -21,14 +18,8 @@ class TCC_MetaBox_Gallery {
 	protected $img_css  = 'attachment-post-thumbnail img-responsive';
 	protected $m_button = 'Assign Image';
 	protected $m_title  = 'Assign/Upload Image';
-	protected $nonce    = 'gallery_nonce';
-	protected $priority = 'high';
 	protected $slug     = 'gallery_meta_box';
-	protected $title    = 'Image Gallery';
-	protected $type     = 'post';
 
-	use TCC_Trait_Magic;
-	use TCC_Trait_ParseArgs;
 
 	public function __construct( $args = array() ) {
 		$this->button   = esc_html__( 'Assign/Upload Gallery Image', 'tcc-fluid' );
@@ -36,17 +27,9 @@ class TCC_MetaBox_Gallery {
 		$this->m_button = esc_html__( 'Assign Image', 'tcc-fluid' );
 		$this->m_title  = esc_html__( 'Assign/Upload Gallery Image', 'tcc-fluid' );
 		$this->title    = esc_html__( 'Image Gallery', 'tcc-fluid' );
-		$this->parse_all_args( $args );
-		$this->add_meta = ( $this->add_meta ) ? $this->add_meta : "add_meta_boxes_{$this->type}";
+		parent::__construct( $args );
 		$this->div_id   = "{$this->type}-gallery";
 		$this->nonce    = "{$this->type}_gallery_nonce";
-		add_action( $this->add_meta,           array( $this, 'add_meta_boxes' ) );
-		add_action( 'admin_enqueue_scripts',   array( $this, 'admin_enqueue_scripts' ), 11 );  #  run later
-		add_action( "save_post_{$this->type}", array( $this, 'save_meta_boxes' ) );
-	}
-
-	public function add_meta_boxes() {
-		add_meta_box( $this->slug, $this->title, array( $this, 'gallery_meta_box' ), $this->type, $this->context, $this->priority, $this->callback );
 	}
 
 	public function admin_enqueue_scripts() {
@@ -54,22 +37,22 @@ class TCC_MetaBox_Gallery {
 		if ( $screen && ( $screen->post_type === $this->type ) ) {
 			wp_enqueue_style( 'tcc-gallery-css' );
 			wp_enqueue_style( 'tcc-columns' );  #  provides 'section group col span_*_of_*' classes
-			$data = array( 'button'  => $this->m_button,
-			               'confirm' => $this->confirm,
-			               'div_img' => $this->div_img,
-			               'icon'    => $this->icon,
-			               'div_id'  => $this->div_id,
-			               'img_css' => $this->img_css,
-			               'field'   => $this->field . '[]',
-			               'title'   => $this->m_title,
-			             );
+			$data = array(
+				'button'  => $this->m_button,
+				'confirm' => $this->confirm,
+				'div_img' => $this->div_img,
+				'icon'    => $this->icon,
+				'div_id'  => $this->div_id,
+				'img_css' => $this->img_css,
+				'field'   => $this->field . '[]',
+				'title'   => $this->m_title,
+			);
 			wp_localize_script( 'tcc-gallery-js', 'tcc_gallery', $data );
-			wp_enqueue_script( 'tcc-gallery-js' );
-
+			wp_enqueue_script(  'tcc-gallery-js' );
 		}
 	}
 
-	public function gallery_meta_box( $post ) {
+	public function show_meta_box( $post ) {
 		wp_nonce_field( basename( __FILE__ ), $this->nonce );
 		do_action( 'tcc_gallery_meta_box_pre' ); ?>
 		<div id="<?php echo $this->div_id; ?>" class="<?php echo $this->div_css; ?>"><?php
@@ -111,12 +94,9 @@ class TCC_MetaBox_Gallery {
 	}
 
 	public function save_meta_boxes( $postID ) {
-		remove_action( "save_post_{$this->type}", array( $this, 'save_meta_boxes' ) ); # prevent recursion
-		if ( ! isset( $_POST[ $this->nonce ] ) )          return;
-		if ( ! current_user_can( 'edit_post', $postID ) ) return;
-		if ( wp_is_post_autosave( $postID ) )             return;
-		if ( wp_is_post_revision( $postID ) )             return;
-		if ( ! wp_verify_nonce( $_POST[ $this->nonce ], basename(__FILE__) ) ) return;
+		if ( $this->pre_save_meta_box( $postID, basename( __FILE__ ) ) ) {
+			return;
+		}
 		$incoming = $_POST;
 		if ( ! empty( $incoming[ $this->field ] ) ) {
 			foreach( $incoming[ $this->field ] as $imageID ) {
@@ -132,7 +112,12 @@ class TCC_MetaBox_Gallery {
 		if ( ! empty( $incoming['delete_image'] ) ) {
 			foreach( $incoming['delete_image'] as $deleteID ) {
 				$check = intval( $deleteID, 10 );
-				if ( $check ) { wp_delete_post( $check ); }
+				if ( $check ) {
+					$attach = get_post( $check );
+					if ( $attach->post_parent === $postID ) {
+						wp_delete_post( $check );
+					}
+				}
 			}
 		}
 	}

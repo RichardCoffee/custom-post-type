@@ -22,6 +22,20 @@ class TCC_Register_Register {
 		return $return;
 	}
 
+	protected static function create_new_page( $new ) {
+		$page = get_page_by_title( $new['post_title'] ); // FIXME: should get page by slug instead
+		if ( $page ) {
+			$class = get_class( $page );
+			foreach( $new as $key => $value ) {
+				if ( property_exists( $class, $key ) ) {
+					$page->$key = $value;
+				}
+			}
+			wp_update_post( $page );
+		} else {
+			wp_insert_post( $new );
+		}
+	}
 
 	/**  Turn things on  **/
 /*
@@ -69,7 +83,7 @@ class TCC_Register_Register {
 	private static function dependency_string() {
 		$site_name = _x( 'The Creative Collective', 'noun - plugin site name', 'tcc-fluid' );
 		$comp_name = _x( 'The Creative Collective', 'noun - plugin company name', 'tcc-fluid');
-		$string    = _x( 'This plugin should only be used with %1$s themes by %2$s', 'nouns - 1 is the company, 2 is the website', 'tcc-fluid' );
+		$string    = _x( 'This plugin should only be used with %1$s themes by %2$s', '1: company name, 2: website title', 'tcc-fluid' );
 		$site      = sprintf( self::$our_site, $site_name );
 		$company   = sprintf( self::our_email(), $comp_name );
 		return sprintf( $string, $site, $company );
