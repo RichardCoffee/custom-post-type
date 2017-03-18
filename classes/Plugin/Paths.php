@@ -29,7 +29,7 @@ class TCC_Plugin_Paths {
 	public function get_plugin_file_path( $file ) {
 		$file_path   = false;
 		$theme_check = get_theme_file_path( $file );
-		if ( $theme_check && file_exists( $theme_check ) ) {
+		if ( file_exists( $theme_check ) ) {
 			$file_path = $theme_check;
 		} else if ( file_exists( $this->dir . $file ) ) {
 			$file_path = $this->dir . $file;
