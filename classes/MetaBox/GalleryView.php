@@ -11,7 +11,7 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 			add_action( 'tcc_after_enqueue', array( $this, 'register_galleryview' ) );
 		}
 		add_shortcode( 'galleryview', array( $this, 'show_galleryview' ) );
-		add_action( 'tcc_gallery_meta_box_pre', array( $this, 'meta_box_description' ) );
+		add_action( 'tcc_gallery_meta_box_pre', array( $this, 'meta_box_pretext' ) );
 	}
 
 	/**  Setup  **/
@@ -73,7 +73,7 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 
 	/**  Admin meta box  **/
 
-	public function meta_box_description() {
+	public function meta_box_pretext() {
 		$text = esc_html_x( 'Use the %s shortcode to place the gallery in your post.', 'a wordpress shortcode', 'tcc-fluid' ); ?>
 		<p>
 			<?php echo sprintf( $text, '<span class="red">[galleryview]</span>' ); ?>

@@ -20,6 +20,7 @@ abstract class TCC_MetaBox_MetaBox {
 	abstract function show_meta_box( $post );
 
 	public function __construct( $args = array() ) {
+		$this->parse_args( $args );
 		$this->add_meta  = ( $this->add_meta )  ? $this->add_meta  : 'add_meta_boxes_' . $this->type;
 		$this->save_meta = ( $this->save_meta ) ? $this->save_meta : 'save_post_' . $this->type;
 		add_action( $this->add_meta,         array( $this, 'add_meta_box' ) );
@@ -32,13 +33,13 @@ abstract class TCC_MetaBox_MetaBox {
 	}
 
 	protected function pre_save_meta_box( $postID, $file ) {
-		remove_action( $this->save_meta, array( $this, 'save_meta_boxe' ) ); # prevent recursion
-		if ( ! isset( $_POST[ $this->nonce ] ) )                  return true;
-		if ( ! wp_verify_nonce( $_POST[ $this->nonce ], $file ) ) return true;
-		if ( ! current_user_can( 'edit_post', $postID ) )         return true;
-		if ( wp_is_post_autosave( $postID ) )                     return true;
-		if ( wp_is_post_revision( $postID ) )                     return true;
-		return false;
+		remove_action( $this->save_meta, array( $this, 'save_meta_box' ) ); # prevent recursion
+		if ( ! isset( $_POST[ $this->nonce ] ) )                  return false;
+		if ( ! wp_verify_nonce( $_POST[ $this->nonce ], $file ) ) return false;
+		if ( ! current_user_can( 'edit_post', $postID ) )         return false;
+		if ( wp_is_post_autosave( $postID ) )                     return false;
+		if ( wp_is_post_revision( $postID ) )                     return false;
+		return true;
 	}
 
 }

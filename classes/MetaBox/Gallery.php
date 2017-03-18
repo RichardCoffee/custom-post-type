@@ -93,9 +93,9 @@ class TCC_MetaBox_Gallery extends TCC_MetaBox_MetaBox {
 		return $images;
 	}
 
-	public function save_meta_boxes( $postID ) {
-		if ( $this->pre_save_meta_box( $postID, basename( __FILE__ ) ) ) {
-			return;
+	public function save_meta_box( $postID ) {
+		if ( ! $this->pre_save_meta_box( $postID, basename( __FILE__ ) ) ) {
+			return;	#	Invalid data
 		}
 		$incoming = $_POST;
 		if ( ! empty( $incoming[ $this->field ] ) ) {
@@ -114,6 +114,7 @@ class TCC_MetaBox_Gallery extends TCC_MetaBox_MetaBox {
 				$check = intval( $deleteID, 10 );
 				if ( $check ) {
 					$attach = get_post( $check );
+					#	Verify parent post
 					if ( $attach->post_parent === $postID ) {
 						wp_delete_post( $check );
 					}
