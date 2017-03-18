@@ -1,6 +1,6 @@
 # Custom Post Type
 
-This is a base class for WordPress custom post types.  For something that might be easier to use, try [Post Types Creator](https://github.com/pelmered/post-types-creator) or [Extended CPTs](https://github.com/johnbillion/extended-cpts).  This is -not- a UI, nor is it intended to be.  If you are looking for that, then try [Custom Post Type UI](here: https://github.com/WebDevStudios/custom-post-type-ui).
+This is a base class for WordPress custom post types.  For something that might be easier to use, try [Post Types Creator](https://github.com/pelmered/post-types-creator) or [Extended CPTs](https://github.com/johnbillion/extended-cpts).  This is -not- a UI, nor is it intended to be.  If you are looking for that, then try [Custom Post Type UI](https://github.com/WebDevStudios/custom-post-type-ui).
 
 Other good resources: [Custom Post Type Permalinks](https://github.com/torounit/custom-post-type-permalinks), [Simple Post Type Permalinks](https://wordpress.org/plugins/simple-post-type-permalinks/)
 
