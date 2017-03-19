@@ -14,6 +14,8 @@ abstract class TCC_Plugin_Plugin {
 	use TCC_Trait_Magic;
 	use TCC_Trait_ParseArgs;
 
+	abstract public function initialize();
+
 	protected function __construct( $args = array() ) {
 		if ( isset( $args['file'] ) ) {
 			$data = get_file_data( $args['file'], array( 'ver' => 'Version' ) );
@@ -29,11 +31,9 @@ abstract class TCC_Plugin_Plugin {
 			$this->state = $this->state_check();
 			$this->schedule_initialize();
 		} else {
-			wp_die("'__FILE__' must be passed in an associative array with a key of 'file' to the plugin constructor");
+			wp_die( "'__FILE__' must be passed in an associative array with a key of 'file' to the plugin constructor" );
 		}
 	}
-
-	abstract public function initialize();
 
 	public function add_actions() { }
 
@@ -44,13 +44,17 @@ abstract class TCC_Plugin_Plugin {
 
 	/**  General functions  **/
 
-	abstract public function enqueue_scripts();
-
 	public function state_check() {
 		$state = 'alone';
-		if ( ! function_exists( 'is_plugin_active' ) ) { include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); }
-		if ( is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) )       { $state = 'plugin'; }
-		if ( file_exists( get_template_directory() . '/classes/Form/Admin.php' ) ) { $state = 'theme'; }
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		}
+		if ( is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) ) {
+			$state = 'plugin';
+		}
+		if ( file_exists( get_template_directory() . '/classes/Form/Admin.php' ) ) {
+			$state = 'theme';
+		}
 		return $state;
 	}
 
@@ -67,7 +71,7 @@ abstract class TCC_Plugin_Plugin {
 	}
 
 
-  /**  Template functions **/
+	/**  Template functions **/
 
 	#	used in classes/pagetemplater.php
 	public function get_stylesheet( $file = 'tcc-plugin.css' ) {
@@ -85,8 +89,7 @@ abstract class TCC_Plugin_Plugin {
 			unset( $links['edit'] );
 			if ( is_plugin_active( $file ) ) { // NOTE:  how would this ever get run if the plugin is not active?  why do we need this check?
 				$url   = ( $this->setting ) ? $this->setting : admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab );
-				$link  = array('settings' => sprintf( '<a href="%1$s"> %2$s </a>', $url, __( 'Settings', 'tcc-plugin' ) ) );
-				$links = array_merge( $link, $links );
+				$links['settings'] = sprintf( '<a href="%1$s"> %2$s </a>', $url, esc_html__( 'Settings', 'tcc-plugin' ) );
 			}
 		}
 		return $links;
