@@ -254,40 +254,40 @@ abstract class TCC_Post_Post {
     } //*/
   }
 
-  protected function post_type_labels() {
-    $phrases = $this->translated_text();
-    $arr = array (
-      'name'          => $this->plural,
-      'singular_name' => $this->label,
-      'add_new'       => sprintf($phrases['add'],    $this->label),
-      'add_new_item'  => sprintf($phrases['add'],    $this->label),
-      'edit_item'     => sprintf($phrases['edit_s'], $this->label),
-      'new_item'      => sprintf($phrases['new'],    $this->label),
-      'view_item'     => sprintf($phrases['view_s'], $this->label),
-      'search_items'  => sprintf($phrases['search'], $this->plural),
-      'not_found'     => sprintf($phrases['404'],    $this->plural),
-      'not_found_in_trash'    => sprintf($phrases['trash'],  $this->plural),
-      'parent_item_colon'     => sprintf($phrases['parent'], $this->label).':',
-      'all_items'             => sprintf($phrases['all'],    $this->plural),
-      'archives'              => sprintf($phrases['all'],    $this->plural),
-      'insert_into_item'      => sprintf($phrases['insert'], $this->label),
-      'uploaded_to_this_item' => sprintf($phrases['upload'], $this->label),
-      'featured_image'        => sprintf($phrases['feature'],$this->label),
-      'set_featured_image'    => sprintf($phrases['feat_set'],strtolower($this->label)),
-      'remove_featured_image' => sprintf($phrases['feat_rem'],strtolower($this->label)),
-      'use_featured_image'    => sprintf($phrases['feat_use'],strtolower($this->label)),
-      'menu_name'             => $this->plural,
-      'filter_items_list'     => sprintf($phrases['filter'],   $this->plural),
-      'items_list_navigation' => sprintf($phrases['list_nav'], $this->plural),
-      'items_list'    => sprintf($phrases['list'],   $this->label),
-      'edit'          => sprintf($phrases['edit_p'], $this->plural),
-      'view'          => sprintf($phrases['view_p'], $this->plural),
-      'items_archive' => sprintf($phrases['archive'],$this->label),
-      'view_items'    => sprintf($phrases['view_p'], $this->plural),
-      'attributes'    => sprintf($phrases['attributes'],$this->plural),
-);
-    return apply_filters('tcc_post_labels_'.$this->type,$arr);
-  }
+	protected function post_type_labels() {
+		$phrases = $this->translated_text();
+		$labels  = array (
+			'name'          => $this->plural,
+			'singular_name' => $this->label,
+			'add_new'       => sprintf( $phrases['add'],    $this->label ),
+			'add_new_item'  => sprintf( $phrases['add'],    $this->label ),
+			'edit_item'     => sprintf( $phrases['edit_s'], $this->label ),
+			'new_item'      => sprintf( $phrases['new'],    $this->label ),
+			'view_item'     => sprintf( $phrases['view_s'], $this->label ),
+			'search_items'  => sprintf( $phrases['search'], $this->plural ),
+			'not_found'     => sprintf( $phrases['404'],    $this->plural ),
+			'not_found_in_trash'    => sprintf( $phrases['trash'],   $this->plural ),
+			'parent_item_colon'     => sprintf( $phrases['parent'],  $this->label ) . ':',
+			'all_items'             => sprintf( $phrases['all'],     $this->plural ),
+			'archives'              => sprintf( $phrases['all'],     $this->plural ),
+			'insert_into_item'      => sprintf( $phrases['insert'],  $this->label ),
+			'uploaded_to_this_item' => sprintf( $phrases['upload'],  $this->label ),
+			'featured_image'        => sprintf( $phrases['feature'], $this->label ),
+			'set_featured_image'    => sprintf( $phrases['feat_set'], strtolower( $this->label ) ),
+			'remove_featured_image' => sprintf( $phrases['feat_rem'], strtolower( $this->label ) ),
+			'use_featured_image'    => sprintf( $phrases['feat_use'], strtolower( $this->label ) ),
+			'menu_name'             => $this->plural,
+			'filter_items_list'     => sprintf( $phrases['filter'],   $this->plural ),
+			'items_list_navigation' => sprintf( $phrases['list_nav'], $this->plural ),
+			'items_list'    => sprintf( $phrases['list'],       $this->label ),
+			'edit'          => sprintf( $phrases['edit_p'],     $this->plural ),
+			'view'          => sprintf( $phrases['view_p'],     $this->plural ),
+			'items_archive' => sprintf( $phrases['archive'],    $this->label ),
+			'view_items'    => sprintf( $phrases['view_p'],     $this->plural ),
+			'attributes'    => sprintf( $phrases['attributes'], $this->plural ),
+		);
+		return apply_filters( "tcc_post_labels_{$this->type}", $labels );
+	}
 
   # http://codex.wordpress.org/Function_Reference/register_post_type
   # http://thomasmaxson.com/update-messages-for-custom-post-types/
@@ -328,17 +328,17 @@ abstract class TCC_Post_Post {
 	#	http://justintadlock.com/archives/2010/07/10/meta-capabilities-for-custom-post-types
 	protected function map_capabilities( ) {
 		$base = $this->map_basic_caps();
-		extract($base);  #  extracts as $sing and $plur
+		extract( $base );  #  extracts as $sing and $plur
 		$caps = array(
-			'publish_posts' => 'publish_'.$plur,
-			'edit_posts' => 'edit_'.$plur,
-			'edit_others_posts' => 'edit_others_'.$plur,
-			'delete_posts' => 'delete_'.$plur,
-			'delete_others_posts' => 'delete_others_'.$plur,
-			'read_private_posts' => 'read_private_'.$plur,
-			'edit_post' => 'edit_'.$sing,
-			'delete_post' => 'delete_'.$sing,
-			'read_post' => 'read_'.$sing,
+			'publish_posts'       => 'publish_' . $plur,
+			'edit_posts'          => 'edit_' . $plur,
+			'edit_others_posts'   => 'edit_others_' . $plur,
+			'delete_posts'        => 'delete_' . $plur,
+			'delete_others_posts' => 'delete_others_' . $plur,
+			'read_private_posts'  => 'read_private_' . $plur,
+			'edit_post'           => 'edit_' . $sing,
+			'delete_post'         => 'delete_' . $sing,
+			'read_post'           => 'read_' . $sing,
 			);
 		#$this->logging( $caps );
 		return $caps;
@@ -391,8 +391,8 @@ abstract class TCC_Post_Post {
 	public function add_caps() {
 		$all_roles    = apply_filters( "{$this->type}_add_roles",    array( 'contributor', 'author', 'editor', 'administrator' ) );
 		$author_roles = apply_filters( "{$this->type}_author_roles", array( 'author', 'editor', 'administrator' ) );
-		$editor_roles = apply_filters( "{$this->type}_editor_roles", array( 'author', 'editor', 'administrator' ) );
-		#this->logging('roles',$roles);
+		$editor_roles = apply_filters( "{$this->type}_editor_roles", array( 'editor', 'administrator' ) );
+		#this->logging( 'roles', $roles );
 		if ( $this->role === 'admin' ) {
 			$roles = array( 'administrator' ); }
 		foreach( $all_roles as $role ) {
@@ -400,19 +400,22 @@ abstract class TCC_Post_Post {
 	}
 
 	private function process_caps( $name, $author_roles, $editor_roles ) {
-		$role = get_role($name);
+		$role = get_role( $name );
 		#$this->logging('user role:  '.$name,$role);
 		$base = $this->map_basic_caps();
-		extract($base);  #  extracts as $sing and $plur
+		extract( $base );  #  extracts as $sing and $plur
 		$caps = array( /*"delete_$sing", "edit_$sing", "read_$sing",*/ "delete_$plur", "edit_$plur");
 		$auth = array( "delete_published_$plur", "edit_published_$plur", "publish_$plur");
 		$edit = array( "delete_others_$plur", "delete_private_$plur", "edit_others_$plur", "edit_private_$plur", "read_private_$plur" );
 		if ( in_array( $role, $author_roles ) ) {
-			$caps = array_unique( array_merge( $caps, $auth ) ); }
+			$caps = array_unique( array_merge( $caps, $auth ) );
+		}
 		if ( in_array( $name, $editor_roles ) ) {
-			$caps = array_unique( array_merge( $caps, $edit ) ); }
-		foreach($caps as $cap) {
-			$role->add_cap($cap); }
+			$caps = array_unique( array_merge( $caps, $edit ) );
+		}
+		foreach( $caps as $cap ) {
+			$role->add_cap( $cap );
+		}
 		#$this->logging('role:  '.$name, $caps,$auth,$edit,get_role($name));
 	}
 
@@ -457,9 +460,8 @@ abstract class TCC_Post_Post {
     if (empty($plural) && empty($taxargs['labels']['name']) && empty($taxargs['label'])) return;  #  Here too
     $plural = (isset($taxargs['labels']['name'])) ? $taxargs['labels']['name'] : (isset($taxargs['label'])) ? $taxargs['label'] : $plural;
     $labels = $this->taxonomy_labels($single,$plural);
-    $labels = apply_filters("tcc_{$this->type}_{$tax}_labels",$labels);		#  Use this one by choice
-
-    $taxargs['labels']  = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
+    $labels = (isset($taxargs['labels'])) ? array_merge($labels,$taxargs['labels']) : $labels;
+    $taxargs['labels']  = apply_filters("tcc_{$this->type}_{$tax}_labels",$labels);		#  Use this one by choice
     $taxargs['show_admin_column'] = (isset($taxargs['show_admin_column'])) ? $taxargs['show_admin_column'] : $admin;
     $taxargs['rewrite'] = (isset($taxargs['rewrite'])) ? $taxargs['rewrite'] : (isset($rewrite)) ? array('slug'=>$rewrite) : array('slug'=>$tax);
     $taxargs = apply_filters('tcc_register_taxonomy_'.$tax,$taxargs,$args);
@@ -732,7 +734,7 @@ abstract class TCC_Post_Post {
         } else if (is_search() || is_post_type_archive($this->type)) {
           $template = $this->locate_template($template,'archive');
         }
-        $template = apply_filters('tcc_assign_template_'.$this->type,$template);
+        $template = apply_filters( "tcc_assign_template_{$this->type}", $template );
       }
     }
     return $template;
