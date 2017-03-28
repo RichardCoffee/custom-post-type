@@ -12,7 +12,7 @@ trait TCC_Trait_Singleton {
 
 	public static function instance() {
 		if ( ! ( self::$instance instanceof self ) ) {
-			$instance = new self;
+			$instance = new self();
 			if ( ! static::$abort_construct ) {
 				self::$instance = $instance;
 			}
