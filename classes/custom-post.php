@@ -515,7 +515,6 @@ abstract class RC_Custom_Post_Type {
   }
 
   private function add_builtins() {
-    $this->logging('function: add_builtins');
     $check = array('post_tag','category');
     foreach($check as $tax) {
       $this->nodelete[] = $tax;
