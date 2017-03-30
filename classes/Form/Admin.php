@@ -24,7 +24,7 @@ abstract class TCC_Form_Admin {
 	protected $type      = 'single'; # two values: single, tabbed
 	protected $validate;
 
-	use TCC_Trait_Logging
+	use TCC_Trait_Logging;
 
 	abstract protected function form_layout( $option );
 	public function description() { return ''; }
@@ -61,6 +61,7 @@ abstract class TCC_Form_Admin {
 			$this->get_form_options();
 			$func = $this->register;
 			$this->$func();
+			do_action( 'tcc_load_form_page' );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		}
 	}
