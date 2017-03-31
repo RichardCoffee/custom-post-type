@@ -782,7 +782,7 @@ log_entry($controls);
 			$output = $func( $input );
 		} else { // FIXME:  test for data type?
 			$output = $this->validate_text( $input );
-			$this->logging( "missing validation function: $func" );
+			$this->logging( 'missing validation function: ' . $func );
 		}
 		return $output;
 	}
@@ -792,7 +792,7 @@ log_entry($controls);
   }
 
 	private function validate_font( $input ) {
-		$this->logging($input);
+		$this->logging( $input );
 		return $input; // FIXME NOW!
 	}
 
