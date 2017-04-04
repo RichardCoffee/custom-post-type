@@ -50,77 +50,95 @@ Requires PHP 5.3+
 Requires jQuery, mainly for the ready() function.  If someone makes vanilla javascript versions
 of the two js files, I would be happy to take a pull request.
 
-Works with WordPress 4.5.3
+Tested up to 4.7.3
 
-This really consists of only three files:
+You need four files out of the repository:
 ```
-  classes/custom-post.php (or classes/Post/Custom, see note)
+  classes/Post/Post.php
+  classes/Trait/Logging.php
   js/slug_noedit.js
   js/tax_nodelete.js
 ```
-Simply copy these to their respective location.  That's it.  Warning:  source code supersends any information contained within this document.
+Simply copy these to where you need them.  `Logging.php` is a dependency of
+`Post.php`.  If the js files are located anywhere other than `plugin_dir/js`
+then the js_path class property will need to be set.
 
-Note:  tcc_plugin.php has an example of an autoload function, which utilizes the classes/Post/Post.php file.  Hmmm, that file is, well, old.
+Note:  tcc_plugin.php has an example of an autoload function, which utilizes
+the classes/Post/Post.php file.  Hmmm, that file is, well, old.
 
 
 ## Usage
 
 Create your own class extending this one.
 
+### Example 1
+
 A bare minumum child class could look like this:
 ```
-class Simple_Custom_Post_Type extends RC_Custom_Post_Type {
+class Simple_Custom_Post_Type extends TCC_Post_Post {
 
-  protected $type = 'simple';
-  protected $main_blog = true;
+	protected $type = 'simple';
+	protected $main_blog = true;
 
-  public function __construct() {
-    $args = array( 'label'     => __('Simple', 'text-domain'),
-                   'plural'    => __('Simples','text-domain'));
-    parent::__construct($args);
-  }
+	public function __construct() {
+		$args = array(
+			'label'     => __( 'Simple',  'text-domain' ),
+			'plural'    => __( 'Simples', 'text-domain' )
+		);
+		parent::__construct( $args );
+	}
 
 }
 ```
+### Example 2
 
 A more complicated class might start like this:
 ```
-class Property extends RC_Custom_Post_Type {
+class Property extends TCC_Post_Post {
 
-  public function __construct() {
-    $data = array('type'       => 'property',
-                  'label'      => _x('Property','single plot of land','text-domain'),
-                  'plural'     => _x('Properties','multiple plots of land','text-domain'),
-                  'descrip'    => __('Real Estate Property','text-domain'),
-                  'menu_position' => 6,
-                  'menu_icon'  => 'dashicons-admin-home',
-                  'taxonomies' => array('category'),
-                  'templates'  => array('single'  => plugin_dir_path(__FILE__).'../page-templates/single-property.php',
-                                        'archive' => plugin_dir_path(__FILE__).'../page-templates/archive-property.php'),
-                  'slug_edit'  => false);
-    parent::__construct($data);
-    if (is_admin()) add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts'));
-    add_action( 'tcc_custom_post_'.$this->type, array( $this, 'create_taxonomies'));
-    add_action( 'add_meta_boxes_'.$this->type,  array( $this, 'add_meta_boxes'));
-    add_action( 'save_post_'.$this->type,       array( $this, 'save_meta_boxes'));
-    add_filter( 'tcc_register_post_property',   array( $this, 'register_property'));
-  }
+	public function __construct() {
+		$data = array(
+			'type'       => 'my-property',
+			'label'      => _x( 'Property', 'single plot of land', 'text-domain' ),
+			'plural'     => _x( 'Properties', 'multiple plots of land', 'text-domain' ),
+			'descrip'    => __( 'Real Estate Property', 'text-domain' ),
+			'menu_position' => 6,
+			'menu_icon'  => 'dashicons-admin-home',
+			'taxonomies' => array(
+				'category'
+			),
+			'templates'  => array(
+				'single'  => plugin_dir_path( __FILE__ ) . '../page-templates/single-property.php',
+				'archive' => plugin_dir_path( __FILE__ ) . '../page-templates/archive-property.php',
+			),
+			'slug_edit'  => false,
+		);
+		parent::__construct( $data );
+		if ( is_admin() ) {
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts') );
+		}
+		add_action( 'tcc_custom_post_' . $this->type, array( $this, 'create_taxonomies' ) );
+		add_action( 'add_meta_boxes_' . $this->type,  array( $this, 'add_meta_boxes' ) );
+		add_action( 'save_post_' . $this->type,       array( $this, 'save_meta_boxes' ) );
+		add_filter( 'tcc_register_post_property',     array( $this, 'register_property' ) );
+	}
 
-  public function register_property( $args ) {
-    $args['show_in_nav_menus'] = false;
-    return $args;
-  }
+	public function register_property( $args ) {
+		$args['show_in_nav_menus'] = false;
+		return $args;
+	}
+
 
 }
 ```
-Look in classes/custom-post.php for a list of all available arguments, and what
+Look in Post.php for a list of all available arguments, and what
 they do.  The method that registers the CPT uses only a subset of arguments
 available for the WordPress [register_post_type()](http://codex.wordpress.org/Function_Reference/register_post_type)
 function.  If you need to utilize more, there is a filter `tcc_register_post_{post-type}`
 that allows you to modify the $args array.  I seem to be adding something with
 every project, so it may have the full set at some point.  :)  I have tried to
 use what I consider reasonable defaults.  There are some examples in the
-`examples\` directory.  They may not work with the current version of `/classes/custom-post.php`.
+`examples\` directory.  They may not work with the current version of `Post.php`.
 
 ## General Guidelines
 
@@ -196,9 +214,9 @@ being deleted, append an array of the term slugs and/or names to the class prope
 All the strings the class uses are defined in the method translated_text().
 Redefine the method in the child class to change the text-domain and/or
 wording of the strings, but be sure to duplicate the array structure
-__exactly__.  Alternately, you could change the custom-post.php text
+__exactly__.  Alternately, you could change the Post.php text
  domain to your domain.  If you are comfortable with the linux command
-line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/custom-post.php`.
+line you could use this command:  `sed -i 's/tcc-custom-post/your-domain-name-here/' path-to/Post.php`.
 Or you could just do a search and replace in your favorite text editor.
 
 #### Text strings
