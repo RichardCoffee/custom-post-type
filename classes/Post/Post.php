@@ -54,6 +54,7 @@ abstract class TCC_Post_Post {
   protected $supports    = array('title','editor','author','revisions');
   protected $thumbnail   = true;        # ** boolean:  indicates support for featured image
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() TODO: possible auto call of $this->taxonomy_registration()
+  protected $trans_text  = array()      #    array: contains translation strings for labels and messages
   protected $js_path     = false;       #
   protected $slug_edit   = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $tax_list    = array();
@@ -70,6 +71,7 @@ abstract class TCC_Post_Post {
   private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
 	use TCC_Trait_Logging;
+	use TCC_Trait_Magic;
 
   protected function __construct($data) {
     $this->debug = WP_DEBUG;
@@ -142,18 +144,6 @@ abstract class TCC_Post_Post {
     unset(static::$types[$this->type]);
   }
 
-  #  http://php.net/manual/en/language.oop5.overloading.php#object.unset
-  public function __get($name) {
-    if (property_exists($this,$name)) {
-      return $this->$name; } #  Allow read access to private/protected variables
-    return null;
-  }
-
-  #  http://php.net/manual/en/language.oop5.overloading.php#object.unset
-  public function __isset($name) {
-    return isset($this->$name); #  Allow read access to private/protected variables
-  } //*/
-
 
   /**  Text functions  **/
 
@@ -166,13 +156,13 @@ abstract class TCC_Post_Post {
     return $contextual_help;
   }
 
-  protected function translate_post_count($count) {
-    return esc_html_nx('%1$s %2$s by this author','%1$s %2$s by this author',$count,'first placeholder is numeric, second should be a noun','tcc-custom-post');
-  }
+	protected function translate_post_count( $count ) {
+		return _nx( '%1$s %2$s by this author', '%1$s %2$s by this author', $count, 'first placeholder is numeric, second should be a noun', 'tcc-custom-post' );
+	}
 
 	protected function translated_text() {
 		static $text;
-		if (empty($text)) {
+		if ( empty( $text ) ) {
 			$text =  array(
 				'404'       => _x( 'No %s found',          'placeholder is plural form',   'tcc-custom-post' ),
 				'add'       => _x( 'Add New %s',           'placeheader is singular form', 'tcc-custom-post' ),

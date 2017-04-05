@@ -2,6 +2,7 @@
 
 /*
  *  https://secure.php.net/manual/en/language.oop5.magic.php
+ *  http://php.net/manual/en/language.oop5.overloading.php
  *  http://www.garfieldtech.com/blog/magical-php-call
  *  https://lornajane.net/posts/2012/9-magic-methods-in-php
  */
