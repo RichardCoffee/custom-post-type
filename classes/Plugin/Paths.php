@@ -1,5 +1,11 @@
 <?php
 
+if ( ! function_exists( 'tcc_plugin_paths' ) ) {
+	function tcc_plugin_paths() {
+		return TCC_Plugin_Paths::instance();
+	}
+}
+
 class TCC_Plugin_Paths {
 
 	protected $file;
