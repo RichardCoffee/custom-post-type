@@ -33,7 +33,7 @@ abstract class TCC_Plugin_Plugin {
 			$this->paths = TCC_Plugin_Paths::get_instance( $args );
 			$this->state = $this->state_check();
 			$this->schedule_initialize();
-			$this->load_text_domain();
+			$this->load_textdomain();
 			$this->load_update_checker();
 		} else {
 			static::$abort_construct = true;
@@ -75,7 +75,7 @@ abstract class TCC_Plugin_Plugin {
 		}
 	}
 
-	private function load_text_domain() {
+	private function load_textdomain() {
 		$args = array(
 			'text_domain' => 'Text Domain',
 			'lang_dir'    => 'Domain Path',
