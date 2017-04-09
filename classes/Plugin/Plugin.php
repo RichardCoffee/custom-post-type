@@ -6,7 +6,7 @@ abstract class TCC_Plugin_Plugin {
 	public    $dbvers   = '0';
 	protected $github   = '';    #  'https://github.com/MyGithubName/my-plugin-name/';
 	public    $paths    = null;  #  TCC_Plugin_Paths object
-	public    $plugin   = '';
+	public    $plugin   = 'plugin-slug';
 	protected $puc      = null;
 	private   $puc_vers = '4.0.3';
 	protected $setting  = '';    #  settings link
@@ -36,7 +36,7 @@ abstract class TCC_Plugin_Plugin {
 			$this->load_textdomain();
 			$this->load_update_checker();
 		} else {
-			static::$abort_construct = true;
+			static::$abort__construct = true;
 		}
 	}
 
@@ -54,11 +54,10 @@ abstract class TCC_Plugin_Plugin {
 		if ( ! function_exists( 'is_plugin_active' ) ) {
 			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		}
-		if ( is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) ) {
-			$state = 'plugin';
-		}
 		if ( file_exists( get_template_directory() . '/classes/Form/Admin.php' ) ) {
 			$state = 'theme';
+		} else if ( is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) ) {
+			$state = 'plugin';
 		}
 		return $state;
 	}
@@ -75,13 +74,37 @@ abstract class TCC_Plugin_Plugin {
 		}
 	}
 
+	#	https://github.com/schemapress/Schema
 	private function load_textdomain() {
 		$args = array(
 			'text_domain' => 'Text Domain',
 			'lang_dir'    => 'Domain Path',
 		);
 		$data = get_file_data( $this->paths->file, $args );
-		load_plugin_textdomain( $data['text_domain'], false, $this->paths->dir . $data['lang_dir'] );
+		if ( $data && ( ! empty( $data['text_domain'] ) ) ) {
+			list( $lang_dir, $mofile_local, $mofile_global ) = $this->determine_textdomain_filenames( $data );
+			if ( file_exists( $mofile_global ) ) {
+				load_textdomain( $data['text_domain'], $mofile_global );
+			} else if ( file_exists( $mofile_local ) ) {
+				load_textdomain( $data['text_domain'], $mofile_local );
+			} else {
+				load_plugin_textdomain( $data['text_domain'], false, $lang_dir );
+			}
+		}
+	}
+
+	private function determine_textdomain_filenames( $data ) {
+		$lang_def = ( empty( $data['lang_dir'] ) ) ? '/languages' : $data['lang_dir'];
+		#	$lang_dir
+		$files[]  = trailingslashit( $this->paths->dir ) . $lang_def;
+		$locale   = apply_filters( 'plugin_locale',  get_locale(), $data['text_domain'] );
+		$mofile   = sprintf( '%1$s-%2$s.mo', $data['text_domain'], $locale );
+		#	$mofile_local
+		$files[]  = trailingslashit( $files[0] ) . $mofile;
+		#	$mofile_global
+		$files[]  = trailingslashit( trailingslashit( WP_LANG_DIR ) . $data['text_domain'] ) . $mofile;
+		$this->logging( $files );
+		return $files;
 	}
 
 	public function get_stylesheet( $file = 'tcc-plugin.css', $path = '/' ) {
