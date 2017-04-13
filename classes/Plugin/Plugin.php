@@ -8,7 +8,7 @@ abstract class TCC_Plugin_Plugin {
 	public    $paths    = null;  #  TCC_Plugin_Paths object
 	public    $plugin   = 'plugin-slug';
 	protected $puc      = null;
-	private   $puc_vers = '4.0.3';
+	private   $puc_vers = '4.1';
 	protected $setting  = '';    #  settings link
 	protected $state    = '';
 	protected $tab      = 'about';
@@ -83,9 +83,9 @@ abstract class TCC_Plugin_Plugin {
 		$data = get_file_data( $this->paths->file, $args );
 		if ( $data && ( ! empty( $data['text_domain'] ) ) ) {
 			list( $lang_dir, $mofile_local, $mofile_global ) = $this->determine_textdomain_filenames( $data );
-			if ( file_exists( $mofile_global ) ) {
+			if ( is_readable( $mofile_global ) ) {
 				load_textdomain( $data['text_domain'], $mofile_global );
-			} else if ( file_exists( $mofile_local ) ) {
+			} else if ( is_readable( $mofile_local ) ) {
 				load_textdomain( $data['text_domain'], $mofile_local );
 			} else {
 				load_plugin_textdomain( $data['text_domain'], false, $lang_dir );
@@ -100,22 +100,15 @@ abstract class TCC_Plugin_Plugin {
 		$locale   = apply_filters( 'plugin_locale',  get_locale(), $data['text_domain'] );
 		$mofile   = sprintf( '%1$s-%2$s.mo', $data['text_domain'], $locale );
 		#	$mofile_local
-		$files[]  = trailingslashit( $files[0] ) . $mofile;
+		$files[]  = $files[0] . '/' . $mofile;
 		#	$mofile_global
-		$files[]  = trailingslashit( trailingslashit( WP_LANG_DIR ) . $data['text_domain'] ) . $mofile;
+		$files[]  = WP_LANG_DIR . '/plugins/' . $data['text_domain'] . '/' . $mofile;
 		$this->logging( $files );
 		return $files;
 	}
 
-	public function get_stylesheet( $file = 'tcc-plugin.css', $path = '/' ) {
-		if ( file_exists( get_stylesheet_directory() . $path . $file ) ) {
-			$stylesheet = get_stylesheet_directory_uri() . $path . $file;
-		} else if ( file_exists( get_template_directory() . $path . $file ) ) {
-			$stylesheet = get_template_directory_uri() . $path . $file;
-		} else {
-			$stylesheet = $this->paths->get_plugin_file_path( $file );
-		}
-		return $stylesheet;
+	public function get_stylesheet( $file = 'css/tcc-plugin.css', $path = '/' ) {
+		return $this->paths->get_plugin_file_path( $file );
 	}
 
 	/*

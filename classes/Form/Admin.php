@@ -701,7 +701,7 @@ log_entry($controls);
 		$basic = explode( '[', $data['name'] );
 		$index = substr( $basic[1], 0, -1 ) . '_color';
 		$data['name']  = $basic[0] . '[' . $index . ']';
-		$data['value'] = ( isset( $this->form_opts[ $index ] ) ) ? $this->form_opts[$index] : $data['layout']['color'];
+		$data['value'] = ( isset( $this->form_opts[ $index ] ) ) ? $this->form_opts[ $index ] : $data['layout']['color'];
 		$data['layout']['default'] = $data['layout']['color'];
 		$data['layout']['text']    = '';
 		$this->render_colorpicker( $data );
