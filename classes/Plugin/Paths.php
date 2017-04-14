@@ -10,8 +10,8 @@ class TCC_Plugin_Paths {
 
 	protected $file;
 	protected $dir;
-	protected $pages = '/page-templates/';
-	protected $parts = '/template-parts/';
+	protected $pages = 'page-templates/';
+	protected $parts = 'template-parts/';
 	protected $url;
 	protected $version;
 
@@ -28,7 +28,7 @@ class TCC_Plugin_Paths {
 
 	public function add_plugin_template( $slug, $text ) {
 		$file = $this->dir . 'vendors/pagetemplater.php';
-		if ( file_exists( $file ) ) {
+		if ( is_readable( $file ) ) {
 			require_once( $file );
 			$pager = PageTemplater::get_instance();
 			$pager->add_project_template( $slug, $text, $this->dir );
@@ -38,9 +38,9 @@ class TCC_Plugin_Paths {
 	public function get_plugin_file_path( $file ) {
 		$file_path   = false;
 		$theme_check = get_theme_file_path( $file );
-		if ( $theme_check && file_exists( $theme_check ) ) {
+		if ( $theme_check && is_readable( $theme_check ) ) {
 			$file_path = $theme_check;
-		} else if ( file_exists( $this->dir . $file ) ) {
+		} else if ( is_readable( $this->dir . $file ) ) {
 			$file_path = $this->dir . $file;
 		}
 		return $file_path;
@@ -49,7 +49,7 @@ class TCC_Plugin_Paths {
 	public function get_plugin_file_uri( $file ) {
 		$file_uri    = false;
 		$theme_check = get_theme_file_path( $file );
-		if ( $theme_check && file_exists( $theme_check ) ) {
+		if ( $theme_check && is_readable( $theme_check ) ) {
 			$file_uri = get_theme_file_uri( $file );
 		} else {
 			$file_uri = plugins_url( $file, $this->file );

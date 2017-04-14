@@ -37,13 +37,13 @@ function tcc_plugin_class_loader( $class ) {
 spl_autoload_register( 'tcc_plugin_class_loader' );
 
 if (!function_exists('tcc_options_check')) {
-  function tcc_options_check() { // FIXME: what exactly is being acomplished here?  Is there another way to do this?
-    $state = 'Stand Alone';
-    if (!function_exists('is_plugin_active')) { include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); }
-    if (is_plugin_active('tcc-theme-options/tcc-theme-options.php'))         { $state = 'Plugin External'; }
-    if (file_exists(get_template_directory().'/classes/admin-form.php'))     { $state = 'Theme Internal'; }
-    return $state;
-  }
+	function tcc_options_check() { // FIXME: what exactly is being acomplished here?  Is there another way to do this?
+		$state = 'Stand Alone';
+		if (!function_exists('is_plugin_active')) { include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); }
+		if (is_plugin_active('tcc-theme-options/tcc-theme-options.php'))         { $state = 'Plugin External'; }
+		if (is_readable(get_template_directory().'/classes/admin-form.php'))     { $state = 'Theme Internal'; }
+		return $state;
+	}
 }
 
 function tcc_plugin_state_check() {

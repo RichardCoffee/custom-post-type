@@ -54,7 +54,7 @@ abstract class TCC_Post_Post {
   protected $supports    = array('title','editor','author','revisions');
   protected $thumbnail   = true;        # ** boolean:  indicates support for featured image
   protected $taxonomies  = array('post_tag','category'); # ** passed to register_post_type() TODO: possible auto call of $this->taxonomy_registration()
-  protected $trans_text  = array()      #    array: contains translation strings for labels and messages
+  protected $trans_text  = array();     #    array: contains translation strings for labels and messages
   protected $js_path     = false;       #
   protected $slug_edit   = true;        # ** whether to allow editing of taxonomy slugs in admin screen
   protected $tax_list    = array();
@@ -731,25 +731,28 @@ abstract class TCC_Post_Post {
     return $template;
   } //*/
 
-  private function locate_template($template,$slug) {
-    if (isset($this->templates[$slug])) {
-      $template = $this->templates[$slug];
-    } elseif (($slug==='archive') && isset($this->has_archive) && is_string($this->has_archive)) {
-      $template = $this->has_archive;  #  DEPRECATED - do not use has_archive - use $this->templates['archive'] instead
-    } elseif (isset($this->templates['folders'])) {
-      foreach((array)$this->templates['folders'] as $folder) {
-        $test = $folder."/$slug-{$this->type}.php";
-        if (file_exists($test)) {
-          $template = $test;
-          break;
-        }
-      }
-    } else {
-      $maybe = locate_template(array("$slug-{$this->type}.php"));
-      if ($maybe) { $template = $maybe; }
-    }
-    return $template;
-  }
+	private function locate_template( $template, $slug ) {
+		$testable = $slug . '-' . $this->type . '.php';
+		if ( isset( $this->templates[ $slug ] ) ) {
+			$template = $this->templates[ $slug ];
+		} elseif ( ( $slug === 'archive' ) && isset( $this->has_archive ) && is_string( $this->has_archive ) ) {
+			$template = $this->has_archive;  #  DEPRECATED - do not use has_archive - use $this->templates['archive'] instead
+		} elseif ( isset( $this->templates['folders'] ) ) {
+			foreach( (array)$this->templates['folders'] as $folder ) {
+				$test = $folder . '/' . $testable;
+				if ( is_readable( $test ) ) {
+					$template = $test;
+					break;
+				}
+			}
+		} else {
+			$maybe = locate_template(array( $testable ) );
+			if ( $maybe ) {
+				$template = $maybe;
+			}
+		}
+		return $template;
+	}
 
 
   /**  Alternate Template filters  **/
