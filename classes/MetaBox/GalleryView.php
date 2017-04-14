@@ -18,11 +18,11 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 
 	public function register_galleryview() {
 		$version = $this->version();
-		wp_register_style( 'tcc-gv-css',          get_theme_file_uri( 'vendors/galleryview/css/jquery.galleryview-3.0-dev.css' ), null, '3.0' );
+		wp_register_style( 'tcc-gv-css',          get_theme_file_uri( 'vendor/galleryview/css/jquery.galleryview-3.0-dev.css' ), null, '3.0' );
 		wp_register_style( 'tcc-galleryview-css', get_theme_file_uri( 'css/galleryview.css' ), array( 'tcc-gv-css' ), $version );
-		wp_register_script('tcc-gv-js',           get_theme_file_uri( 'vendors/galleryview/js/jquery.galleryview-3.0-dev.js' ), array( 'jquery' ), '3.0', true );
-		wp_register_script('tcc-gv-easing',       get_theme_file_uri( 'vendors/galleryview/js/jquery.easing.1.3.js' ), array( 'jquery','tcc-gv-js' ), '1.3', true );
-		wp_register_script('tcc-gv-timers',       get_theme_file_uri( 'vendors/galleryview/js/jquery.timers-1.2.js' ), array( 'jquery','tcc-gv-js' ), '1.2', true );
+		wp_register_script('tcc-gv-js',           get_theme_file_uri( 'vendor/galleryview/js/jquery.galleryview-3.0-dev.js' ), array( 'jquery' ), '3.0', true );
+		wp_register_script('tcc-gv-easing',       get_theme_file_uri( 'vendor/galleryview/js/jquery.easing.1.3.js' ), array( 'jquery','tcc-gv-js' ), '1.3', true );
+		wp_register_script('tcc-gv-timers',       get_theme_file_uri( 'vendor/galleryview/js/jquery.timers-1.2.js' ), array( 'jquery','tcc-gv-js' ), '1.2', true );
 		wp_register_script('tcc-galleryview-js',  get_theme_file_uri( 'js/galleryview.js' ), array( 'tcc-gv-easing', 'tcc-gv-timers' ), $version, true );
 		$this->enqueue_galleryview();
 	}
