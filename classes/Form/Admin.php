@@ -15,6 +15,7 @@ abstract class TCC_Form_Admin {
 	protected $form_opts =  array();
 	protected $form_text =  array();
 	protected $hook_suffix;
+	protected $library;
 	protected $options;
 	protected $prefix    = 'tcc_options_';
 	protected $register;
@@ -30,6 +31,7 @@ abstract class TCC_Form_Admin {
 	public function description() { return ''; }
 
 	protected function __construct() {
+		$this->library = library();
 		$this->screen_type();
 		add_action( 'admin_init', array( $this, 'load_form_page' ) );
 	}
@@ -38,17 +40,14 @@ abstract class TCC_Form_Admin {
 		global $plugin_page;
 		if ( ( $plugin_page === $this->slug ) || ( ( $refer = wp_get_referer() ) && ( strpos( $refer, $this->slug ) ) ) ) {
 			if ( $this->type === 'tabbed' ) {
-				if ( defined( 'TCC_TAB' ) ) {
-					$this->tab = TCC_TAB;
-				}
-				if ( $trans = get_transient( 'TCC_TAB' ) ) {
-					$this->tab = $trans;
-				}
-				if ( isset( $_GET['tab'] ) )  {
-					$this->tab = sanitize_key( $_GET['tab'] );
-				}
 				if ( isset( $_POST['tab'] ) ) {
 					$this->tab = sanitize_key( $_POST['tab'] );
+				} else if ( isset( $_GET['tab'] ) )  {
+					$this->tab = sanitize_key( $_GET['tab'] );
+				} else if ( $trans = get_transient( 'TCC_TAB' ) ) {
+					$this->tab = $trans;
+				} else if ( defined( 'TCC_TAB' ) ) {
+					$this->tab = TCC_TAB;
 				}
 				set_transient( 'TCC_TAB', $this->tab, ( DAY_IN_SECONDS * 5 ) );
 			}
@@ -552,25 +551,31 @@ log_entry($controls);
 	private function render_radio($data) {
 		extract( $data );	#	associative array: keys are 'ID', 'value', 'layout', 'name'
 		if ( empty( $layout['source'] ) ) return;
-		$uniq = uniqid();
+		$uniq        = uniqid();
 		$tooltip     = ( isset( $layout['help'] ) )    ? $layout['help']    : '';
 		$before_text = ( isset( $layout['text'] ) )    ? $layout['text']    : '';
 		$after_text  = ( isset( $layout['postext'] ) ) ? $layout['postext'] : '';
-		$onchange    = ( isset( $layout['change'] ) )  ? $layout['change']  : ''; ?>
+		$radio_attrs = array(
+			'type' => 'radio',
+			'name' => $name,
+			'onchange' => ( isset( $layout['change'] ) ) ? $layout['change']  : '',
+			'aria-describedby' => $uniq,
+		); ?>
 		<div title="<?php echo esc_attr( $tooltip ); ?>">
 			<div id="<?php echo $uniq; ?>">
 				<?php echo esc_html( $before_text ); ?>
 			</div><?php
-			foreach( $layout['source'] as $key => $text ) { ?>
+			foreach( $layout['source'] as $key => $text ) {
+				$radio_attrs['value'] = $key; ?>
 				<div>
 					<label>
-						<input type="radio"
-						       name="<?php echo esc_attr( $name ) ; ?>"
-						       value="<?php echo esc_html( $key ); ?>"
-						       <?php checked( $value, $key ); ?>
-						       onchange="<?php echo esc_attr( $onchange ); ?>"
-						       aria-describedby="<?php echo $uniq; ?>"><?php
-						echo esc_html( $text );
+						<input <?php $this->library->apply_attrs( $radio_attrs ); ?> <?php checked( $value, $key ); ?>><?php
+						if ( isset( $layout['src-html'] ) ) {
+							// FIXME:  this is here so I can display font awesome icons - it needs to be done differently
+							echo $text;
+						} else {
+							echo esc_html( $text );
+						}
 						if ( isset( $layout['extra_html'][ $key ] ) ) {
 							echo $layout['extra_html'][ $key ];
 						} ?>

@@ -43,7 +43,8 @@ abstract class TCC_Plugin_Plugin {
 	public function add_actions() { }
 
 	public function add_filters() {
-		add_filter( 'plugin_action_links', array( $this, 'settings_link' ), 10, 2 );
+		add_filter( 'plugin_action_links', array( $this, 'settings_link' ), 10, 4 );
+		add_filter( 'network_admin_plugin_action_links', array( $this, 'settings_link' ), 10, 4 );
 	} //*/
 
 
@@ -116,13 +117,14 @@ abstract class TCC_Plugin_Plugin {
 	 *  Adds 'Settings' option to plugin page entry
 	 *
 	 *  sources:  http://code.tutsplus.com/tutorials/integrating-with-wordpress-ui-the-basics--wp-26713
+	 *            https://hugh.blog/2012/07/27/wordpress-add-plugin-settings-link-to-plugins-page/
 	 */
-	public function settings_link( $links, $file ) {
+	public function settings_link( $links, $file, $data, $context ) {
 		if ( strpos( $file, $this->plugin ) > -1 ) {
 			unset( $links['edit'] );
-			if ( is_plugin_active( $file ) ) { // NOTE:  how would this ever get run if the plugin is not active?  why do we need this check?
+			if ( is_plugin_active( $file ) ) {
 				$url   = ( $this->setting ) ? $this->setting : admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab );
-				$links['settings'] = sprintf( '<a href="%1$s"> %2$s </a>', $url, esc_html__( 'Settings', 'tcc-plugin' ) );
+				$links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'tcc-plugin' ) );
 			}
 		}
 		return $links;
