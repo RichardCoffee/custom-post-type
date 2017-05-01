@@ -157,52 +157,52 @@ abstract class TCC_Post_Post {
   }
 
 	protected function translate_post_count( $count ) {
-		return _nx( '%1$s %2$s by this author', '%1$s %2$s by this author', $count, 'first placeholder is numeric, second should be a noun', 'tcc-custom-post' );
+		return _nx( '%1$s %2$s by this author', '%1$s %2$s by this author', $count, 'first placeholder is numeric, second should be a noun', 'tcc-plugin' );
 	}
 
 	protected function translated_text() {
 		static $text;
 		if ( empty( $text ) ) {
 			$text =  array(
-				'404'       => _x( 'No %s found',          'placeholder is plural form',   'tcc-custom-post' ),
-				'add'       => _x( 'Add New %s',           'placeheader is singular form', 'tcc-custom-post' ),
-				'add_rem'   => _x( 'Add or remove $s',     'placeholder is plural form',   'tcc-custom-post' ),
-				'all'       => _x( 'All %s',               'placeholder is plural form',   'tcc-custom-post' ),
-				'archive'   => _x( '%s Archive',           'placeholder is singular form', 'tcc-custom-post' ),
-				'attributes'=> _x( '%s Attributes',        'placeholder is singular form', 'tcc-custom-post' ),
-				'commas'    => _x( 'Separate %s with commas', 'placeholder is plural form','tcc-custom-post' ),
-				'edit_p'    => _x( 'Edit %s',              'placeholder is plural form',   'tcc-custom-post' ),
-				'edit_s'    => _x( 'Edit %s',              'placeholder is singular form', 'tcc-custom-post' ),
-				'feature'   => _x( '%s Image',             'placeholder is singular form', 'tcc-custom-post' ),
-				'feat_rem'  => _x( 'Remove %s image',      'placeholder is singular form', 'tcc-custom-post' ),
-				'feat_set'  => _x( 'Set %s image',         'placeholder is singular form', 'tcc-custom-post' ),
-				'feat_use'  => _x( 'Use as %s image',      'placeholder is singular form', 'tcc-custom-post' ),
-				'filter'    => _x( 'Filter %s list',       'placeholder is plural form',   'tcc-custom-post' ),
-				'insert'    => _x( 'Insert into %s',       'placeholder is singular form', 'tcc-custom-post' ),
-				'list'      => _x( '%s list',              'placeholder is singular form', 'tcc-custom-post' ),
-				'list_nav'  => _x( '%s list navigation',   'placeholder is plural form',   'tcc-custom-post' ),
-				'new'       => _x( 'New %s',               'placeholder is singular form', 'tcc-custom-post' ),
-				'none'      => _x( 'No %s',                'placeholder is plural form',   'tcc-custom-post' ),
-				'parent'    => _x( 'Parent %s',            'placeholder is singular form', 'tcc-custom-post' ),
-				'popular'   => _x( 'Popular %s',           'placeholder is plural form',   'tcc-custom-post' ),
-				'search'    => _x( 'Search %s',            'placeholder is plural form',   'tcc-custom-post' ),
-				'trash'     => _x( 'No %s found in trash', 'placeholder is plural form',   'tcc-custom-post' ),
-				'update'    => _x( 'Update %s',            'placeholder is singular form', 'tcc-custom-post' ),
-				'upload'    => _x( 'Uploaded to this %s',  'placeholder is singular form', 'tcc-custom-post' ),
-				'used'      => _x( 'Choose from the most used %s', 'placeholder is plural form', 'tcc-custom-post' ),
-				'view_p'    => _x( 'View %s',              'placeholder is plural form',   'tcc-custom-post' ),
-				'view_s'    => _x( 'View %s',              'placeholder is singular form', 'tcc-custom-post' ),
+				'404'       => _x( 'No %s found',          'placeholder is plural form',   'tcc-plugin' ),
+				'add'       => _x( 'Add New %s',           'placeheader is singular form', 'tcc-plugin' ),
+				'add_rem'   => _x( 'Add or remove $s',     'placeholder is plural form',   'tcc-plugin' ),
+				'all'       => _x( 'All %s',               'placeholder is plural form',   'tcc-plugin' ),
+				'archive'   => _x( '%s Archive',           'placeholder is singular form', 'tcc-plugin' ),
+				'attributes'=> _x( '%s Attributes',        'placeholder is singular form', 'tcc-plugin' ),
+				'commas'    => _x( 'Separate %s with commas', 'placeholder is plural form','tcc-plugin' ),
+				'edit_p'    => _x( 'Edit %s',              'placeholder is plural form',   'tcc-plugin' ),
+				'edit_s'    => _x( 'Edit %s',              'placeholder is singular form', 'tcc-plugin' ),
+				'feature'   => _x( '%s Image',             'placeholder is singular form', 'tcc-plugin' ),
+				'feat_rem'  => _x( 'Remove %s image',      'placeholder is singular form', 'tcc-plugin' ),
+				'feat_set'  => _x( 'Set %s image',         'placeholder is singular form', 'tcc-plugin' ),
+				'feat_use'  => _x( 'Use as %s image',      'placeholder is singular form', 'tcc-plugin' ),
+				'filter'    => _x( 'Filter %s list',       'placeholder is plural form',   'tcc-plugin' ),
+				'insert'    => _x( 'Insert into %s',       'placeholder is singular form', 'tcc-plugin' ),
+				'list'      => _x( '%s list',              'placeholder is singular form', 'tcc-plugin' ),
+				'list_nav'  => _x( '%s list navigation',   'placeholder is plural form',   'tcc-plugin' ),
+				'new'       => _x( 'New %s',               'placeholder is singular form', 'tcc-plugin' ),
+				'none'      => _x( 'No %s',                'placeholder is plural form',   'tcc-plugin' ),
+				'parent'    => _x( 'Parent %s',            'placeholder is singular form', 'tcc-plugin' ),
+				'popular'   => _x( 'Popular %s',           'placeholder is plural form',   'tcc-plugin' ),
+				'search'    => _x( 'Search %s',            'placeholder is plural form',   'tcc-plugin' ),
+				'trash'     => _x( 'No %s found in trash', 'placeholder is plural form',   'tcc-plugin' ),
+				'update'    => _x( 'Update %s',            'placeholder is singular form', 'tcc-plugin' ),
+				'upload'    => _x( 'Uploaded to this %s',  'placeholder is singular form', 'tcc-plugin' ),
+				'used'      => _x( 'Choose from the most used %s', 'placeholder is plural form', 'tcc-plugin' ),
+				'view_p'    => _x( 'View %s',              'placeholder is plural form',   'tcc-plugin' ),
+				'view_s'    => _x( 'View %s',              'placeholder is singular form', 'tcc-plugin' ),
 				'messages'  => array(
-					'custom_u' => __( 'Custom field updated.', 'tcc-custom-post'),
-					'custom_d' => __( 'Custom field deleted.', 'tcc-custom-post'),
-					'draft'    => _x( '%s draft updated.', 'placeholder is singular form', 'tcc-custom-post' ),
-					'preview'  => _x( 'Preview %s',        'placeholder is singular form', 'tcc-custom-post' ),
-					'publish'  => _x( '%s published.',     'placeholder is singular form', 'tcc-custom-post' ),
-					'revision' => _x( '%1$s restored to revision from %2$s', '1: label in singular form, 2: date and time of the revision', 'tcc-custom-post' ),
-					'saved'    => _x( '%s saved.',         'placeholder is singular form', 'tcc-custom-post' ),
-					'schedule' => _x( '%1$s publication scheduled for %2$s', '1: label in singular form, 2: formatted date string', 'tcc-custom-post' ),
-					'submit'   => _x( '%s submitted.',     'placeholder is singular form', 'tcc-custom-post' ),
-					'update'   => _x( '%s updated.',       'placeholder is singular form', 'tcc-custom-post' )
+					'custom_u' => __( 'Custom field updated.', 'tcc-plugin'),
+					'custom_d' => __( 'Custom field deleted.', 'tcc-plugin'),
+					'draft'    => _x( '%s draft updated.', 'placeholder is singular form', 'tcc-plugin' ),
+					'preview'  => _x( 'Preview %s',        'placeholder is singular form', 'tcc-plugin' ),
+					'publish'  => _x( '%s published.',     'placeholder is singular form', 'tcc-plugin' ),
+					'revision' => _x( '%1$s restored to revision from %2$s', '1: label in singular form, 2: date and time of the revision', 'tcc-plugin' ),
+					'saved'    => _x( '%s saved.',         'placeholder is singular form', 'tcc-plugin' ),
+					'schedule' => _x( '%1$s publication scheduled for %2$s', '1: label in singular form, 2: formatted date string', 'tcc-plugin' ),
+					'submit'   => _x( '%s submitted.',     'placeholder is singular form', 'tcc-plugin' ),
+					'update'   => _x( '%s updated.',       'placeholder is singular form', 'tcc-plugin' )
 				)
 			);
 			$text = apply_filters( "tcc_translated_text_{$this->type}", $text );
