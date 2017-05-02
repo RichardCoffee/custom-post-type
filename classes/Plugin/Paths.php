@@ -19,9 +19,13 @@ class TCC_Plugin_Paths {
 	use TCC_Trait_ParseArgs;
 	use TCC_Trait_Singleton;
 
-	protected function __construct( $args ) {
-		$this->parse_args( $args );
-		$this->dir = trailingslashit( $this->dir );
+	protected function __construct( $args = array() ) {
+		if ( isset( $args['file'] ) ) {
+			$this->parse_args( $args );
+			$this->dir = trailingslashit( $this->dir );
+		} else {
+			static::$abort__construct = true;
+		}
 	}
 
 	/**  Template functions  **/

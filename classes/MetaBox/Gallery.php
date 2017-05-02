@@ -22,11 +22,11 @@ class TCC_MetaBox_Gallery extends TCC_MetaBox_MetaBox {
 
 
 	public function __construct( $args = array() ) {
-		$this->button   = esc_html__( 'Assign/Upload Gallery Image', 'tcc-fluid' );
-		$this->confirm  = esc_html__( 'Remove this image?', 'tcc-fluid' );
-		$this->m_button = esc_html__( 'Assign Image', 'tcc-fluid' );
-		$this->m_title  = esc_html__( 'Assign/Upload Gallery Image', 'tcc-fluid' );
-		$this->title    = esc_html__( 'Image Gallery', 'tcc-fluid' );
+		$this->button   = esc_html__( 'Assign/Upload Gallery Image', 'tcc-plugin' );
+		$this->confirm  = esc_html__( 'Remove this image?',          'tcc-plugin' );
+		$this->m_button = esc_html__( 'Assign Image',                'tcc-plugin' );
+		$this->m_title  = esc_html__( 'Assign/Upload Gallery Image', 'tcc-plugin' );
+		$this->title    = esc_html__( 'Image Gallery',               'tcc-plugin' );
 		parent::__construct( $args );
 		$this->div_id   = "{$this->type}-gallery";
 		$this->nonce    = "{$this->type}_gallery_nonce";

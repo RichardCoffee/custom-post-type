@@ -26,53 +26,67 @@ class TCC_Role_Agent {
 	}
 
 	public function login_prefix( $input ) {
-		$title  = _x( 'Agent', 'noun - user role, prefixed to login placeholder string', 'tcc-fluid' );
-		$format = _x( '%1$s %2$s', '1 - noun serving as an adjective, 2 - primary noun', 'tcc-fluid' );
+		$title  = _x( 'Agent', 'noun - user role, prefixed to login placeholder string', 'tcc-plugin' );
+		$format = _x( '%1$s %2$s', '1 - noun serving as an adjective, 2 - primary noun', 'tcc-plugin' );
 		return sprintf( $format, $title, $input );
 	}
 
 
-  /**  Agent field info  **/
+	/**  Agent field info  **/
 
-  private function get_field_titles() {
-    return array('job_title'      => __('Job Title', 'tcc-fluid'),
-                 'education'      => __('Education One', 'tcc-fluid'),
-                 'edu_two'        => __('Education Two', 'tcc-fluid'),
-                 'edu_three'      => __('Education Three', 'tcc-fluid'),
-                 #  TODO:  allow for variable number
-                 'certifications' => __('Certifications / Affiliations', 'tcc-fluid'),
-                 'certi_two'      => __('Certs / Affiliations Two', 'tcc-fluid'),
-                 'certi_three'    => __('Certs / Affiliations Three', 'tcc-fluid'),
-                 #  TODO:  allow for variable number
-                 'languages'      => __('Language One', 'tcc-fluid'),
-                 'lang_two'       => __('Language Two', 'tcc-fluid'),
-                 'lang_three'     => __('Language Three', 'tcc-fluid'),
-                 'telephone'      => __('Telephone','tcc-fluid'),
-                 'facebook'       => __('Facebook username', 'tcc-fluid'),
-                 'twitter'        => __('Twitter handle',  'tcc-fluid'),
-                 'linkedin'       => __('LinkedIN Profile', 'tcc-fluid'),
-                 'website_image'  => __('Website Image', 'tcc-fluid'));
-  }
+	private function get_field_titles() {
+		return array(
+			'job_title'      => __( 'Job Title', 'tcc-plugin' ),
+			'education'      => __( 'Education One', 'tcc-plugin' ),
+			'edu_two'        => __( 'Education Two', 'tcc-plugin' ),
+			'edu_three'      => __( 'Education Three', 'tcc-plugin' ),
+			#  TODO:  allow for variable number
+			'certifications' => __( 'Certifications / Affiliations', 'tcc-plugin' ),
+			'certi_two'      => __( 'Certs / Affiliations Two', 'tcc-plugin' ),
+			'certi_three'    => __( 'Certs / Affiliations Three', 'tcc-plugin' ),
+			#  TODO:  allow for variable number
+			'languages'      => __( 'Language One', 'tcc-plugin' ),
+			'lang_two'       => __( 'Language Two', 'tcc-plugin' ),
+			'lang_three'     => __( 'Language Three', 'tcc-plugin' ),
+			'telephone'      => __( 'Telephone', 'tcc-plugin' ),
+			'facebook'       => __( 'Facebook username', 'tcc-plugin' ),
+			'twitter'        => __( 'Twitter handle',  'tcc-plugin' ),
+			'linkedin'       => __( 'LinkedIN Profile', 'tcc-plugin' ),
+			'website_image'  => __( 'Website Image', 'tcc-plugin' ),
+		);
+	}
 
 
   /**  Agent template  **/
 
-  public function agent_rewrite_rules($current) {
-    $rules = array(array('regex'    => 'agent/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$',
-                         'redirect' => 'index.php?author_name=$matches[1]&agent=true&feed=$matches[2]'),
-                   array('regex'    => 'agent/([^/]+)/(feed|rdf|rss|rss2|atom)/?$',
-                         'redirect' => 'index.php?author_name=$matches[1]&agent=true&feed=$matches[2]'),
-                   array('regex'    => 'agent/([^/]+)/embed/?$',
-                         'redirect' => 'index.php?author_name=$matches[1]&embed=true&agent=true'),
-                   array('regex'    => 'agent/([^/]+)/page/?([0-9]{1,})/?$',
-                         'redirect' => 'index.php?author_name=$matches[1]&paged=$matches[2]&agent=true'),
-                   array('regex'    => 'agent/([^/]+)/?$',
-                         'redirect' => 'index.php?author_name=$matches[1]&agent=true'));
-    foreach($rules as $rule) {
-      $current[$rule['regex']] = $rule['redirect'];
-    }
-    return $current;
-  }
+	public function agent_rewrite_rules( $current ) {
+		$rules = array(
+			array(
+				'regex'    => 'agent/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$',
+				'redirect' => 'index.php?author_name=$matches[1]&agent=true&feed=$matches[2]',
+			),
+			array(
+				'regex'    => 'agent/([^/]+)/(feed|rdf|rss|rss2|atom)/?$',
+				'redirect' => 'index.php?author_name=$matches[1]&agent=true&feed=$matches[2]',
+			),
+			array(
+				'regex'    => 'agent/([^/]+)/embed/?$',
+				'redirect' => 'index.php?author_name=$matches[1]&embed=true&agent=true',
+			),
+			array(
+				'regex'    => 'agent/([^/]+)/page/?([0-9]{1,})/?$',
+				'redirect' => 'index.php?author_name=$matches[1]&paged=$matches[2]&agent=true',
+			),
+			array(
+				'regex'    => 'agent/([^/]+)/?$',
+				'redirect' => 'index.php?author_name=$matches[1]&agent=true',
+			),
+		);
+		foreach( $rules as $rule ) {
+			$current[ $rule['regex'] ] = $rule['redirect'];
+		}
+		return $current;
+	}
 
   public function query_vars($vars) {
     $vars[] = 'agent';
@@ -126,10 +140,18 @@ class TCC_Role_Agent {
     }
   }
 
-  private function agent_image($user) {
+	protected function agent_image_text() {
+		return array(
+			'assign' => __('Assign Image','tcc-plugin'),
+			'upload' => __('Assign/Upload Image','tcc-plugin'),
+		);
+	}
+
+  protected function agent_image($user) {
     #tcc_log_entry('profile user',$user,"user ID: {$user->ID}",get_user_meta($user->ID));
     if (in_array('agent',$user->roles)) {
       $image = get_user_meta($user->ID,'website_image');
+		$text  = $this->agent_image_text();
       $url   = ($image) ? $image[0] : ''; ?>
       <table class="form-table">
         <tr>
@@ -137,8 +159,8 @@ class TCC_Role_Agent {
             <label for="website_image"><?php echo $this->fields['website_image']; ?></label>
           </th>
           <td>
-            <div data-title='<?php _e('Assign/Upload Image','tcc-fluid'); ?>' data-button='<?php _e('Assign Image','tcc-fluid'); ?>'>
-              <button class='tcc-image'><?php _e('Assign Image','tcc-fluid'); ?></button>
+            <div data-title='<?php echo esc_attr( $text['upload'] ); ?>' data-button='<?php echo esc_attr( $text['assign'] ); ?>'>
+              <button class='tcc-image'><?php echo esc_attr( $text['assign'] ); ?></button>
               <input type='hidden' name='website_image' value='<?php echo esc_url($url); ?>' />
               <div>
                 <img class='tcc-image-size' src='<?php echo esc_url($url); ?>'>

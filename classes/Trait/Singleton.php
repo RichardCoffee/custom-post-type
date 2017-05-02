@@ -3,6 +3,8 @@
 /*
  *  https://secure.php.net/manual/en/language.oop5.magic.php
  *  https://lornajane.net/posts/2012/9-magic-methods-in-php
+ *
+ *  Notes:  Any class that uses this trait must be sterile.
  */
 
 trait TCC_Trait_Singleton {
@@ -31,19 +33,19 @@ trait TCC_Trait_Singleton {
 	}
 
 	public function __clone() {
-		$message = __( 'This class can not be cloned.' , 'tcc-fluid' ) . ' * ' . debug_calling_function();
+		$message = __( 'This class can not be cloned.' , 'tcc-plugin' ) . ' * ' . debug_calling_function();
 		$version = ( isset( $this->version ) ) ? $this->version : '0.0.0';
 		_doing_it_wrong( __FUNCTION__, esc_html( $message ), esc_html( $version ) );
 	}
 
 	public function __sleep() {
-		$message = __( 'This class can not be serialized.' , 'tcc-fluid' ) . ' * ' . debug_calling_function();
+		$message = __( 'This class can not be serialized.' , 'tcc-plugin' ) . ' * ' . debug_calling_function();
 		$version = ( isset( $this->version ) ) ? $this->version : '0.0.0';
 		_doing_it_wrong( __FUNCTION__, esc_html( $message ), esc_html( $version ) );
 	}
 
 	public function __wakeup() {
-		$message = __( 'This class can not be unserialized.' , 'tcc-fluid' ) . ' * ' . debug_calling_function();
+		$message = __( 'This class can not be unserialized.' , 'tcc-plugin' ) . ' * ' . debug_calling_function();
 		$version = ( isset( $this->version ) ) ? $this->version : '0.0.0';
 		_doing_it_wrong( __FUNCTION__, esc_html( $message ), esc_html( $version ) );
 	}
