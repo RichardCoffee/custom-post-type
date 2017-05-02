@@ -52,13 +52,15 @@ abstract class TCC_Plugin_Plugin {
 
 	public function state_check() {
 		$state = 'alone';
-		if ( ! function_exists( 'is_plugin_active' ) ) {
-			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		}
 		if ( is_readable( get_template_directory() . '/classes/Form/Admin.php' ) ) {
 			$state = 'theme';
-		} else if ( is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) ) {
-			$state = 'plugin';
+		} else {
+			if ( ! function_exists( 'is_plugin_active' ) ) {
+				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			}
+			if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) ) {
+				$state = 'plugin';
+			}
 		}
 		return $state;
 	}
@@ -97,14 +99,13 @@ abstract class TCC_Plugin_Plugin {
 	private function determine_textdomain_filenames( $data ) {
 		$lang_def = ( empty( $data['lang_dir'] ) ) ? '/languages' : $data['lang_dir'];
 		#	$lang_dir
-		$files[]  = trailingslashit( $this->paths->dir ) . $lang_def;
+		$files[]  = untrailingslashit( $this->paths->dir ) . $lang_def;
 		$locale   = apply_filters( 'plugin_locale',  get_locale(), $data['text_domain'] );
 		$mofile   = sprintf( '%1$s-%2$s.mo', $data['text_domain'], $locale );
 		#	$mofile_local
 		$files[]  = $files[0] . '/' . $mofile;
 		#	$mofile_global
 		$files[]  = WP_LANG_DIR . '/plugins/' . $data['text_domain'] . '/' . $mofile;
-		$this->logging( $files );
 		return $files;
 	}
 
