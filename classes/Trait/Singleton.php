@@ -3,19 +3,25 @@
 /*
  *  https://secure.php.net/manual/en/language.oop5.magic.php
  *  https://lornajane.net/posts/2012/9-magic-methods-in-php
+ *  http://stackoverflow.com/questions/203336/creating-the-singleton-design-pattern-in-php
  *
- *  Notes:  Any class that uses this trait must be sterile.
+ *  Notes:  Any class that uses this trait must be sterile, or the child must declare 'private static $instance;'
+ *          __clone, __sleep, and __wakeup are private, so can never get called.
  */
 
 trait TCC_Trait_Singleton {
 
+
 	protected static $abort_construct;
 	private   static $instance;
+
 
 	public static function instance() {
 		if ( ! ( self::$instance instanceof self ) ) {
 			$instance = new self();
-			if ( ! static::$abort_construct ) {
+			if ( static::$abort_construct ) {
+				static::$abort_construct = false;
+			} else {
 				self::$instance = $instance;
 			}
 		}
@@ -25,26 +31,49 @@ trait TCC_Trait_Singleton {
 	public static function get_instance( $args = array() ) {
 		if ( ! ( self::$instance instanceof self ) ) {
 			$instance = new self( $args );
-			if ( ! static::$abort_construct ) {
+			if ( static::$abort_construct ) {
+				static::$abort_construct = false;
+			} else {
 				self::$instance = $instance;
 			}
 		}
 		return self::$instance;
+	} //*/
+
+	/**  An alternate methodology  **/
+/*
+private static $instances = array();
+
+	public static function instance() {
+		return self::get_instance();
 	}
 
-	public function __clone() {
+	public static function get_instance( $args = array() ) {
+		$class = get_called_class();
+		if ( ! isset( self::$instances[ $class ] ) ) {
+			$instance = new $class( $args );
+			if ( static::$abort_construct ) {
+				static::$abort_construct = false;
+			} else {
+				self::$instances[ $class ] = $instance;
+			}
+		}
+		return ( isset( self::$instances[ $class ] ) ) ? self::$instances[ $class ] : null;
+	} //*/
+
+	private function __clone() {
 		$message = __( 'This class can not be cloned.' , 'tcc-plugin' ) . ' * ' . debug_calling_function();
 		$version = ( isset( $this->version ) ) ? $this->version : '0.0.0';
 		_doing_it_wrong( __FUNCTION__, esc_html( $message ), esc_html( $version ) );
 	}
 
-	public function __sleep() {
+	private function __sleep() {
 		$message = __( 'This class can not be serialized.' , 'tcc-plugin' ) . ' * ' . debug_calling_function();
 		$version = ( isset( $this->version ) ) ? $this->version : '0.0.0';
 		_doing_it_wrong( __FUNCTION__, esc_html( $message ), esc_html( $version ) );
 	}
 
-	public function __wakeup() {
+	private function __wakeup() {
 		$message = __( 'This class can not be unserialized.' , 'tcc-plugin' ) . ' * ' . debug_calling_function();
 		$version = ( isset( $this->version ) ) ? $this->version : '0.0.0';
 		_doing_it_wrong( __FUNCTION__, esc_html( $message ), esc_html( $version ) );
