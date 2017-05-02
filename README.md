@@ -1,4 +1,6 @@
 This repository has evolved from just a CPT class into more of a collection of boiler plate plugin files.
+Most of the information below is primarily for the custom post base class.  Some of it no longer applies.
+Work continues...
 
 
 
