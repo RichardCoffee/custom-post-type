@@ -42,15 +42,5 @@ abstract class TCC_MetaBox_MetaBox {
 		return true;
 	}
 
-	protected function version() {
-		if ( defined( 'TCC_THEME_VERSION' ) ) {
-			return TCC_THEME_VERSION;
-		} else if ( function_exists( 'tcc_plugin_paths' ) ) {
-			return tcc_plugin_paths()->version;
-		} else if ( function_exists( 'tcp_plugin_paths' ) ) {
-			return tcp_plugin_paths()->version;
-		}
-		return '0.0.0';
-	}
 
 }

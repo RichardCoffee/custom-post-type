@@ -39,6 +39,18 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 		}
 	}
 
+	protected function version() {
+		if ( defined( 'TCC_THEME_VERSION' ) ) {
+			return TCC_THEME_VERSION;
+		} else if ( function_exists( 'tcc_plugin_paths' ) ) {
+			return tcc_plugin_paths()->version;
+		} else if ( function_exists( 'tcp_plugin_paths' ) ) {
+			return tcp_plugin_paths()->version;
+		}
+		return '0.0.0';
+	}
+
+
 	/**  Front end display  **/
 
 	public function show_galleryview($postID=0) {
