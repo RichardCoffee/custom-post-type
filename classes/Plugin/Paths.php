@@ -20,7 +20,7 @@ class TCC_Plugin_Paths {
 	use TCC_Trait_Singleton;
 
 	protected function __construct( $args = array() ) {
-		if ( isset( $args['file'] ) ) {
+		if ( ! empty( $args['file'] ) ) {
 			$this->parse_args( $args );
 			$this->dir = trailingslashit( $this->dir );
 		} else {

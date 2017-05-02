@@ -20,7 +20,7 @@ abstract class TCC_Plugin_Plugin {
 	abstract public function initialize();
 
 	protected function __construct( $args = array() ) {
-		if ( isset( $args['file'] ) ) {
+		if ( ! empty( $args['file'] ) ) {
 			$data = get_file_data( $args['file'], array( 'ver' => 'Version' ) );
 			$defaults = array(
 				'dir'     => plugin_dir_path( $args['file'] ),
