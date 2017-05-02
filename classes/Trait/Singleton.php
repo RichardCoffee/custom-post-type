@@ -12,15 +12,15 @@
 trait TCC_Trait_Singleton {
 
 
-	protected static $abort_construct;
+	protected static $abort__construct;
 	private   static $instance;
 
 
 	public static function instance() {
 		if ( ! ( self::$instance instanceof self ) ) {
 			$instance = new self();
-			if ( static::$abort_construct ) {
-				static::$abort_construct = false;
+			if ( static::$abort__construct ) {
+				static::$abort__construct = false;
 			} else {
 				self::$instance = $instance;
 			}
@@ -31,8 +31,8 @@ trait TCC_Trait_Singleton {
 	public static function get_instance( $args = array() ) {
 		if ( ! ( self::$instance instanceof self ) ) {
 			$instance = new self( $args );
-			if ( static::$abort_construct ) {
-				static::$abort_construct = false;
+			if ( static::$abort__construct ) {
+				static::$abort__construct = false;
 			} else {
 				self::$instance = $instance;
 			}
@@ -52,8 +52,8 @@ private static $instances = array();
 		$class = get_called_class();
 		if ( ! isset( self::$instances[ $class ] ) ) {
 			$instance = new $class( $args );
-			if ( static::$abort_construct ) {
-				static::$abort_construct = false;
+			if ( static::$abort__construct ) {
+				static::$abort__construct = false;
 			} else {
 				self::$instances[ $class ] = $instance;
 			}
