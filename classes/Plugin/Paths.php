@@ -55,7 +55,7 @@ class TCC_Plugin_Paths {
 		$theme_check = get_theme_file_path( $file );
 		if ( $theme_check && is_readable( $theme_check ) ) {
 			$file_uri = get_theme_file_uri( $file );
-		} else {
+		} else if ( is_readable( $this->dir . $file ) ) {
 			$file_uri = plugins_url( $file, $this->file );
 		}
 		return $file_uri;
