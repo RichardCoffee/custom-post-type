@@ -35,6 +35,7 @@ abstract class TCC_Post_Post {
   ######  I have marked properties with '**' that I believe people may want to change more often.
 
   protected $main_blog   =  true;       # ** set to false to not include the cpt in WP post queries
+  protected $show_in_rest = true;       #    add the cpt to the WP REST API
 
   protected $caps        = 'post';      #    default is to not create custom capabilities
   protected $role        = 'normal';    #    value of 'admin' will cause only the administrator caps to be updated - TODO: allow array of roles
@@ -226,6 +227,7 @@ abstract class TCC_Post_Post {
         'map_meta_cap'      => (isset($this->map_meta_cap))    ? $this->map_meta_cap    : true,
         'hierarchical'      => (isset($this->hierarchical))    ? $this->hierarchical    : false,
         'query_var'         => (isset($this->query_var))       ? $this->query_var       : false,
+        'show_in_rest'      => $this->show_in_rest,
         'supports'          => $this->supports,
         'taxonomies'        => $this->taxonomies,
         'has_archive'       => (isset($this->has_archive)) ? $this->has_archive : $this->type,
