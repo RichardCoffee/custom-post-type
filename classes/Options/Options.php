@@ -36,12 +36,11 @@ abstract class TCC_Options_Options {
 	}
 
 	public function options_localization( $data = array() ) {
-		foreach( $this->layout as $key => $item ) {
+		foreach( $this->screen as $key => $item ) {
 			if ( isset( $item['showhide'] ) ) {
 				$data[] = $item['showhide'];
 			}
 		}
-log_entry($data);
 		return $data;
 	}
 
