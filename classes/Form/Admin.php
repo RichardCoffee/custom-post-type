@@ -207,58 +207,7 @@ abstract class TCC_Form_Admin {
 	public function customizer_settings( $wp_customize, $base ) {
 		log_entry($base,$wp_customize);
 	}
-/*  All this is either going to get moved or done away with altogether
-  public function customizer_settings($wp_customize,$base) {
-    if ($base && $this->form[$base]) {
-      $layout = $this->form[$base];
-#log_entry('customizer',"base: $base",$layout,$wp_customize); // too many recursion errors for this to be useful
-      foreach($layout as $key=>$option) {
-        if (!isset($option['default'])) { continue; }
-        if (!isset($option['render']))  { continue; }
-        if ($option['render']==='skip') { continue; }
-        $name = "tcc_options_{$base}[$key]";
-        $settings = array('default'    => $option['default'],
-                          'type'       => 'option',
-                          'capability' => 'edit_theme_options',
-                          'sanitize_callback' => $this->sanitize_callback($option));
-        $wp_customize->add_setting($name,$settings);
-        #  default WordPress sections
-        $wp_sections = array('title_tagline','colors','header_image','background_image','nav','static_front_page');
-        $section  = (in_array($base,$wp_sections)) ? $base : "fluid_$base";
-        $controls = array('label'    => $option['label'], // FIXME: use $this->field_label($ID,$option) instead, what would $ID be?
-                          'section'  => $section,
-                          'settings' => $name);
-        switch($option['render']) {
-          case "checkbox":
-            $controls['type'] = 'checkbox';
-            break;
-          case "colorpicker":
-            $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize,$name,$controls));
-            $name = false;
-            break;
-          case "image": // FIXME: does not seem to work as advertised
-            //$controls['type'] = 'image';
-            if (isset($option['context'])) $controls['context'] = $option['context'];
-log_entry($controls);
-            $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize,$name,$controls));
-            break;
-          case "radio":
-            $controls['type']    = 'radio';
-            $controls['choices'] = $option['source'];
-            break;
-          case "select":
-            if (!is_array($option['source'])) continue; // FIXME: this action leaves an orphaned setting with no control
-            $controls['type']    = 'select';
-            $controls['choices'] = $option['source'];
-            break;
-          default:
-            log_entry("WARNING:  switch case needed in customizer_settings for {$option['render']}");
-            $name = false;
-        }
-        if ($name) $wp_customize->add_control($name,$controls);
-      }
-    }
-  } //*/
+
 
   private function sanitize_callback($option) {
     $valid_func = "validate_{$option['render']}";
@@ -389,7 +338,7 @@ log_entry($controls);
 		extract( $args );  #  array( 'key'=>$key, 'item'=>$item, 'num'=>$i);
 		$data   = $this->form_opts;
 		$layout = $this->form['layout'];
-		echo '<div ' . $this->render_attributes( $layout[ $item ] ) . '>';
+		echo '<div ' . $this->library->get_apply_attrs( $this->render_attributes( $layout[ $item ] ) ) . '>';
 		if ( empty( $layout[ $item ]['render'] ) ) {
 			echo $data[ $item ];
 		} else {
@@ -423,7 +372,7 @@ log_entry($controls);
     extract($args);  #  $args = array( 'key' => {group-slug}, 'item' => {item-slug})
     $data   = $this->form_opts;
     $layout = $this->form[$key]['layout'];
-    $attr   = $this->render_attributes($layout[$item]);
+    $attr   = $this->library->get_apply_attrs( $this->render_attributes( $layout[ $item ] ) );
     echo "<div $attr>";
     if (empty($layout[$item]['render'])) {
       echo $data[$item];
@@ -446,14 +395,15 @@ log_entry($controls);
   public function render_multi_options($args) {
   }
 
-	private function render_attributes($layout) {
-		$attr = ( ! empty( $layout['divcss'] ) )  ? ' class="' . esc_attr( $layout['divcss'] ).'"'   : '';
-		$attr.= ( isset( $layout['help'] ) )      ? ' title="' . esc_attr( $layout['help']   ).'"'   : '';
+	private function render_attributes( $layout ) {
+		$attrs = array();
+		$attrs['class'] = ( ! empty( $layout['divcss'] ) ) ? $layout['divcss'] : '';
+		$attrs['title'] = ( isset( $layout['help'] ) )     ? $layout['help']   : '';
 		if ( ! empty( $layout['showhide'] ) ) {
-			$attr.= ' data-item="' . esc_attr( $layout['showhide']['item'] ) . '"';
-			$attr.= ' data-show="' . esc_attr( $layout['showhide']['show'] ) . '"';
+			$attrs['data-item'] = ( isset( $layout['showhide']['item'] ) ) ? $layout['showhide']['item'] : $layout['showhide']['target'];
+			$attrs['data-show'] = $layout['showhide']['show'];
 		}
-		return $attr;
+		return $attrs;
 	}
 
 
