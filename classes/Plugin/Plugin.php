@@ -121,7 +121,7 @@ abstract class TCC_Plugin_Plugin {
 	 *            https://hugh.blog/2012/07/27/wordpress-add-plugin-settings-link-to-plugins-page/
 	 */
 	public function settings_link( $links, $file, $data, $context ) {
-		if ( strpos( $file, $this->plugin ) > -1 ) {
+		if ( strpos( $file, $this->plugin ) !== false ) {
 			unset( $links['edit'] );
 			if ( is_plugin_active( $file ) ) {
 				$url   = ( $this->setting ) ? $this->setting : admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab );
