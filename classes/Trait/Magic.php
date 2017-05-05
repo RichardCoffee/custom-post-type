@@ -9,7 +9,10 @@
 
 trait TCC_Trait_Magic {
 
-	protected static $magic__call = array();
+
+	protected static $magic__call   = array();
+	protected static $set__callable = false;
+
 
 	public function __call( $string, $args ) {
 		$return = false;
@@ -43,9 +46,11 @@ trait TCC_Trait_Magic {
 	} //*/
 
 	public function set( $property, $value ) {
-		if ( ( ! empty( $property ) ) && ( ! empty( $value ) ) ) {
-			if ( property_exists( $this, $property ) ) {
-				$this->{$property} = $value;
+		if ( self::$set__callable ) {
+			if ( ( ! empty( $property ) ) && ( ! empty( $value ) ) ) {
+				if ( property_exists( $this, $property ) ) {
+					$this->{$property} = $value;
+				}
 			}
 		}
 	}
