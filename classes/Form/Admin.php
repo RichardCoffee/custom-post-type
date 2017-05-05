@@ -31,7 +31,9 @@ abstract class TCC_Form_Admin {
 	public function description() { return ''; }
 
 	protected function __construct() {
-		$this->library = library();
+		if ( empty( $this->library ) && function_exists( 'library' ) ) {
+			$this->library = library();
+		}
 		$this->screen_type();
 		add_action( 'admin_init', array( $this, 'load_form_page' ) );
 	}
