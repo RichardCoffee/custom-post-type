@@ -73,6 +73,10 @@ abstract class TCC_Form_Admin {
 		wp_enqueue_media();
 		wp_enqueue_style(  'admin-form.css' );
 		wp_enqueue_script( 'admin-form.js'  );
+		$options = apply_filters( 'tcc_form_admin_options_localization', array() );
+		if ( $options ) {
+			wp_localize_script( 'admin-form.js', 'tcc_admin_options', $options );
+		}
 	}
 
 
