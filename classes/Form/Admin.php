@@ -201,14 +201,6 @@ abstract class TCC_Form_Admin {
     return $html;
   }
 
-
-  /**  Customizer  **/
-
-	public function customizer_settings( $wp_customize, $base ) {
-		log_entry($base,$wp_customize);
-	}
-
-
   private function sanitize_callback($option) {
     $valid_func = "validate_{$option['render']}";
     if (method_exists($this,$valid_func)) {
