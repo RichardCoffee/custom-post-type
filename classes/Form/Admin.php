@@ -482,15 +482,25 @@ log_entry($controls);
 
 	private function render_checkbox_multiple( $data ) {
 		extract( $data );	#	associative array: keys are 'ID', 'value', 'layout', 'name'
-		if ( empty( $layout['source'] ) ) return;
+		if ( empty( $layout['source'] ) ) {
+			return;
+		}
+		if ( ! empty( $layout['text'] ) ) { ?>
+			<div>
+				<?php e_esc_html( $layout['text'] ); ?>
+			</div><?php
+		}
 		foreach( $layout['source'] as $key => $text ) {
-			$check = isset( $value[ $key ] ) ? true : false; ?>
+			$check = isset( $value[ $key ] ) ? true : false;
+			$attrs = array(
+				'type'  => 'checkbox',
+				'id'    => $ID . '-' . $key,
+				'name'  => $name . '[' . $key . ']',
+				'value' => $key,
+			); ?>
 			<div>
 				<label>
-					<input type="checkbox"
-					       id="<?php echo esc_attr( $ID.'-'.$key ); ?>"
-					       name="<?php echo esc_attr( $name.'['.$key.']' ); ?>"
-					       value="yes" <?php checked( $check ); ?> />&nbsp;
+					<input <?php $this->library->apply_attrs( $attrs ); ?> <?php checked( $check ); ?> />&nbsp;
 					<span>
 						<?php echo esc_html( $text ); ?>
 					</span>
