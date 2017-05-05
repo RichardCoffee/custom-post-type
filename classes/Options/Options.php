@@ -15,7 +15,6 @@ abstract class TCC_Options_Options {
 	public function __construct() {
 		add_filter( 'fluidity_options_form_layout',        array( $this, 'form_layout' ),          $this->priority );
 		add_filter( 'tcc_form_admin_options_localization', array( $this, 'options_localization' ), $this->priority );
-#		add_action( 'fluid-customizer', array( $this, 'options_customize_register' ), $this->priority, 2 );
 	}
 
 	public function form_layout( $form ) {
