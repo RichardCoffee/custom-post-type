@@ -15,7 +15,6 @@ abstract class TCC_Form_Admin {
 	protected $form_opts =  array();
 	protected $form_text =  array();
 	protected $hook_suffix;
-	protected $library;
 	protected $options;
 	protected $prefix    = 'tcc_options_';
 	protected $register;
@@ -32,9 +31,6 @@ abstract class TCC_Form_Admin {
 	public function description() { return ''; }
 
 	protected function __construct() {
-		if ( empty( $this->library ) && function_exists( 'library' ) ) {
-			$this->library = library();
-		}
 		$this->screen_type();
 		add_action( 'admin_init', array( $this, 'load_form_page' ) );
 	}
@@ -338,7 +334,7 @@ abstract class TCC_Form_Admin {
 		extract( $args );  #  array( 'key'=>$key, 'item'=>$item, 'num'=>$i);
 		$data   = $this->form_opts;
 		$layout = $this->form['layout'];
-		echo '<div ' . $this->library->get_apply_attrs( $this->render_attributes( $layout[ $item ] ) ) . '>';
+		echo '<div ' . $this->get_apply_attrs( $this->render_attributes( $layout[ $item ] ) ) . '>';
 		if ( empty( $layout[ $item ]['render'] ) ) {
 			echo $data[ $item ];
 		} else {
@@ -372,7 +368,7 @@ abstract class TCC_Form_Admin {
     extract($args);  #  $args = array( 'key' => {group-slug}, 'item' => {item-slug})
     $data   = $this->form_opts;
     $layout = $this->form[$key]['layout'];
-    $attr   = $this->library->get_apply_attrs( $this->render_attributes( $layout[ $item ] ) );
+    $attr   = $this->get_apply_attrs( $this->render_attributes( $layout[ $item ] ) );
     echo "<div $attr>";
     if (empty($layout[$item]['render'])) {
       echo $data[$item];
@@ -461,7 +457,7 @@ abstract class TCC_Form_Admin {
 			); ?>
 			<div>
 				<label>
-					<input <?php $this->library->apply_attrs( $attrs ); ?> <?php checked( $check ); ?> />&nbsp;
+					<input <?php $this->apply_attrs( $attrs ); ?> <?php checked( $check ); ?> />&nbsp;
 					<span>
 						<?php echo esc_html( $text ); ?>
 					</span>
@@ -545,7 +541,7 @@ abstract class TCC_Form_Admin {
 				$radio_attrs['value'] = $key; ?>
 				<div>
 					<label>
-						<input <?php $this->library->apply_attrs( $radio_attrs ); ?> <?php checked( $value, $key ); ?>><?php
+						<input <?php $this->apply_attrs( $radio_attrs ); ?> <?php checked( $value, $key ); ?>><?php
 						if ( isset( $layout['src-html'] ) ) {
 							// FIXME:  this is here so I can display font awesome icons - it needs to be done differently
 							echo $text;
