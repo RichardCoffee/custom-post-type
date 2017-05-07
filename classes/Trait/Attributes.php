@@ -15,14 +15,15 @@ trait TCC_Trait_Attributes {
 		$attrs = ' ';
 		foreach( $args as $attr => $value ) {
 			if ( empty( $value ) ) {
-				if ( in_array( $attr, array( 'value' ), true ) ) {
-					$attrs .= 'value="" ';
+				if ( in_array( $attr, array( 'itemscope', 'value' ), true ) ) {
+					$attrs .= $attr . '="" ';
 				}
 				continue;
 			}
 			switch( $attr ) {
 				case 'action':
 				case 'href':
+				case 'itemtype':	#	schema.org
 				case 'src':
 					$value = esc_url( $value );
 					break;
@@ -30,6 +31,7 @@ trait TCC_Trait_Attributes {
 					$value = esc_html( $value );
 					break;
 				case 'aria-label':
+				case 'placeholder':
 				case 'title':
 					$value = wp_strip_all_tags( $value );
 				default:

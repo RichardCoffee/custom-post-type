@@ -65,13 +65,18 @@ class TCC_Microdata {
   *
   */
 
-  public function __call($name,$arguments) {
-    $this->microdata($name);
-  }
+	public function __call( $name, $args ) {
+		$this->microdata( $name, $args );
+	}
 
-	public function microdata( $type ) {
+	public function microdata( $type, $as_attr = false ) {
 		if ( method_exists( $this, $type ) ) {
 			$this->$type();
+		} else if ( $as_attr ) {
+			return array(
+				'itemscope' => 'itemscope',
+				'itemtype'  => 'http://schema.org/' . $type,
+			);
 		} else {
 			echo 'itemscope itemtype="http://schema.org/' . esc_attr( $type ) . '"';
 		}
