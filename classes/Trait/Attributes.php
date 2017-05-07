@@ -15,6 +15,9 @@ trait TCC_Trait_Attributes {
 		$attrs = ' ';
 		foreach( $args as $attr => $value ) {
 			if ( empty( $value ) ) {
+				if ( in_array( $attr, array( 'value' ), true ) ) {
+					$attrs .= 'value="" ';
+				}
 				continue;
 			}
 			switch( $attr ) {
