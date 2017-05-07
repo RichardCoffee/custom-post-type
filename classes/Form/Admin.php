@@ -25,6 +25,7 @@ abstract class TCC_Form_Admin {
 	protected $type      = 'single'; # two values: single, tabbed
 	protected $validate;
 
+	use TCC_Trait_Attributes;
 	use TCC_Trait_Logging;
 
 	abstract protected function form_layout( $option );
