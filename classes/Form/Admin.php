@@ -75,12 +75,19 @@ abstract class TCC_Form_Admin {
 		wp_enqueue_script( 'admin-form.js'  );
 		$options = apply_filters( 'tcc_form_admin_options_localization', array() );
 		if ( $options ) {
-			$options = array_map( array( $this, 'normalize_options' ), $options );
+			$options = $this->normalize_options( $options, $options );
 			wp_localize_script( 'admin-form.js', 'tcc_admin_options', $options );
 		}
 	}
 
-	public function normalize_options( $item ) {
+	protected function normalize_options( $new, $old ) {
+		if ( isset( $old['showhide'] ) ) {
+			$new['showhide'] = array_map( array( $this, 'normalize_showhide' ), $old['showhide'] );
+		}
+		return $new;
+	}
+
+	public function normalize_showhide( $item ) {
 		$default = array(
 			'origin' => null,
 			'target' => null,
@@ -521,7 +528,6 @@ abstract class TCC_Form_Admin {
 		extract( $data );	#	associative array: keys are 'ID', 'value', 'layout', 'name'
 		if ( empty( $layout['source'] ) ) return;
 		$uniq        = uniqid();
-		$tooltip     = ( isset( $layout['help'] ) )    ? $layout['help']    : '';
 		$before_text = ( isset( $layout['text'] ) )    ? $layout['text']    : '';
 		$after_text  = ( isset( $layout['postext'] ) ) ? $layout['postext'] : '';
 		$radio_attrs = array(
@@ -530,7 +536,7 @@ abstract class TCC_Form_Admin {
 			'onchange' => ( isset( $layout['change'] ) ) ? $layout['change']  : '',
 			'aria-describedby' => $uniq,
 		); ?>
-		<div title="<?php echo esc_attr( $tooltip ); ?>">
+		<div>
 			<div id="<?php echo $uniq; ?>">
 				<?php echo esc_html( $before_text ); ?>
 			</div><?php
@@ -561,12 +567,11 @@ abstract class TCC_Form_Admin {
 	private function render_radio_multiple( $data ) {
 		extract( $data );   #   associative array: keys are 'ID', 'value', 'layout', 'name'
 		if ( empty( $layout['source'] ) ) return;
-		$tooltip   = ( isset( $layout['help'] ) )    ? $layout['help']    : '';
 		$pre_css   = ( isset( $layout['textcss'] ) ) ? $layout['textcss'] : '';
 		$pre_text  = ( isset( $layout['text'] ) )    ? $layout['text']    : '';
 		$post_text = ( isset( $layout['postext'] ) ) ? $layout['postext'] : '';
 		$preset    = ( isset( $layout['preset'] ) )  ? $layout['preset']  : 'no'; ?>
-		<div class="radio-multiple-div" title="<?php echo esc_attr( $tooltip ); ?>">
+		<div class="radio-multiple-div">
 			<div class="<?php echo $pre_css; ?>">
 				<?php e_esc_html( $pre_text ); ?>
 			</div>
@@ -625,18 +630,15 @@ abstract class TCC_Form_Admin {
 
 	private function render_spinner( $data ) {
 		extract($data);  #  array('ID'=>$item, 'value'=>$data[$item], 'layout'=>$layout[$item], 'name'=>$name)
-		$tooltip = ( isset( $layout['help'] ) ) ? $layout['help'] : '';
 /*		$attrs = array(
 			'id'    => $ID,
 			'name'  => $name,
-			'title' => $tooltip,
 			'value' => $value, */
 
  ?>
 		<input type="number" class="small-text" min="1" step="1"
 		       id="<?php e_esc_attr( $ID ); ?>"
 		       name="<?php e_esc_attr( $name ); ?>"
-		       title="<?php e_esc_attr( $tooltip ); ?>"
 		       value="<?php e_esc_attr( sanitize_text_field( $value ) ); ?>" /> <?php
 		if ( ! empty( $layout['stext'] ) ) { e_esc_attr( $layout['stext'] ); }
 	}
