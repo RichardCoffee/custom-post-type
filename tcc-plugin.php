@@ -1,34 +1,46 @@
 <?php
-/*
-Plugin Name: TCC Plugin for Custom Post Types
-Plugin URI: the-creative-collective.com
-Description: basic plugin for themes from The Creative Collective. Warning:  not intended for use with other themes
-Version: 2.0.0
-Author: Richard Coffee, The Creative Collective
-Author URI: the-creative-collective.com
-Text Domain: tcc-plugin
-Domain Path: /locales
-License: GPLv2
-*/
+/**
+ * Privacy My Way
+ *
+ * @package   Custom Post Type Plugin
+ * @author    Author Name <author@email>
+ * @copyright 2018 Author Name
+ * @license   GPLv2  <need uri here>
+ * @link      link
+ *
+ * @wordpress-plugin
+ * Plugin Name:       Custom Post Type Plugin
+ * Plugin URI:        pluginhome.com
+ * Description:       Description for the plugin.
+ * Version:           2.3.1
+ * Requires at least: 4.7.0
+ * Requires WP:       4.7.0
+ * Tested up to:      4.7.4
+ * Requires PHP:      5.3.6
+ * Author:            Author Name
+ * Author URI:        author uri
+ * GitHub Plugin URI: github uri needed if using plugin-update-checker
+ * License:           GPLv2
+ * Text Domain:       plugin-domain
+ * Domain Path:       /languages
+ * Tags:              what, where, when, who, how, why
+ */
 
-defined('ABSPATH') || exit;
+defined( 'ABSPATH' ) || exit;
 /*
-#	https://github.com/helgatheviking/Nav-Menu-Roles/blob/master/nav-menu-roles.php
-if ( ! defined('ABSPATH') || ! function_exists( 'is_admin' ) ) { // FIXME:  redundancy?
+# https://github.com/helgatheviking/Nav-Menu-Roles/blob/master/nav-menu-roles.php
+if ( ! defined('ABSPATH') || ! function_exists( 'is_admin' ) ) {
 	header( 'Status: 403 Forbidden' );
 	header( 'HTTP/1.1 403 Forbidden' );
 	exit();
 } //*/
 
-define('TCC_PLUGIN_FILE', __FILE__ );
-define('TCC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-$data = get_file_data( __FILE__, array( 'ver' => 'Version' ) );
-define('TCC_PLUGIN_VERSION',$data['ver']);
+define( 'TCC_PLUGIN_DIR' , plugin_dir_path( __FILE__ ) );
 
 function tcc_plugin_class_loader( $class ) {
-   if (substr($class,0,4)==='TCC_') {
-     $load = str_replace( '_', '/', substr( $class, (strpos($class,'_')+1) ) );
-     $file = TCC_PLUGIN_DIR."/classes/{$load}.php";
+   if ( substr( $class, 0, 4 ) === 'TCC_' ) {
+     $load = str_replace( '_', '/', substr( $class, ( strpos( $class, '_' ) + 1 ) ) );
+     $file = TCC_PLUGIN_DIR . "/classes/{$load}.php";
      if ( is_readable( $file ) ) {
        include $file;
      }
@@ -36,26 +48,6 @@ function tcc_plugin_class_loader( $class ) {
 }
 spl_autoload_register( 'tcc_plugin_class_loader' );
 
-if (!function_exists('tcc_options_check')) {
-	function tcc_options_check() { // FIXME: what exactly is being acomplished here?  Is there another way to do this?
-		$state = 'Stand Alone';
-		if (!function_exists('is_plugin_active')) { include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); }
-		if (is_plugin_active('tcc-theme-options/tcc-theme-options.php'))         { $state = 'Plugin External'; }
-		if (is_readable(get_template_directory().'/classes/admin-form.php'))     { $state = 'Theme Internal'; }
-		return $state;
-	}
-}
+$plugin = TCC_Plugin_NameHere::get_instance( array( 'file' => __FILE__ ) );
 
-function tcc_plugin_state_check() {
-  $state  = tcc_options_check();
-  $plugin = TCC_Plugin_Basic::get_instance();
-#  if ($state==='Plugin External') {
-#    add_action('tcc_theme_options_loaded', array($plugin,'initialize'));
-#  } else {
-    add_action('plugins_loaded', array($plugin,'initialize'), 100);  #  run late - priority 100
-#  }
-}
-
-tcc_plugin_state_check();
-
-register_activation_hook(TCC_PLUGIN_FILE, array('TCC_Register_Plugin','activate'));
+register_activation_hook( __FILE__, array( 'TCC_Register_Plugin', 'activate' ) );
