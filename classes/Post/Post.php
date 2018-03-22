@@ -93,7 +93,8 @@ abstract class TCC_Post_Post {
 
       #  Filters
       add_filter( 'comments_open',         array( $this, 'comments_limit' ), 10, 2 );
-      #add_filter( 'map_meta_cap',          array( $this, 'map_meta_cap'),    10, 4 );
+		add_filter( 'gutenberg_can_edit_post_type', array( $this, 'gutenberg_can_edit_post_types' ) );
+#		add_filter( 'map_meta_cap',          array( $this, 'map_meta_cap'),    10, 4 );
       add_filter( 'pings_open',            array( $this, 'comments_limit' ), 10, 2 );
       add_filter( 'post_updated_messages', array( $this, 'post_type_messages' ) );
       add_filter( 'wpseo_metabox_prio',    function ($arg) { return 'low'; } );
@@ -881,6 +882,16 @@ abstract class TCC_Post_Post {
       }
     }
   }
+
+
+/***   Turn off gutenberg editor   ***/
+
+	public function gutenberg_can_edit_post_types( $can_edit, $post_type ) {
+		if ( $post_type === $this->type ) {
+			return false;
+		}
+		return $can_edit;
+	}
 
 
 }
