@@ -23,8 +23,8 @@ abstract class TCC_MetaBox_MetaBox {
 		$this->parse_args( $args );
 		$this->add_meta  = ( $this->add_meta )  ? $this->add_meta  : 'add_meta_boxes_' . $this->type;
 		$this->save_meta = ( $this->save_meta ) ? $this->save_meta : 'save_post_' . $this->type;
-		add_action( $this->add_meta,         array( $this, 'add_meta_box' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 11 );  #  run later
+		add_action( $this->add_meta,         array( $this, 'add_meta_box' ) );
 		add_action( $this->save_meta,        array( $this, 'save_meta_box' ) );
 	}
 
