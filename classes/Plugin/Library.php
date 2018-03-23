@@ -1,6 +1,6 @@
 <?php
 
-class PMW_Plugin_Library {
+class TCC_Plugin_Library {
 
 
 	/**  attribute functions  **/

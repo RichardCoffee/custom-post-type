@@ -5,7 +5,7 @@
  *
  */
 
-abstract class PMW_Form_Field_Field {
+abstract class TCC_Form_Field_Field {
 
 #	protected $echo       = true;       # echo html
 	protected $field_css  = '';         # field css
@@ -25,11 +25,11 @@ abstract class PMW_Form_Field_Field {
 #	protected $post_id;                 # wordpress post id number
 	protected $sanitize   = 'esc_attr'; # default sanitize method
 
-	use PMW_Trait_Magic;
-	use PMW_Trait_ParseArgs;
+	use TCC_Trait_Magic;
+	use TCC_Trait_ParseArgs;
 
 	public function __construct( $args ) {
-		$this->library = new PMW_Plugin_Library;
+		$this->library = new TCC_Plugin_Library;
 		$this->parse_args( $args );
 		if ( ( empty( $this->placeholder ) ) && ( ! empty( $this->label_text ) ) ) {
 			$this->placeholder = $this->label_text;

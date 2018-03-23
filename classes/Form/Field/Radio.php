@@ -1,6 +1,6 @@
 <?php
 
-class PMW_Form_Field_Radio extends PMW_Form_Field_Field {
+class TCC_Form_Field_Radio extends TCC_Form_Field_Field {
 
 	protected $field_radio = array();
 	protected $sanitize    = 'sanitize_title';
