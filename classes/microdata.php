@@ -82,6 +82,13 @@ class TCC_Microdata {
 		}
 	}
 
+	public function microdata_attrs( $type ) {
+		return array(
+			'itemscope' => 'itemscope',
+			'itemtype'  => 'http://schema.org/' . $type,
+		);
+	}
+
   public function about()    { $this->AboutPage(); }              // CreativeWork > WebPage > AboutPage
   public function address()  { $this->PostalAddress(); }          // descendant of many types - see itemtype link
   public function agent()    { $this->RealEstateAgent(); }        // Organization|Place > LocalBusiness > RealEstateAgent
