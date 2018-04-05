@@ -9,6 +9,7 @@
  */
 class TCC_Plugin_Base extends TCC_Plugin_Plugin {
 
+	use TCC_Trait_Singleton;
 
 	public function initialize() {
 		if ( ( ! TCC_Register_Register::php_version_check() ) || ( ! TCC_Register_Register::wp_version_check() ) ) {
