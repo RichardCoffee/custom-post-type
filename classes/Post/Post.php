@@ -75,7 +75,6 @@ abstract class TCC_Post_Post {
 	use TCC_Trait_Magic;
 
   protected function __construct($data) {
-    $this->debug = WP_DEBUG;
     if ((isset($data['type']) && !post_type_exists($data['type'])) || ($this->type && !post_type_exists($this->type))) {
       if (isset($data['nodelete'])) { $this->cpt_nodelete = true; }  //  FIXME
       unset($data['cpt_nodelete'],$data['nodelete']);                //  FIXME
@@ -238,14 +237,14 @@ abstract class TCC_Post_Post {
       #$args['capabilities']    = $this->map_capabilities();
     }
     $args = apply_filters("tcc_register_post_{$this->type}",$args);
-    #$this->logging( $args, $this->caps );
+    #$this->logg( $args, $this->caps );
     register_post_type($this->type,$args);
     do_action('tcc_custom_post_'.$this->type);
     $cpt = get_post_type_object( $this->type );
-    #$this->logging( $args, $cpt );
+    #$this->logg( $args, $cpt );
     if ($cpt->map_meta_cap)  add_action('admin_init', array($this,'add_caps'));
     /*foreach($this->supports as $support) {
-      $this->logging("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
+      $this->logg("supports $support: ".((post_type_supports($this->type,$support)) ? 'true' : 'false'));
     } //*/
   }
 
@@ -335,7 +334,7 @@ abstract class TCC_Post_Post {
 			'delete_post'         => 'delete_' . $sing,
 			'read_post'           => 'read_' . $sing,
 			);
-		#$this->logging( $caps );
+		#$this->logg( $caps );
 		return $caps;
 	}
 
@@ -343,7 +342,7 @@ abstract class TCC_Post_Post {
 	public function map_meta_cap( $caps, $cap, $user_id, $args ) {
 		if ( $this->caps !== 'post' ) {
 			$base = $this->map_capabilities();
-			#$this->logging($base);
+			#$this->logg($base);
 
 			#	If editing, deleting, or reading cpt, get the post and post type object.
 			if ( in_array( $cap, array( $base['edit_post'], $base['delete_post'], $base['read_post'] ) ) ) {
@@ -387,7 +386,7 @@ abstract class TCC_Post_Post {
 		$all_roles    = apply_filters( "{$this->type}_add_roles",    array( 'contributor', 'author', 'editor', 'administrator' ) );
 		$author_roles = apply_filters( "{$this->type}_author_roles", array( 'author', 'editor', 'administrator' ) );
 		$editor_roles = apply_filters( "{$this->type}_editor_roles", array( 'editor', 'administrator' ) );
-		#this->logging( 'roles', $roles );
+		#$this->logg( 'roles', $roles );
 		if ( $this->role === 'admin' ) {
 			$roles = array( 'administrator' ); }
 		foreach( $all_roles as $role ) {
@@ -396,7 +395,7 @@ abstract class TCC_Post_Post {
 
 	private function process_caps( $name, $author_roles, $editor_roles ) {
 		$role = get_role( $name );
-		#$this->logging('user role:  '.$name,$role);
+		#$this->logg('user role:  '.$name,$role);
 		$base = $this->map_basic_caps();
 		extract( $base );  #  extracts as $sing and $plur
 		$caps = array( /*"delete_$sing", "edit_$sing", "read_$sing",*/ "delete_$plur", "edit_$plur");
@@ -411,7 +410,7 @@ abstract class TCC_Post_Post {
 		foreach( $caps as $cap ) {
 			$role->add_cap( $cap );
 		}
-		#$this->logging('role:  '.$name, $caps,$auth,$edit,get_role($name));
+		#$this->logg('role:  '.$name, $caps,$auth,$edit,get_role($name));
 	}
 
 
@@ -558,7 +557,7 @@ abstract class TCC_Post_Post {
       }
       if ($keep_list) {
         $keep_list = array_unique($keep_list);
-        $this->logging($keep_list);
+        $this->logg($keep_list);
         $nodelete  = ($this->js_path) ? plugin_dir_url($this->js_path.'/dummy.js').'tax_nodelete.js' : plugins_url('../js/tax_nodelete.js',__FILE__);
         wp_register_script('tax_nodelete',$nodelete,array('jquery'),false,true);
         wp_localize_script('tax_nodelete','term_list',$keep_list);
@@ -603,7 +602,7 @@ abstract class TCC_Post_Post {
       if (is_callable($this->columns['callback'])) {
         add_action('manage_posts_custom_column',$this->columns['callback'],10,2); }
       else {
-        $this->logging('columns[callback] function name not callable',$this->columns['callback']); } }
+        $this->logg('columns[callback] function name not callable',$this->columns['callback']); } }
     else {
       add_filter('manage_posts_custom_column',array($this,'display_custom_post_column'),10,2); }
   }
@@ -810,7 +809,7 @@ abstract class TCC_Post_Post {
             $open = $this->comments;
           } else { // TODO:  support numeric values
 #            $postime = get_the_time('U', $post_id);
-             $this->logging("WARNING: Numeric values for {$this->type}->comments is not yet supported.");
+             $this->logg("WARNING: Numeric values for {$this->type}->comments is not yet supported.");
           }
         }
       }
