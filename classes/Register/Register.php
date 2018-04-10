@@ -10,7 +10,7 @@ class TCC_Register_Register {
 	protected static $title    = 'This plugin';
 	protected static $wp_vers  = '4.7.0';         #  get_theme_file_uri function added
 
-	private static $our_site = '<a href="rtcenterprises.net" target="tcc">%s</a>';
+	private static $our_site = '<a href="rtcenterprises.net" target="rtc">%s</a>';
 	private static $rc_email = '<a href="mailto:richard.coffee@rtcenterprises.net">%s</a>';
 	private static $jg_email = '<a href="mailto:cableman371@gmail.com">%s</a>';
 	private static function our_email() { return ( ( mt_rand( 1, 10 ) > 5 ) ? self::$rc_email : self::$jg_email ); }
@@ -151,56 +151,6 @@ class TCC_Register_Register {
 			wp_insert_post( $new );
 		}
 	}
-/*
-	#	this is not currently being used by anything
-	protected static function activate_multisite() {
-		#	https://core.trac.wordpress.org/ticket/14170
-		global $wpdb;
-		if (function_exists('is_multisite') && is_multisite()) {
-			if (isset($_GET['networkwide']) && ($_GET['networkwide'] == 1)) {
-				$old_blog = $wpdb->blogid;
-				#	Get all blog ids
-				$blogids = $wpdb->get_col($wpdb->prepare("SELECT blog_id FROM $wpdb->blogs"));
-				foreach ($blogids as $blog_id) {
-					switch_to_blog($blog_id);
-					self::single_blog_activate();
-				}
-				switch_to_blog($old_blog);
-				return;
-			}
-		}
-		self::single_blog_activate();
-	}
-
-	protected static function single_blog_activate() { } //*/
-
-/*
-	protected static function theme_dependency() {
-		if ( ! function_exists( self::$dep_func ) ) {
-			$error_text = self::dependency_string();
-			trigger_error( $error_text, E_USER_ERROR );
-		}
-	} //*/
-/*
-	public static function check_dependency() {
-		if ( current_user_can( 'manage_options' ) ) {
-			if ( ! function_exists( self::$dep_func ) ) {
-				require_once( ABSPATH . 'wp-admin/include/plugin.php' );
-				deactivate_plugins( TCC_BASE ); // FIXME:  plugin name
-				$error_text = dependency_string();
-				trigger_error( $error_text, E_USER_ERROR );
-			}
-		}
-	} //*/
-/*
-	private static function dependency_string() {
-		$site_name = _x( 'The Creative Collective', 'noun - plugin site name', 'tcc-plugin' );
-		$comp_name = _x( 'The Creative Collective', 'noun - plugin company name', 'tcc-plugin');
-		$string    = _x( 'This plugin should only be used with %1$s themes by %2$s', '1: company name, 2: website title', 'tcc-plugin' );
-		$site      = sprintf( self::$our_site, $site_name );
-		$company   = sprintf( self::our_email(), $comp_name );
-		return sprintf( $string, $site, $company );
-	} //*/
 
 
 	/**  Turn things off  **/

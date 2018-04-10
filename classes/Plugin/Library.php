@@ -2,36 +2,26 @@
 
 class TCC_Plugin_Library {
 
+	use TCC_Trait_Attributes;
+	use TCC_Trait_Logging;
+	use TCC_Trait_Magic;
 
-	/**  attribute functions  **/
-
-	public function apply_attrs( $args ) {
-		echo $this->get_apply_attrs( $args );
+	public function __construct() {
+		$this->initialize();
+		$this->logging_check_function();
 	}
 
-	public function get_apply_attrs( $args ) {
-		$attrs = ' ';
-		foreach( $args as $attr => $value ) {
-			if ( empty( $value ) ) {
-				continue;
-			}
-			switch( $attr ) {
-				case 'href':
-				case 'src':
-					$value = esc_url( $value );
-					break;
-				case 'value':
-					$value = esc_html( $value );
-					break;
-				case 'aria-label':
-				case 'title':
-					$value = wp_strip_all_tags( $value );
-				default:
-					$value = esc_attr( $value );
-			}
-			$attrs .= $attr . '="' . $value . '" ';
+	protected function initialize() {
+		$this->register__call( array( $this, 'logging_get_calling_function_name' ), 'get_calling_function' );
+		$this->register__call( array( $this, 'logging_was_called_by' ),             'was_called_by' );
+		if ( WP_DEBUG && function_exists( 'add_action' ) ) {
+			add_action( 'deprecated_function_run',    array( $this, 'logging_log_deprecated' ), 10, 3 );
+			add_action( 'deprecated_constructor_run', array( $this, 'logging_log_deprecated' ), 10, 3 );
+			add_action( 'deprecated_file_included',   array( $this, 'logging_log_deprecated' ), 10, 4 );
+			add_action( 'deprecated_argument_run',    array( $this, 'logging_log_deprecated' ), 10, 3 );
+			add_action( 'deprecated_hook_run',        array( $this, 'logging_log_deprecated' ), 10, 4 );
+			add_action( 'doing_it_wrong_run',         array( $this, 'logging_log_deprecated' ), 10, 3 );
 		}
-		return $attrs;
 	}
 
 

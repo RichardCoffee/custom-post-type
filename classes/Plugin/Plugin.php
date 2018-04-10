@@ -138,7 +138,7 @@ abstract class TCC_Plugin_Plugin {
 
 /*
   public function check_update() {
-    $addr = 'tcc_option_'.$this->tab;
+    $addr = 'tcc_options_'.$this->tab;
     $data = get_option($addr);
     if (!isset($data['dbvers'])) return;
     if (intval($data['dbvers'],10)>=intval($this->dbvers)) return;
