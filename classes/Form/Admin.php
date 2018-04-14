@@ -98,20 +98,20 @@ abstract class TCC_Form_Admin {
 	private function form_text() {
 	$text = array(
 		'error'  => array(
-			'render'    => _x( 'ERROR: Unable to locate function %s', 'string - a function name', 'tcc-plugin' ),
-			'subscript' => _x( 'ERROR: Not able to locate form data subscript:  %s', 'placeholder will be an ASCII character string', 'tcc-plugin' )
+			'render'    => _x( 'ERROR: Unable to locate function %s', 'string - a function name', 'tcc-fluid' ),
+			'subscript' => _x( 'ERROR: Not able to locate form data subscript:  %s', 'placeholder will be an ASCII character string', 'tcc-fluid' )
 		),
 		'submit' => array(
-			'save'      => __( 'Save Changes', 'tcc-plugin' ),
-			'object'    => __( 'Form', 'tcc-plugin' ),
-			'reset'     => _x( 'Reset %s', 'placeholder is a noun, may be plural', 'tcc-plugin' ),
-			'subject'   => __( 'Form', 'tcc-plugin' ),
-			'restore'   => _x( 'Default %s options restored.', 'placeholder is a noun, probably singular', 'tcc-plugin' )
+			'save'      => __( 'Save Changes', 'tcc-fluid' ),
+			'object'    => __( 'Form', 'tcc-fluid' ),
+			'reset'     => _x( 'Reset %s', 'placeholder is a noun, may be plural', 'tcc-fluid' ),
+			'subject'   => __( 'Form', 'tcc-fluid' ),
+			'restore'   => _x( 'Default %s options restored.', 'placeholder is a noun, probably singular', 'tcc-fluid' )
 		),
 		'media'  => array(
-			'title'     => __( 'Assign/Upload Image', 'tcc-plugin' ),
-			'button'    => __( 'Assign Image', 'tcc-plugin' ),
-			'delete'    => __( 'Unassign Image', 'tcc-plugin' )
+			'title'     => __( 'Assign/Upload Image', 'tcc-fluid' ),
+			'button'    => __( 'Assign Image', 'tcc-fluid' ),
+			'delete'    => __( 'Unassign Image', 'tcc-fluid' )
 		)
 	);
 	$this->form_text = apply_filters( 'form_text_' . $this->slug, $text, $text );
@@ -577,8 +577,8 @@ abstract class TCC_Form_Admin {
 				<?php e_esc_html( $pre_text ); ?>
 			</div>
 			<div class="radio-multiple-header">
-				<span class="radio-multiple-yes"><?php esc_html_e( 'Yes', 'tcc-plugin' ); ?></span>&nbsp;
-				<span class="radio-multiple-no" ><?php esc_html_e( 'No', 'tcc-plugin' ); ?></span>
+				<span class="radio-multiple-yes"><?php esc_html_e( 'Yes', 'tcc-fluid' ); ?></span>&nbsp;
+				<span class="radio-multiple-no" ><?php esc_html_e( 'No', 'tcc-fluid' ); ?></span>
 			</div><?php
 			foreach( $layout['source'] as $key => $text ) {
 				$check  = ( isset( $value[ $key ] ) ) ? $value[ $key ] : $preset; ?>

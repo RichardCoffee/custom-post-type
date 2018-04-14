@@ -84,7 +84,7 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 	/**  Admin meta box  **/
 
 	protected function gallery_meta_box_pretext() {
-		$text = esc_html_x( 'Use the %s shortcode to place the gallery in your post.', 'a wordpress shortcode', 'tcc-plugin' ); ?>
+		$text = esc_html_x( 'Use the %s shortcode to place the gallery in your post.', 'a wordpress shortcode', 'tcc-fluid' ); ?>
 		<p>
 			<?php echo sprintf( $text, '<span class="red">[galleryview]</span>' ); ?>
 		</p><?php
