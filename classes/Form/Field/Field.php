@@ -28,6 +28,7 @@ abstract class TCC_Form_Field_Field {
 
 	protected static $date_format = 'm/d/y';
 
+	use TCC_Trait_Attributes;
 	use TCC_Trait_Magic;
 	use TCC_Trait_ParseArgs;
 
