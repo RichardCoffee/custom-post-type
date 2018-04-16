@@ -3,7 +3,7 @@
 # sanitize will require a false timestamp attribute when checking strings
 class WMN_Form_Field_Date extends WMN_Form_Field_Field {
 
-	protected $timestamp = true;
+	protected $type      = 'date';
 	protected $field_css = 'date';
 
 	public function __construct( $args ) {
@@ -11,9 +11,6 @@ class WMN_Form_Field_Date extends WMN_Form_Field_Field {
 		$this->placeholder = 'dd/mm/yyyy';
 		parent::__construct( $args );
 		$this->add_form_control_css( 'date' );
-		if ( ! $this->timestamp && ( $this->sanitize === array( $this, 'sanitize_timestamp' ) ) ) {
-			$this->sanitize = array( $this, 'sanitize_string' );
-		}
 	}
 
 	public function date() { ?>
@@ -51,26 +48,19 @@ class WMN_Form_Field_Date extends WMN_Form_Field_Field {
 
 	# convert to unix timestamp
 	public function deform_date() {
-		$check = intval( $this->field_value, 10 );
-		if ( $check < 3000 ) { // probably a date string
-			if ( $unix = strtotime( $this->field_value ) ) {
-				return $unix;
-			}
+		if ( is_string( $this->field_value ) ) {
+			return strtotime( $this->field_value );
 		}
 		return $this->field_value;
 	}
 
 	# convert to formatted date
-	public function form_date( $reset = false ) {
-		//  check for unix time before formatting
-		$check = intval( $this->field_value, 10 );
-		if ( $reset && $check < 3000 ) {
-			$check = strtotime( $this->field_value );
+	public function form_date() {
+		if ( is_string( $this->field_value ) ) {
+			return date( self::$date_format, strtotime( $this->field_value ) );
+		} else {
+			return date( self::$date_format, $this->field_value );
 		}
-		if ( $check > 3000 ) {  // large year value - assumed unix time stamp
-			return date( self::$date_format, $check );
-		}
-		return $this->field_value;
 	}
 
 	public function bare() {
@@ -86,16 +76,16 @@ class WMN_Form_Field_Date extends WMN_Form_Field_Field {
 		$this->apply_attrs_element( 'input', $attrs );
 	}
 
-	public function sanitize_timestamp( $date ) {
-		$date_format = DateTime::createFromFormat( self::$date_format, $date );
-		if( ! $date_format ) {
-			return false;
+	public function sanitize( $date ) {
+		if ( is_string( $date ) ) {
+			return date( self::$date_format, strtotime( $date ) );
+		} else {
+			$formatted = date( self::$date_format, $date );
+			if( ! $formatted ) {
+				return false;
+			}
 		}
 		return $date;
-	}
-
-	public function sanitize_string( $date ) {
-		return date( self::$date_format, strtotime( $date ) );
 	}
 
 
