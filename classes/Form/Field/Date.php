@@ -6,7 +6,7 @@ class WMN_Form_Field_Date extends WMN_Form_Field_Field {
 	protected $type      = 'date';
 	protected $field_css = 'date';
 
-	public function __construct( $args ) {
+	public function __construct( $args = array() ) {
 		$this->sanitize    = array( $this, 'sanitize_timestamp' );
 		$this->placeholder = 'dd/mm/yyyy';
 		parent::__construct( $args );
