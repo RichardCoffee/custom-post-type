@@ -96,11 +96,11 @@ class TCC_Role_Agent {
   public function template_include($template) {
     $agent = get_query_var('agent', null);
     $name  = get_query_var('author_name', null);
-    #tcc_log_entry("agent: $agent  name: $name");
+    #fluid()->log("agent: $agent  name: $name");
     if($agent && $name) {
       $template = get_template_directory().'/author.php';
     }
-    #tcc_log_entry("template: $template");
+    #fluid()->log("template: $template");
     return $template;
 }
 
@@ -148,7 +148,7 @@ class TCC_Role_Agent {
 	}
 
   protected function agent_image($user) {
-    #tcc_log_entry('profile user',$user,"user ID: {$user->ID}",get_user_meta($user->ID));
+    #fluid()->log('profile user',$user,"user ID: {$user->ID}",get_user_meta($user->ID));
     if (in_array('agent',$user->roles)) {
       $image = get_user_meta($user->ID,'website_image');
 		$text  = $this->agent_image_text();

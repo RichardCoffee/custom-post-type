@@ -115,45 +115,30 @@ class TCC_Microdata {
   }
 
 
- /*
-  *  These functions can be utilized like so:
-  *
-  *  $instance = microdata();
-  *  echo sprintf(_x('Posted on %1$s by %2$s','1: formatted date, 2: author name','text-domain'),get_the_date(),$instance->get_the_author());
-  *
-  */
+	/**
+	 *  These functions are designed to be called in place of the native wordpress function.
+	 *
+	 *  These functions should be called like so:
+	 *		microdata()->bloginfo( 'name' );
+	 *		$name = microdata()->get_bloginfo( 'name' );
+	 *
+	 */
 
 	public function bloginfo( $show, $filter = 'raw' ) {
+		echo $this->get_bloginfo( $show, $filter );
+	}
+
+	public function get_bloginfo( $show, $filter = 'raw' ) {
 		if ( $show === 'url' ) { // bloginfo('url') has been deprecated by WordPress
-			$string = esc_url( home_url('/' ) );
+			$string = esc_url( home_url( '/' ) );
 		} else {
 			$string = esc_html( get_bloginfo( $show, $filter ) );
 			if ( $show === 'name' ) {
-				$string = '<span itemprop="copyrightHolder">' . esc_html( $string ) . '</span>';
+				$string = '<span itemprop="copyrightHolder">' . $string . '</span>';
 			}
 		}
-		echo $string;
+		return $string;
 	}
-
-  public function get_bloginfo($show,$filter='raw') {
-    if ($show=='url') return esc_url(home_url()); // get_bloginfo('url') has been deprecated by WordPress
-    $string = get_bloginfo($show,$filter);
-    if ($show=='name') { $string = "<span itemprop='copyrightHolder'>$string</span>"; }
-    return $string;
-  }
-
-  public function get_the_author($addlink=false) {
-    $string = '';
-    if ($addlink) {
-      $title  = sprintf(__('Posts by %s'),get_the_author());
-      $string.= "<a itemprop='url' rel='author' title='$title' href='".get_author_posts_url(get_the_author_meta('ID'))."'>";
-    }
-    $string.= "<span itemprop='author'>";
-    $string.= get_the_author();
-    $string.= "</span>";
-    if ($addlink) { $string.= "</a>"; }
-    return $string;
-  }
 
  /*
   *  These are filters, and will do their work behind the scenes.  Nothing else is required.
@@ -164,8 +149,7 @@ class TCC_Microdata {
   *
   */
 
-  private function filters() {
-    $pri = 20;
+  private function filters( $pri = 20 ) {
     add_filter('comments_popup_link_attributes',     array($this,'comments_popup_link_attributes'),     $pri);
     add_filter('comment_reply_link',                 array($this,'comment_reply_link'),                 $pri);
     add_filter('get_archives_link',                  array($this,'get_archives_link'),                  $pri);
@@ -176,6 +160,7 @@ class TCC_Microdata {
     add_filter('get_the_archive_description',        array($this,'get_the_archive_description'),        $pri);
     add_filter('get_the_archive_title',              array($this,'get_the_archive_title'),              $pri);
     add_filter('get_the_date',                       array($this,'get_the_date'),                       $pri, 3);
+    add_filter('get_the_modified_date',              array($this,'get_the_date'),                       $pri, 3);
     add_filter('get_the_title',                      array($this,'get_the_title'),                      $pri, 2);
     add_filter('post_thumbnail_html',                array($this,'post_thumbnail_html'),                $pri);
     add_filter('post_type_archive_title',            array($this,'get_the_title'),                      $pri, 2);
@@ -183,9 +168,11 @@ class TCC_Microdata {
     add_filter('single_post_title',                  array($this,'get_the_title'),                      $pri, 2);
     add_filter('single_tag_title',                   array($this,'single_term_title'),                  $pri);
     add_filter('single_term_title',                  array($this,'single_term_title'),                  $pri);
+    add_filter('the_author',                         array($this,'the_author'),                         $pri);
     add_filter('the_author_posts_link',              array($this,'the_author_posts_link'),              $pri);
     add_filter('wp_get_attachment_image_attributes', array($this,'wp_get_attachment_image_attributes'), $pri, 2);
     add_filter('wp_get_attachment_link',             array($this,'wp_get_attachment_link'),             $pri);
+fluid()->log('microdata filters assigned');
   }
 
   public function comments_popup_link_attributes($attr) {
@@ -200,7 +187,7 @@ class TCC_Microdata {
 
   public function get_archives_link($link) {
     if (strpos($link,'itemprop')===false) {
-      $patts = array('/(<link.*?)(\/>)/i',"/(<option.*?>)(\'>)/i","/(<a.*?)(>)/i"); # <?php
+      $patts = array('/(<link.*?)(\/>)/i',"/(<option.*?>)(\'>)/i","/(<a.*?)(>)/i"); #<?
       $link  = preg_replace($patts,'$1 itemprop="url" $2',$link);
     }
     return $link;
@@ -215,7 +202,7 @@ class TCC_Microdata {
 
   public function get_comment_author_link($link) {
     if (strpos($link,'itemprop')===false) {
-      $pats = array('/(<a.*?)(>)/i',      '/(<a.*?>)(.*?)(<\/a>)/i'); #<?
+      $pats = array('/(<a.*?)(>)/i',      '/(<a.*?>)(.*?)(<\/a>)/i');
       $reps = array('$1 itemprop="url"$2','$1<span itemprop="name">$2</span>$3');
       $link = preg_replace($pats,$reps,$link);
     }
@@ -234,56 +221,62 @@ class TCC_Microdata {
 			$date_time = DateTime::createFromFormat( $format, $time );
 			if ( $date_time ) {
 				$date = $date_time->format( 'Y-m-d H:i:s' );
-				$time = '<time itemprop="datePublished" datetime="' . $date . '">' . $time . '</time>';
+				$time = '<time itemprop="datePublished" datetime="' . $date . '">' . esc_html( $time ) . '</time>';
 			}
 		}
 		return $time;
 	}
 
-  public function get_the_archive_description($descrip) {
-    if (!strpos($descrip,'itemprop')===false) return $descrip;
-    return "<span itemprop='description'>$descrip</span>";
-  }
+	public function get_the_archive_description( $descrip ) {
+		if ( ! ( strpos( $descrip, 'itemprop' ) === false ) ) { return $descrip; }
+		return '<span itemprop="description">' . esc_html( $descrip ) . '</span>';
+}
 
   public function get_the_archive_title($title) {
     if (strpos($title,'itemprop')===false) {
       if (is_author()) {
         $title = preg_replace('/(<span.*?)(>)/i','$1 itemprop="author"$2',$title); }
-      else if ($title==__('Archives')) {  #  do not add text domain to this
-        $title = "<span itemprop='headline'>$title</span>"; }
+      else if ($title==__('Archives')) {  #  no need to add the text domain to this
+        $title = '<span itemprop="headline">' . esc_html( $title ) . '</span>'; }
     }
     return $title;
   }
 
-  public function get_the_date($the_date,$format,$postID) {
-    if (strpos($the_date,'itemprop')===false  && $format!=='U') {
-      $datetime = mysql2date('Y-m-d',get_post($postID)->post_date);
-      $the_date = "<time itemprop='datePublished' datetime='$datetime'>$the_date</time>";
-    }
-    return $the_date;
-  }
+	public function get_the_date( $the_date, $format, $postID ) {
+		if ( ( strpos( $the_date, 'itemprop' ) === false ) && ( ! ( $format === 'U' ) ) ) {
+			$datetime = mysql2date( 'Y-m-d H:i:s', get_post( $postID )->post_date );
+			$string   = '<time itemprop="datePublished" datetime="%1$s">%2$s</time>';
+			return sprintf( $string, $datetime, esc_html( $the_date ) );
+		}
+		return $the_date;
+	}
 
   public function get_the_title($title,$id) {
-    if (!strpos($title,'itemprop')===false) return $title; // itemprop already present
-    if (!strpos($title,'sr-only')===false) return $title;  // bootstrap css
-    if (!strpos($title,'screen-reader-text')===false) return $title; // underscore theme
+    if (!(strpos($title,'itemprop')===false)) return $title; // itemprop already present
+    if (!(strpos($title,'sr-only')===false)) return $title;  // bootstrap css
+    if (!(strpos($title,'screen-reader-text')===false)) return $title; // underscore theme
     if ($this->called_by(array('wp_title','_wp_render_title_tag'))) return $title;
-    return "<span itemprop='headline'>$title</span>";
+    return '<span itemprop="headline">' . esc_html( $title ) . '</span>';
   }
 
   public function post_thumbnail_html($html) {
-    if (!strpos($html,'itemprop')===false) return $html;
+    if (!(strpos($html,'itemprop')===false)) return $html;
     return preg_replace('/(<img.*?)(\/>|>)/i','$1 itemprop="image" $2',$html);
   }
 
-  public function single_term_title($title) {
-    if (!strpos($title,'itemprop')===false) return $title;
-    if ($this->called_by(array('wp_title','wp_get_document_title'))) return $title;
-    return "<span itemprop='headline'>$title</span>";
-  }
+	public function single_term_title($title) {
+		if ( ! ( strpos( $title, 'itemprop' ) === false ) ) { return $title; }
+		if ( $this->called_by( array( 'wp_title', 'wp_get_document_title' ) ) ) { return $title; }
+		return '<span itemprop="headline">'. esc_html( $title ) . '</span>';
+	}
+
+	public function the_author( $author ) {
+		if ( ! ( strpos( $author, 'itemprop' ) === false ) ) { return $author; }
+		return '<span itemprop="author">' . esc_html( $author ) . '</span>';
+	}
 
   public function the_author_posts_link($link) {
-    if (!strpos($link,'itemprop')===false) return $link;
+    if (!(strpos($link,'itemprop')===false)) return $link;
     $pattern = array('/(<a.*?)(>)/i',      '/(<a.*?>)(.*?)(<\/a>)/i'); #<?
     $replace = array('$1 itemprop="url"$2','$1<span itemprop="name">$2</span>$3');
     return preg_replace($pattern,$replace,$link);
@@ -295,70 +288,72 @@ class TCC_Microdata {
   }
 
   public function wp_get_attachment_link($link) {
-    if (!strpos($link,'itemprop')===false) return $link;
+    if (!(strpos($link,'itemprop')===false)) return $link;
     return preg_replace('/(<a.*?)>/i','$1 itemprop="contentURL">',$link);
   }
 
 
   /**  Helper functions  **/
 
-  public function description($text) {
-    if (!strpos($text,'itemprop')===false) return $text;
-    return "<span itemprop='description'>$text</span>";
-  }
+	public function description( $text ) {
+		if ( ! ( strpos( $text, 'itemprop' ) === false ) ) { return $text; }
+		return '<span itemprop="description">' . esc_html( $text ) . '</span>';
+	}
 
-  public function email_format($email) {
-    if (!strpos($email,'itemprop')===false) return $email;
-    $email = sanitize_email($email);
-    return "<a href='mailto:$email' itemprop='email'>$email</a>";
-  }
+	public function email_format( $email ) {
+		if ( ! ( strpos( $email, 'itemprop' ) === false ) ) { return $email; }
+		$email  = sanitize_email( $email );
+		$string = '<a href="mailto:%s" itemprop="email">%s</a>';
+		return sprintf( $string, $email, $email );
+	}
 
   public function image_html($image) {
     return $this->post_thumbnail_html($image);
   }
 
-  public function name($name) {
-    if (!strpos($name,'itemprop')===false) return $name;
-    return "<span itemprop='name'>$name</span>";
-  }
+	public function name( $name ) {
+		if ( ! ( strpos( $name, 'itemprop' ) === false ) ) { return $name; }
+		return '<span itemprop="name">' . esc_html( $name ) . '</span>';
+	}
 
-  public function telephone($phone) {
-    if (!strpos($phone,'itemprop')===false) return $phone;
-    return "<span itemprop='telephone'>$phone</span>";
-  }
+	public function telephone( $phone ) {
+		if ( ! ( strpos( $phone, 'itemprop' ) === false ) ) { return $phone; }
+		return '<span itemprop="telephone">' . esc_html( $phone ). '</span>';
+	}
 
-  public function url_format($url) {
-    if (!strpos($url,'itemprop')===false) return $url;
-    return "<a href='$url' itemprop='url'>$url</a>";
-  }
+	public function url_format( $url ) {
+		if ( ! ( strpos( $url, 'itemprop' ) === false ) ) { return $url; }
+		$string = '<a href="%s" itemprop="url">%s</a>';
+		return sprintf( $string, esc_url( $url ), esc_url( $url ) );
+	}
 
 
-  /**  Address functions  **/
+  /**  Address helper functions  **/
 
-  public function city($city) {
-    if (!strpos($city,'itemprop')===false) return $city;
-    return "<span itemprop='addressLocality'>$city</span>";
-  }
+	public function city( $city ) {
+		if ( ! ( strpos( $city, 'itemprop' ) === false ) ) { return $city; }
+		return '<span itemprop="addressLocality">' . esc_html( $city ) . '</span>';
+}
 
-  public function pobox($pobox) {
-    if (!strpos($pobox,'itemprop')===false) return $pobox;
-    return "<span itemprop='postOfficeBoxNumber'>$pobox</span>";
-  }
+	public function pobox( $pobox ) {
+		if ( ! ( strpos( $pobox, 'itemprop' ) === false ) ) { return $pobox; }
+		return '<span itemprop="postOfficeBoxNumber">' . esc_html( $pobox ) . '</span>';
+}
 
-  public function state($state) {
-    if (!strpos($state,'itemprop')===false) return $state;
-    return "<span itemprop='addressRegion'>$state</span>";
-  }
+	public function state( $state ) {
+		if ( ! ( strpos( $state, 'itemprop' ) === false ) ) { return $state; }
+		return '<span itemprop="addressRegion">' . esc_html( $state ) . '</span>';
+	}
 
-  public function street($street) {
-    if (!strpos($street,'itemprop')===false) return $street;
-    return "<span itemprop='streetAddress'>$street</span>";
-  }
+	public function street( $street ) {
+		if ( ! ( strpos( $street, 'itemprop' ) === false ) ) { return $street; }
+		return '<span itemprop="streetAddress">' . esc_html( $street ) . '</span>';
+	}
 
-  public function zipcode($zipcode) {
-    if (!strpos($zipcode,'itemprop')===false) return $zipcode;
-    return "<span itemprop='postalCode'>$zipcode</span>";
-  }
+	public function zipcode( $zipcode ) {
+		if ( ! ( strpos( $zipcode, 'itemprop' ) === false ) ) { return $zipcode; }
+		return '<span itemprop="postalCode">' . esc_html( $zipcode ) . '</span>';
+	}
 
 
   /**  Private functions  **/
