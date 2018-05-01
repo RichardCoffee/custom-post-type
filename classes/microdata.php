@@ -125,7 +125,7 @@ class TCC_Microdata {
 	 */
 
 	public function bloginfo( $show, $filter = 'raw' ) {
-		echo $this->get_bloginfo( $show, $filter );
+		echo esc_html( $this->get_bloginfo( $show, $filter ) );
 	}
 
 	public function get_bloginfo( $show, $filter = 'raw' ) {
@@ -160,7 +160,7 @@ class TCC_Microdata {
     add_filter('get_the_archive_description',        array($this,'get_the_archive_description'),        $pri);
     add_filter('get_the_archive_title',              array($this,'get_the_archive_title'),              $pri);
     add_filter('get_the_date',                       array($this,'get_the_date'),                       $pri, 3);
-    add_filter('get_the_modified_date',              array($this,'get_the_date'),                       $pri, 3);
+    add_filter('get_the_modified_date',              array($this,'get_the_modified_date'),              $pri, 3);
     add_filter('get_the_title',                      array($this,'get_the_title'),                      $pri, 2);
     add_filter('post_thumbnail_html',                array($this,'post_thumbnail_html'),                $pri);
     add_filter('post_type_archive_title',            array($this,'get_the_title'),                      $pri, 2);
@@ -172,7 +172,6 @@ class TCC_Microdata {
     add_filter('the_author_posts_link',              array($this,'the_author_posts_link'),              $pri);
     add_filter('wp_get_attachment_image_attributes', array($this,'wp_get_attachment_image_attributes'), $pri, 2);
     add_filter('wp_get_attachment_link',             array($this,'wp_get_attachment_link'),             $pri);
-fluid()->log('microdata filters assigned');
   }
 
   public function comments_popup_link_attributes($attr) {
@@ -202,7 +201,7 @@ fluid()->log('microdata filters assigned');
 
   public function get_comment_author_link($link) {
     if (strpos($link,'itemprop')===false) {
-      $pats = array('/(<a.*?)(>)/i',      '/(<a.*?>)(.*?)(<\/a>)/i');
+      $pats = array('/(<a.*?)(>)/i',      '/(<a.*?>)(.*?)(<\/a>)/i'); #<?
       $reps = array('$1 itemprop="url"$2','$1<span itemprop="name">$2</span>$3');
       $link = preg_replace($pats,$reps,$link);
     }
@@ -236,7 +235,7 @@ fluid()->log('microdata filters assigned');
     if (strpos($title,'itemprop')===false) {
       if (is_author()) {
         $title = preg_replace('/(<span.*?)(>)/i','$1 itemprop="author"$2',$title); }
-      else if ($title==__('Archives')) {  #  no need to add the text domain to this
+      else if ($title==__('Archives')) {  #  Translatable in core
         $title = '<span itemprop="headline">' . esc_html( $title ) . '</span>'; }
     }
     return $title;
@@ -246,6 +245,15 @@ fluid()->log('microdata filters assigned');
 		if ( ( strpos( $the_date, 'itemprop' ) === false ) && ( ! ( $format === 'U' ) ) ) {
 			$datetime = mysql2date( 'Y-m-d H:i:s', get_post( $postID )->post_date );
 			$string   = '<time itemprop="datePublished" datetime="%1$s">%2$s</time>';
+			return sprintf( $string, $datetime, esc_html( $the_date ) );
+		}
+		return $the_date;
+	}
+
+	public function get_the_modified_date( $the_date, $format, $postID ) {
+		if ( ( strpos( $the_date, 'itemprop' ) === false ) && ( ! ( $format === 'U' ) ) ) {
+			$datetime = mysql2date( 'Y-m-d H:i:s', get_post( $postID )->post_date );
+			$string   = '<time itemprop="dateModified" datetime="%1$s">%2$s</time>';
 			return sprintf( $string, $datetime, esc_html( $the_date ) );
 		}
 		return $the_date;
@@ -272,6 +280,7 @@ fluid()->log('microdata filters assigned');
 
 	public function the_author( $author ) {
 		if ( ! ( strpos( $author, 'itemprop' ) === false ) ) { return $author; }
+		if ( $this->called_by( [ 'get_the_author_posts_link' ] ) ) { return $author; }
 		return '<span itemprop="author">' . esc_html( $author ) . '</span>';
 	}
 

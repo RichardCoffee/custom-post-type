@@ -649,20 +649,26 @@ abstract class TCC_Post_Post {
     }
   }
 
-  /*
-   *  See:  http://wordpress.stackexchange.com/questions/33885/style-custom-columns-in-admin-panels-especially-to-adjust-column-cell-widths
-   *
-   *  css class: .column-{$column}
-   *
-   */
-  public function display_custom_post_column($column,$post_id) {
-    if (array_key_exists($column,$this->columns['add'])) {
-      $term = get_post_meta($post_id,$column,true);
-      $tobj = get_term_by('slug',$term,$column);
-      if ($tobj) { echo $tobj->name; }
-      else { echo '--'; }
-    }
-  }
+	/**
+	 * display a custom column on posts list
+	 *
+	 *  css class: .column-{$column}
+	 *
+	 * @link http://wordpress.stackexchange.com/questions/33885/style-custom-columns-in-admin-panels-especially-to-adjust-column-cell-widths
+	 * @param string $column
+	 * @param integer $post_id
+	 */
+	public function display_custom_post_column( $column, $post_id ) {
+		if ( array_key_exists( $column, $this->columns['add'] ) ) {
+			$term   = get_post_meta( $post_id, $column, true );
+			$object = get_term_by( 'slug', $term, $column );
+			if ( $object ) {
+				echo esc_html( $object->name );
+			} else {
+				echo '--';
+			}
+		}
+	}
 
 
   /**  Users screen  **/

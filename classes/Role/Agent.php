@@ -96,11 +96,9 @@ class TCC_Role_Agent {
   public function template_include($template) {
     $agent = get_query_var('agent', null);
     $name  = get_query_var('author_name', null);
-    #fluid()->log("agent: $agent  name: $name");
     if($agent && $name) {
       $template = get_template_directory().'/author.php';
     }
-    #fluid()->log("template: $template");
     return $template;
 }
 
@@ -129,10 +127,10 @@ class TCC_Role_Agent {
         <table class="form-table">
           <tr>
             <th>
-              <label for="<?php echo $field; ?>"><?php echo $this->fields[$field]; ?></label>
+              <label for="<?php e_esc_attr( $field); ?>"><?php e_esc_html( $this->fields[$field] ); ?></label>
             </th>
             <td>
-              <input type="text" class="regular-text" name="<?php echo $field; ?>" value="<?php echo $value; ?>" />
+              <input type="text" class="regular-text" name="<?php e_esc_attr( $field ); ?>" value="<?php e_esc_attr( $value ); ?>" />
             </td>
           </tr>
         </table><?php
@@ -148,7 +146,6 @@ class TCC_Role_Agent {
 	}
 
   protected function agent_image($user) {
-    #fluid()->log('profile user',$user,"user ID: {$user->ID}",get_user_meta($user->ID));
     if (in_array('agent',$user->roles)) {
       $image = get_user_meta($user->ID,'website_image');
 		$text  = $this->agent_image_text();
@@ -156,7 +153,7 @@ class TCC_Role_Agent {
       <table class="form-table">
         <tr>
           <th>
-            <label for="website_image"><?php echo $this->fields['website_image']; ?></label>
+            <label for="website_image"><?php e_esc_html( $this->fields['website_image'] ); ?></label>
           </th>
           <td>
             <div data-title='<?php echo esc_attr( $text['upload'] ); ?>' data-button='<?php echo esc_attr( $text['assign'] ); ?>'>

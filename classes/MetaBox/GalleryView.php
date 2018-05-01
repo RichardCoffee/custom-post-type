@@ -10,7 +10,8 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 		if ( ! is_admin() ) {
 			add_action( 'tcc_after_enqueue', array( $this, 'register_galleryview' ) );
 		}
-		add_shortcode( 'galleryview', array( $this, 'show_galleryview' ) );
+		// This is a hack, and a stupid one at that.
+		call_user_func( 'add_shortcode', 'galleryview', array( $this, 'show_galleryview' ) ); # FIXME: hack
 	}
 
 	/**  Setup  **/
@@ -55,7 +56,7 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 		if ( $postID ) {
 			$images = $this->get_gallery_images( $postID, true );
 			if ( $images || has_post_thumbnail( $postID ) ) { ?>
-				<div id="<?php echo $this->div_id; ?>">
+				<div id="<?php e_esc_attr( $this->div_id ); ?>">
 					<ul class='tcc-galleryview'><?php
 						if ( has_post_thumbnail( $postID ) ) {
 							$this->show_galleryview_image( get_post_thumbnail_id() );
@@ -71,13 +72,15 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 
 	protected function show_galleryview_image( $imgID ) {
 		$info  = wp_get_attachment( $imgID );
-		$attrs = ( empty( $info['src'] ) )                ? '' :              ' src="' . esc_attr( $info['src'] ) . '"';
-		$attrs.= ( empty( $info['alt'] ) )                ? '' :              ' alt="' . esc_attr( $info['alt'] ) . '"';
-		$attrs.= ( empty( $info['title'] ) )              ? '' :            ' title="' . esc_attr( $info['title'] ) . '"';
-		$attrs.= ( empty( $info['sizes']['thumbnail'] ) ) ? '' :       ' data-frame="' . esc_attr( $info['sizes']['thumbnail'] ) . '"';
-		$attrs.= ( empty( $info['description'] ) )        ? '' : ' data-description="' . esc_attr( $info['description'] ) . '"'; ?>
+		$attrs = array(
+			'src'        => ( empty( $info['src'] ) )                ? '' : $info['src'],
+			'alt'        => ( empty( $info['alt'] ) )                ? '' : $info['alt'],
+			'title'      => ( empty( $info['title'] ) )              ? '' : $info['title'],
+			'data-frame' => ( empty( $info['sizes']['thumbnail'] ) ) ? '' : $info['sizes']['thumbnail'],
+			'data-description' => ( empty( $info['description'] ) )  ? '' : $info['description']
+		); ?>
 		<li>
-			<img <?php echo $attrs; ?> />
+			<?php $this->apply_attrs_element( 'img', $attrs ); ?>
 		</li><?php
 	}
 
@@ -86,7 +89,7 @@ class TCC_MetaBox_GalleryView extends TCC_MetaBox_Gallery {
 	protected function gallery_meta_box_pretext() {
 		$text = esc_html_x( 'Use the %s shortcode to place the gallery in your post.', 'a wordpress shortcode', 'tcc-fluid' ); ?>
 		<p>
-			<?php echo sprintf( $text, '<span class="red">[galleryview]</span>' ); ?>
+			<?php printf( $text, '<span class="red">[galleryview]</span>' ); ?>
 		</p><?php
 	}
 

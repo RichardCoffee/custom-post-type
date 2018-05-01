@@ -55,16 +55,16 @@ class TCC_MetaBox_Gallery extends TCC_MetaBox_MetaBox {
 	public function show_meta_box( $post ) {
 		wp_nonce_field( basename( __FILE__ ), $this->nonce );
 		$this->gallery_meta_box_pretext(); ?>
-		<div id="<?php echo $this->div_id; ?>" class="<?php echo $this->div_css; ?>"><?php
+		<div id="<?php e_esc_attr( $this->div_id ); ?>" class="<?php e_esc_attr( $this->div_css ); ?>"><?php
 			$images = $this->get_gallery_images( $post->ID, true );
 			foreach( $images as $imgID => $src ) { ?>
-				<div class="<?php echo $this->div_img; ?>">
-					<span class="<?php echo $this->icon; ?>"></span>
-					<img class="<?php echo $this->img_css; ?>" src="<?php echo $src; ?>" data-id="<?php echo $imgID ?>">
+				<div class="<?php e_esc_attr( $this->div_img ); ?>">
+					<span class="<?php e_esc_attr( $this->icon ); ?>"></span>
+					<img class="<?php e_esc_attr( $this->img_css ); ?>" src="<?php e_esc_attr( $src ); ?>" data-id="<?php e_esc_attr( $imgID ); ?>">
 				</div><?php
 			} ?>
 		</div>
-		<button id="add-<?php echo $this->div_id; ?>" type="button"><?php echo $this->button; ?></button><?php
+		<button id="add-<?php e_esc_attr( $this->div_id ); ?>" type="button"><?php e_esc_html( $this->button ); ?></button><?php
 	}
 
 	protected function gallery_meta_box_pretext() { }

@@ -12,6 +12,7 @@ abstract class TCC_MetaBox_MetaBox {
 	protected $title     = 'MetaBox Title';
 	protected $type      = 'post';
 
+	use TCC_Trait_Attributes;
 	use TCC_Trait_Magic;
 	use TCC_Trait_ParseArgs;
 
