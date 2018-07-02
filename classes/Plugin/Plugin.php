@@ -10,7 +10,6 @@ abstract class TCC_Plugin_Plugin {
 	protected $setting  = '';    #  settings link
 	protected $state    = '';
 	protected $tab      = 'about';
-	public    $version  = '0.0.0';
 
 	use TCC_Trait_Magic;
 	use TCC_Trait_ParseArgs;
@@ -52,6 +51,13 @@ abstract class TCC_Plugin_Plugin {
 		$state = 'alone';
 		if ( is_readable( get_template_directory() . '/classes/Form/Admin.php' ) ) {
 			$state = 'theme';
+		} else {
+			if ( ! function_exists( 'is_plugin_active' ) ) {
+				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			}
+			if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'tcc-theme-options/tcc-theme-options.php' ) ) {
+				$state = 'plugin';
+			}
 		}
 		return $state;
 	}

@@ -47,17 +47,17 @@ trait TCC_Trait_Attributes {
 	 */
 	public function get_apply_attrs( $attrs ) {
 
-		$is_allowed_no_value = array( 'itemscope', 'multiple', 'value' );
-/*		static $is_allowed_no_value;
-		if ( ! $is_allowed_no_value ) {
+/*		static $is_allowed_no_value = null;
+		if ( empty( $is_allowed_no_value ) ) {
 			$is_allowed_no_value = apply_filters( 'fluid_attr_is_allowed_no_value', [ 'itemscope', 'value' ] );
 		} //*/
+		$is_allowed_no_value = array( 'itemscope', 'multiple', 'value', 'required' );
 
 		$html = ' ';
 		foreach( $attrs as $attr => $value ) {
 			if ( empty( $value ) ) {
 				if ( in_array( $attr, $is_allowed_no_value, true ) ) {
-					$html .= $attr . '="" ';
+					$html .= "$attr ";
 				}
 				continue;
 			}
@@ -94,9 +94,9 @@ trait TCC_Trait_Attributes {
 	 * @param string|array $classes css classes to be sanitized
 	 * @return string
 	 */
-	protected function sanitize_html_class( $classes ) {
+	public function sanitize_html_class( $classes ) {
 		if ( is_array( $classes ) ) {
-			// pack it down then blow it up - insure each element is a single class
+			// pack it down then blow it up - insure each item is a single class
 			$classes = explode( ' ', implode( ' ', $classes ) );
 		} else {
 			// convert string to an array
@@ -171,7 +171,7 @@ trait TCC_Trait_Attributes {
 		$html  = "<$element ";
 		$html .= $this->get_apply_attrs( $attrs );
 		if ( $this->is_tag_self_closing( $element ) ) {
-			$html .= ' />';
+			$html .= ' />' . esc_html( $text );
 		} else {
 			$html .= '>' . esc_html( $text ) . "</$element>";
 		}
@@ -182,13 +182,7 @@ trait TCC_Trait_Attributes {
 		if ( ( $html_tag === 'a' ) && isset( $attrs[ 'target' ] ) ) {
 			# @link https://www.hongkiat.com/blog/wordpress-rel-noopener/
 			$attrs['rel'] = ( ( isset( $attrs['rel'] ) ) ? $attrs['rel'] : '' ) . ' nofollow noopener';
-/*			$add_rel = ' nofollow noopener';
-			if ( isset( $attrs['rel'] ) ) {
-				$attrs['rel'] = $attrs['rel'] . $add_rel;
-			} else {
-				$attrs['rel'] = $add_rel;
-			} //*/
-#			$attrs['rel'] = apply_filters( 'fluid_filter_attributes_by_a_rel', $attrs['rel'] );
+#			$attrs['rel'] = apply_filters( 'fluid_filter_attributes_by_a_rel', $attrs['rel'], $attrs );
 		}
 		return $attrs;
 	}

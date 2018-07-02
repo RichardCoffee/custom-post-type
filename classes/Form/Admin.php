@@ -3,7 +3,7 @@
 /*
  *  classes/Form/Admin.php
  *
- *  copyright 2014-2017, The Creative Collective, the-creative-collective.com
+ *  copyright 2014-2018, The Creative Collective, the-creative-collective.com
  *
  *  I sure hope that Fields API thing works out, cause then I can get rid of this monstrosity.
  */
@@ -181,27 +181,22 @@ abstract class TCC_Form_Admin {
 #    }
   }
 
-  private function field_label($ID,$data) {
-    $html = '';
-    if (($data['render']==='display') || ($data['render']==='radio_multiple')) {
-      $html = '<span';
-      $html.= (isset($data['help']))  ? ' title="'.esc_attr($data['help']).'">' : '>';
-      $html.= (isset($data['label'])) ? esc_html($data['label']) : '';
-      $html.= '</span>';
-    } elseif ($data['render']==='title') {
-      $html = '<span';
-      $html.= ' class="form-title"';
-      $html.= (isset($data['help']))  ? ' title="'.esc_attr($data['help']).'">' : '>';
-      $html.= (isset($data['label'])) ? esc_html($data['label']) : '';
-      $html.= '</span>';
-    } else {
-      $html = '<label for="'.esc_attr($ID).'"';
-      $html.= (isset($data['help']))  ? ' title="'.esc_attr($data['help']).'">' : '>';
-      $html.= (isset($data['label'])) ? esc_html($data['label']) : '';
-      $html.= '</label>';
-    }
-    return $html;
-  }
+	private function field_label( $ID, $data ) {
+		$data  = array_merge( [ 'help' => '', 'label' => '' ], $data );
+		$attrs = array(
+			'title' => $data['help'],
+		);
+		if ( in_array( $data['render'], [ 'display', 'radio_multiple' ] ) ) {
+			return $this->get_element( 'span', $attrs, $data['label'] );
+		} else if ( $data['render'] === 'title' ) {
+			$attrs['class'] = 'form-title';
+			return $this->get_element( 'span', $attrs, $data['label'] );
+		} else {
+			$attrs['for'] = $ID;
+			return $this->get_element( 'label', $attrs, $data['label'] );
+		}
+		return '';
+	}
 
   private function sanitize_callback($option) {
     $valid_func = "validate_{$option['render']}";

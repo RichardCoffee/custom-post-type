@@ -9,11 +9,11 @@
  */
 class TCC_Plugin_Base extends TCC_Plugin_Plugin {
 
-	use TCC_Trait_Singleton;
+#	use TCC_Trait_Singleton;
 
 	public function initialize() {
 		if ( ( ! TCC_Register_Register::php_version_check() ) || ( ! TCC_Register_Register::wp_version_check() ) ) {
-			return
+			return;
 		}
 		register_deactivation_hook( $this->paths->file, array( 'TCC_Register_Register', 'deactivate' ) );
 		register_uninstall_hook(    $this->paths->file, array( 'TCC_Register_Register', 'uninstall'  ) );

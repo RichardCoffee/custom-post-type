@@ -79,18 +79,26 @@ trait TCC_Trait_Logging {
 		}
 	}
 
-	public function logging_get_calling_function_name( $depth = 1 ) {
-		$result = $this->logging_calling_location( $depth );
+	public function logging_get_calling_function_name( $depth = 4 ) {
+		$result = $this->logging_calling_location( max( $depth, 4 ) );
+		$trace  = array_map( 'trim', explode( '/', $result ) );
+		$result = $this->logging_calling_location( $trace[1] );
 		$trace  = array_map( 'trim', explode( ',', $result ) );
 		return $trace[1];
 	}
 
+	/**
+	 * locates a function name in the stack
+	 *
+	 * @param string $func
+	 * @return bool|numeric false or stack level
+	 */
 	public function logging_was_called_by( $func ) {
 		$call_trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
-		foreach( $call_trace as $current ) {
+		foreach( $call_trace as $key => $current ) {
 			if ( ! empty( $current['function'] ) ) {
 				if ( $current['function'] === $func ) {
-					return true;
+					return $key;
 				}
 			}
 		}

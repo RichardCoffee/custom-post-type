@@ -1,22 +1,70 @@
 <?php
+/**
+ * classes/Form/Field/Select.php
+ *
+ */
+/**
+ * display the select field
+ *
+ */
+class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 
-# sanitize requires the attributes 'choices' and 'default'
-class WMN_Form_Field_Select extends WMN_Form_Field_Field {
-
+	/**
+	 * array containing the options for the select element
+	 */
 	protected $choices =  array();
+	/**
+	 * field type
+	 */
 	protected $type    = 'select';
 
+	/**
+	 * initialize the class
+	 *
+	 * @param array $args
+	 */
 	public function __construct( $args ) {
+		# sanitize requires the properties 'choices' and 'default'
 		$this->sanitize = array( $this, 'sanitize' );
 		parent::__construct( $args );
 	}
 
+	/**
+	 * display enclosing div and select element
+	 *
+	 * @param string $css
+	 */
+	public function select_div( $css = 'undef-input-group') { ?>
+		<div class="<?php e_esc_attr( $css ); ?>"><?php
+			$this->label();
+			$this->select(); ?>
+		</div><?php
+	}
+
+	/**
+	 * display select element as table row
+	 */
+	public function select_table_row() { ?>
+		<tr>
+			<th><?php
+				$this->label(); ?>
+			</th>
+			<td><?php
+				$this->select(); ?>
+			</td>
+		</tr><?php
+	}
+
+	/**
+	 * core function - displays select element with options
+	 */
 	public function select() {
 		if ( $this->choices ) {
 			$select = array(
 				'id'    => $this->field_id,
 				'name'  => $this->field_name,
-				'class' => $this->field_css
+				'class' => $this->field_css,
+				'onchange' => $this->onchange,
 			);
 			if ( ! empty( $this->description ) ) {
 				$select['aria-labelledby'] = $this->field_id . '_label';
@@ -24,33 +72,29 @@ class WMN_Form_Field_Select extends WMN_Form_Field_Field {
 			if ( strpos( '[]', $this->field_name ) ) {
 				$select['multiple'] = 'multiple';
 			}
-			if ( $this->onchange ) {
-				$select['onchange'] = $this->onchange;
-			} ?>
-			<div class="undef-input-group"><?php
-				if ( ! empty( $this->description ) ) {
-					echo $this->label();
+			$this->tag( 'select', $select );
+				if ( is_callable( $this->choices ) ) {
+					call_user_func( $this->choices );
+				} else if ( is_array( $this->choices ) ) {
+					$assoc = is_assoc( $this->choices );
+					foreach( $this->choices as $key => $text ) {
+						$attrs = array(
+							'value' => ( $assoc ) ? $key : $text,
+						);
+						$attr = $this->selected( $attrs, $attrs['value'], $this->field_value );
+						$this->element( 'option', $attr, ' ' . $text . ' ' );
+					}
 				} ?>
-				<select <?php $this->apply_attrs( $select ); ?>><?php
-					if ( is_callable( $this->choices ) ) {
-						call_user_func( $this->choices );
-					} else if ( is_array( $this->choices ) ) {
-						$assoc = is_assoc( $this->choices );
-						foreach( $this->choices as $key => $text ) {
-							$attrs = array(
-								'value'    => ( $assoc ) ? $key : $text,
-							);
-							if ( ( $assoc && ( $key === $this->field_value ) ) || ( $text === $this->field_value ) ) {
-								$attrs['selected'] = '';
-							}
-							$this->apply_attrs_element( 'option', $attrs, ' ' . $text . ' ' );
-						}
-					} ?>
-				</select>
-			</div><?php
+			</select><?php
 		}
 	}
 
+	/**
+	 * validate and sanitize select value
+	 *
+	 * @param string $input
+	 * @return string
+	 */
 	public function sanitize( $input ) {
 		$input = sanitize_text_field( $input );
 		return ( in_array( $input, $this->choices ) || array_key_exists( $input, $this->choices ) ) ? $input : $this->default;
