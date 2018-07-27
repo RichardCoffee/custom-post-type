@@ -43,7 +43,7 @@ class TCC_Register_Register {
 
 	public static function php_version_check() {
 		if ( version_compare( phpversion(), static::php_version_required(), '<' ) ) {
-			add_action( 'admin_notices', array( 'TCC_Register_Register', 'unsupported_php_version' ), 10, 2 );
+			add_action( 'admin_notices', [ 'TCC_Register_Register', 'unsupported_php_version' ], 10, 2 );
 			return false;
 		}
 		return true;
@@ -77,7 +77,7 @@ class TCC_Register_Register {
 
 	public static function wp_version_check() {
 		if ( version_compare( $GLOBALS['wp_version'], static::wp_version_required(), '<' ) ) {
-			add_action( 'admin_notices', array( 'TCC_Register_Register', 'unsupported_wp_version' ), 10, 2 );
+			add_action( 'admin_notices', [ 'TCC_Register_Register', 'unsupported_wp_version' ], 10, 2 );
 			return false;
 		}
 		return true;

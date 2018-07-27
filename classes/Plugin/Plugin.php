@@ -18,7 +18,7 @@ abstract class TCC_Plugin_Plugin {
 
 	protected function __construct( $args = array() ) {
 		if ( ! empty( $args['file'] ) ) {
-			$data = get_file_data( $args['file'], array( 'ver' => 'Version' ) );
+			$data = get_file_data( $args['file'], [ 'ver' => 'Version' ] );
 			$defaults = array(
 				'dir'     => plugin_dir_path( $args['file'] ),
 				'plugin'  => dirname( plugin_basename( $args['file'] ) ),
@@ -40,8 +40,8 @@ abstract class TCC_Plugin_Plugin {
 	public function add_actions() { }
 
 	public function add_filters() {
-		add_filter( 'plugin_action_links', array( $this, 'settings_link' ), 10, 4 );
-		add_filter( 'network_admin_plugin_action_links', array( $this, 'settings_link' ), 10, 4 );
+		add_filter( 'plugin_action_links', [ $this, 'settings_link' ], 10, 4 );
+		add_filter( 'network_admin_plugin_action_links', [ $this, 'settings_link' ], 10, 4 );
 	} //*/
 
 
@@ -65,12 +65,12 @@ abstract class TCC_Plugin_Plugin {
 	protected function schedule_initialize() {
 		switch ( $this->state ) {
 			case 'plugin':
-				add_action( 'tcc_theme_options_loaded', array( $this, 'initialize' ) );
+				add_action( 'tcc_theme_options_loaded', [ $this, 'initialize' ] );
 				break;
 			case 'alone':
 			case 'theme':
 			default:
-				add_action( 'plugins_loaded', array( $this, 'initialize' ), 100 );
+				add_action( 'plugins_loaded', [ $this, 'initialize' ], 100 );
 		}
 	}
 

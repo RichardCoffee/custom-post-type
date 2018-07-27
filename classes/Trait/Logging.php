@@ -18,7 +18,7 @@ trait TCC_Trait_Logging {
 /***   Action functions   ***/
 
 	public function log() {
-		call_user_func_array( array( $this, 'logging_entry' ), func_get_args() );
+		call_user_func_array( [ $this, 'logging_entry' ], func_get_args() );
 	}
 
 	public function logg() {
@@ -30,7 +30,7 @@ trait TCC_Trait_Logging {
 
 	public function logobj( $object ) {
 		$reduced = $this->logging_reduce_object( $object );
-		call_user_func( array( $this, 'logging_entry' ), $reduced );
+		call_user_func( [ $this, 'logging_entry' ], $reduced );
 	}
 
 
