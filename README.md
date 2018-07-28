@@ -52,7 +52,7 @@ Requires PHP 5.3+
 Requires jQuery, mainly for the ready() function.  If someone makes vanilla javascript versions
 of the two js files, I would be happy to take a pull request.
 
-Tested up to 4.7.3
+Tested up to 4.9.7
 
 You need four files out of the repository:
 ```
@@ -159,12 +159,20 @@ below for related information.
 #### List columns
 Custom columns can be added/removed via the plugin.  This can be done utilizing the columns property like so:
 ```
-$this->columns = array('add' => array('taxslug' => __('Header text','text-domain')));
+$this->columns = array(
+	'add' => array(
+		'taxslug' => __( 'Header text', 'text-domain' )
+	)
+);
 ```
 The display of taxonomies is handled automatically, while you may need to override the internal method, display_custom_post_column, to display other data:
 ```
-$this->columns = array('add' => array('taxslug' => __('Header text','text-domain'),
-                                      'postid'  => __('Post ID','text-domain')));
+$this->columns = array(
+	'add' => array(
+		'taxslug' => __( 'Header text', 'text-domain' ),
+		'postid'  => __( 'Post ID', 'text-domain' )
+	)
+);
 
 public function display_custom_post_column($column,$post_id) {
   switch($column) {
@@ -178,15 +186,23 @@ public function display_custom_post_column($column,$post_id) {
 ```
 Optionally, a custom display callback can be specified.  It would be used instead of the plugin method:
 ```
-$this->columns = array('add' => array( 'index1' => __('Header One','text-domain'),
-                                       'index2' => __('Header Two','text-domain'))
-                       'callback' => 'callable_function');
+$this->columns = array(
+	'add' => array(
+		'index1' => __( 'Header One', 'text-domain' ),
+		'index2' => __( 'Header Two', 'text-domain' )
+	),
+	'callback' => 'callable_function'
+);
 ```
 If you want a column to be sortable, then add a 'sort' index, like so:
 ```
-$this->columns = array('add'  => array('taxslug' => __('Header text','text-domain'),
-                                       'postid'  => __('Post ID','text-domain'))
-                       'sort' => array('taxslug'));
+$this->columns = array(
+	'add' => array(
+		'taxslug' => __( 'Header text', 'text-domain' ),
+		'postid'  => __( 'Post ID', 'text-domain' )
+	),
+	'sort' => array( 'taxslug' )
+);
 ```
 To style the column use '.column-{slug}' in your css file.
 
@@ -260,4 +276,4 @@ omit     => array --- array of terms not to display in searches. ie:  if a post 
 
 # Change Log
 
-No formal release yet.  Code still subject to change without notice.  If anyone uses this, please let me know, and I will start being more structured in a release schedule.
+No formal release schedule.
