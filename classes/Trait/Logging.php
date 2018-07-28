@@ -58,6 +58,7 @@ trait TCC_Trait_Logging {
 			'log',
 			'logg',
 #			'logging',
+			'logging_log_deprecated',
 			'logobj'
 		);
 		$default = $file = $func = $line = 'n/a';
