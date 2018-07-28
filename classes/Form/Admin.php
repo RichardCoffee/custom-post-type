@@ -702,12 +702,13 @@ abstract class TCC_Form_Admin {
 		$this->render_colorpicker( $data );
 	}
 
-  private function render_title($data) {
-    extract($data);  #  array('ID'=>$item, 'value'=>$data[$item], 'layout'=>$layout[$item], 'name'=>$name)
-    if (!empty($layout['text'])) {
-      $data['layout']['text'] = "<b>{$layout['text']}</b>"; }
-    $this->render_display($data);
-  }
+	private function render_title( $data ) {
+		extract( $data );  #  array('ID'=>$item, 'value'=>$data[$item], 'layout'=>$layout[$item], 'name'=>$name)
+/*		if ( ! empty( $layout['text'] ) ) {
+			$data['layout']['text'] = "<b>{$layout['text']}</b>";
+		} */
+		$this->render_display( $data );
+	}
 
   /**  Validate functions  **/
 
