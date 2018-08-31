@@ -70,14 +70,14 @@ class TCC_Microdata {
   */
 
 	public function __call( $name, $args ) {
-		$this->microdata( $name, $args );
+		return $this->microdata( $name, $args );
 	}
 
 	public function microdata( $type, $as_attr = false ) {
-		if ( method_exists( $this, $type ) ) {
-			$this->$type();
-		} else if ( $as_attr ) {
+		if ( $as_attr ) {
 			return $this->microdata_attrs( $type );
+		} else if ( method_exists( $this, $type ) ) {
+			$this->$type();
 		} else {
 			echo 'itemscope itemtype="http://schema.org/' . esc_attr( $type ) . '"';
 		}

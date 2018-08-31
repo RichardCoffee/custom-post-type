@@ -9,6 +9,7 @@ abstract class TCC_Options_Options {
 	protected $screen     = array();
 
 	abstract protected function form_title();
+	abstract protected function form_icon();
 	abstract public    function describe_options();
 	abstract protected function options_layout();
 
@@ -29,6 +30,7 @@ abstract class TCC_Options_Options {
 			$this->screen = array(
 				'describe' => array( $this, 'describe_options' ),
 				'title'    => $this->form_title(),
+				'icon'     => $this->form_icon(),
 				'option'   => 'tcc_options_' . $this->base,
 				'layout'   => $this->options_layout(),
 			);

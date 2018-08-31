@@ -437,21 +437,23 @@ abstract class TCC_Post_Post {
 	private function process_caps( $name, $author_roles, $editor_roles ) {
 		$role = get_role( $name );
 		#$this->logg('user role:  '.$name,$role);
-		$base = $this->map_basic_caps();
-		extract( $base );  #  extracts as $sing and $plur
-		$caps = array( /*"delete_$sing", "edit_$sing", "read_$sing",*/ "delete_$plur", "edit_$plur");
-		$auth = array( "delete_published_$plur", "edit_published_$plur", "publish_$plur");
-		$edit = array( "delete_others_$plur", "delete_private_$plur", "edit_others_$plur", "edit_private_$plur", "read_private_$plur" );
-		if ( in_array( $role, $author_roles ) ) {
-			$caps = array_unique( array_merge( $caps, $auth ) );
+		if ( $role instanceof WP_Role ) {
+			$base = $this->map_basic_caps();
+			extract( $base );  #  extracts as $sing and $plur
+			$caps = array( /*"delete_$sing", "edit_$sing", "read_$sing",*/ "delete_$plur", "edit_$plur");
+			$auth = array( "delete_published_$plur", "edit_published_$plur", "publish_$plur");
+			$edit = array( "delete_others_$plur", "delete_private_$plur", "edit_others_$plur", "edit_private_$plur", "read_private_$plur" );
+			if ( in_array( $role, $author_roles ) ) {
+				$caps = array_unique( array_merge( $caps, $auth ) );
+			}
+			if ( in_array( $name, $editor_roles ) ) {
+				$caps = array_unique( array_merge( $caps, $edit ) );
+			}
+			foreach( $caps as $cap ) {
+				$role->add_cap( $cap );
+			}
+			#$this->logg('role:  '.$name, $caps,$auth,$edit,get_role($name));
 		}
-		if ( in_array( $name, $editor_roles ) ) {
-			$caps = array_unique( array_merge( $caps, $edit ) );
-		}
-		foreach( $caps as $cap ) {
-			$role->add_cap( $cap );
-		}
-		#$this->logg('role:  '.$name, $caps,$auth,$edit,get_role($name));
 	}
 
 

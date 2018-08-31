@@ -1,6 +1,6 @@
 <?php
 /**
- * Privacy My Way
+ * Plugin Name
  *
  * @package   Custom Post Type Plugin
  * @author    Author Name <author@email>
