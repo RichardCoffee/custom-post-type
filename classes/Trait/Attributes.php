@@ -167,7 +167,7 @@ trait TCC_Trait_Attributes {
 	 */
 	protected function sanitize_tag( $tag ) {
 		$tag = strtolower( $tag );
-		$tag = preg_replace( '/[^a-z]/', '', $tag );
+		$tag = preg_replace( '/[^a-z0-9]/', '', $tag );
 		return $tag;
 	}
 
