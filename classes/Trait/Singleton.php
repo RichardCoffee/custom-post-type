@@ -6,7 +6,7 @@
  *  http://stackoverflow.com/questions/203336/creating-the-singleton-design-pattern-in-php
  *
  *  Notes:  Any class that uses this trait must be sterile, or the child must declare 'private static $instance;'
- *          __clone, __sleep, and __wakeup are private, so can never get called.
+ *          __clone and __wakeup are private, so can never get called.
  */
 
 trait TCC_Trait_Singleton {
@@ -34,7 +34,7 @@ trait TCC_Trait_Singleton {
 
 	/**  An alternate methodology  **/
 /*
-private static $instances = array();
+	private static $instances = array();
 
 	public static function get_instance( $args = array() ) {
 		$class = get_called_class();
