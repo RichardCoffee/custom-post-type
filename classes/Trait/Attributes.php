@@ -2,6 +2,8 @@
 /**
  * classes/Trait/Attributes.php
  *
+ * @package Plugin
+ * @subpackage Traits
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2018, Richard Coffee
  */
