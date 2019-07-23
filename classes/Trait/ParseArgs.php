@@ -2,7 +2,7 @@
 /**
  *  Add support for pre-loading class properties.
  *
- * @package Fluidity
+ * @package Plugin
  * @subpackage Traits
  * @since 20170128
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>

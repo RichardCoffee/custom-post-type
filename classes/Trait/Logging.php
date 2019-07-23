@@ -1,8 +1,8 @@
 <?php
 /**
- * @package    Fluidity
- * @subpackage Debugging
- * @requires   PHP 5.3.6
+ * @package Plugin
+ * @subpackage Traits
+ * @requires PHP 5.3.6
  */
 
 defined( 'WP_DEBUG' ) || exit;

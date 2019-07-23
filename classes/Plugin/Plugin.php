@@ -141,7 +141,7 @@ abstract class TCC_Plugin_Plugin {
 			unset( $links['edit'] );
 			if ( is_plugin_active( $file ) && ! ( $this->tab === 'about' ) ) {
 				$url   = ( $this->setting ) ? $this->setting : admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab );
-				$links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'tcc-fluid' ) );
+				$links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'tcc-plugin' ) );
 			}
 		}
 		return $links;

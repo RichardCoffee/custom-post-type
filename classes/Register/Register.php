@@ -50,7 +50,7 @@ class TCC_Register_Register {
 	}
 
 	public static function unsupported_php_version() {
-		$short = __( 'You are running an unsupported version of PHP.', 'tcc-fluid' );
+		$short = __( 'You are running an unsupported version of PHP.', 'tcc-plugin' );
 		$long  = static::php_bad_version_text();
 		self::display_admin_notice( '&#151; ' . $short, $long );
 	}
@@ -60,7 +60,7 @@ class TCC_Register_Register {
 			_x(
 				'%1$s requires PHP version %2$s, version %3$s detected.  Please upgrade your PHP before attempting to use this plugin. ',
 				'1: Plugin name   2: php version required  3: php version detected',
-				'tcc-fluid'
+				'tcc-plugin'
 			),
 			static::$title,
 			static::$php_vers,
@@ -84,7 +84,7 @@ class TCC_Register_Register {
 	}
 
 	public static function unsupported_wp_version() {
-		$short = __( 'You are running an unsupported version of WordPress.', 'tcc-fluid' );
+		$short = __( 'You are running an unsupported version of WordPress.', 'tcc-plugin' );
 		$long  = static::wp_bad_version_text();
 		self::display_admin_notice( '&#151; ' . $short, $long );
 	}
@@ -94,7 +94,7 @@ class TCC_Register_Register {
 			_x(
 				'%1$s requires WordPress %2$s or later and has detected you are running %3$s. Upgrade your WordPress install before using this plugin.',
 				'1: Plugin name  2: Required version of WordPress  3: Current version of WordPress',
-				'tcc-fluid'
+				'tcc-plugin'
 			),
 			static::$title,
 			static::wp_version_required(),
@@ -109,7 +109,7 @@ class TCC_Register_Register {
 		} ?>
 		<div class="notice notice-error">
 			<p style="max-width:800px;">
-				<b><?php echo esc_html( sprintf( _x( '%s can not be activated.', 'Plugin title', 'tcc-fluid' ), static::$title ) );?></b>
+				<b><?php echo esc_html( sprintf( _x( '%s can not be activated.', 'Plugin title', 'tcc-plugin' ), static::$title ) );?></b>
 				<?php echo esc_html( $short ); ?>
 			</p>
 			<p style="max-width:800px;">

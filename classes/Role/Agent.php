@@ -26,8 +26,8 @@ class TCC_Role_Agent {
 	}
 
 	public function login_prefix( $input ) {
-		$title  = _x( 'Agent', 'noun - user role, prefixed to login placeholder string', 'tcc-fluid' );
-		$format = _x( '%1$s %2$s', '1 - noun serving as an adjective, 2 - primary noun', 'tcc-fluid' );
+		$title  = _x( 'Agent', 'noun - user role, prefixed to login placeholder string', 'tcc-plugin' );
+		$format = _x( '%1$s %2$s', '1 - noun serving as an adjective, 2 - primary noun', 'tcc-plugin' );
 		return sprintf( $format, $title, $input );
 	}
 
@@ -36,23 +36,23 @@ class TCC_Role_Agent {
 
 	private function get_field_titles() {
 		return array(
-			'job_title'      => __( 'Job Title', 'tcc-fluid' ),
-			'education'      => __( 'Education One', 'tcc-fluid' ),
-			'edu_two'        => __( 'Education Two', 'tcc-fluid' ),
-			'edu_three'      => __( 'Education Three', 'tcc-fluid' ),
+			'job_title'      => __( 'Job Title', 'tcc-plugin' ),
+			'education'      => __( 'Education One', 'tcc-plugin' ),
+			'edu_two'        => __( 'Education Two', 'tcc-plugin' ),
+			'edu_three'      => __( 'Education Three', 'tcc-plugin' ),
 			#  TODO:  allow for variable number
-			'certifications' => __( 'Certifications / Affiliations', 'tcc-fluid' ),
-			'certi_two'      => __( 'Certs / Affiliations Two', 'tcc-fluid' ),
-			'certi_three'    => __( 'Certs / Affiliations Three', 'tcc-fluid' ),
+			'certifications' => __( 'Certifications / Affiliations', 'tcc-plugin' ),
+			'certi_two'      => __( 'Certs / Affiliations Two', 'tcc-plugin' ),
+			'certi_three'    => __( 'Certs / Affiliations Three', 'tcc-plugin' ),
 			#  TODO:  allow for variable number
-			'languages'      => __( 'Language One', 'tcc-fluid' ),
-			'lang_two'       => __( 'Language Two', 'tcc-fluid' ),
-			'lang_three'     => __( 'Language Three', 'tcc-fluid' ),
-			'telephone'      => __( 'Telephone', 'tcc-fluid' ),
-			'facebook'       => __( 'Facebook username', 'tcc-fluid' ),
-			'twitter'        => __( 'Twitter handle',  'tcc-fluid' ),
-			'linkedin'       => __( 'LinkedIN Profile', 'tcc-fluid' ),
-			'website_image'  => __( 'Website Image', 'tcc-fluid' ),
+			'languages'      => __( 'Language One', 'tcc-plugin' ),
+			'lang_two'       => __( 'Language Two', 'tcc-plugin' ),
+			'lang_three'     => __( 'Language Three', 'tcc-plugin' ),
+			'telephone'      => __( 'Telephone', 'tcc-plugin' ),
+			'facebook'       => __( 'Facebook username', 'tcc-plugin' ),
+			'twitter'        => __( 'Twitter handle',  'tcc-plugin' ),
+			'linkedin'       => __( 'LinkedIN Profile', 'tcc-plugin' ),
+			'website_image'  => __( 'Website Image', 'tcc-plugin' ),
 		);
 	}
 
@@ -140,8 +140,8 @@ class TCC_Role_Agent {
 
 	protected function agent_image_text() {
 		return array(
-			'assign' => __('Assign Image','tcc-fluid'),
-			'upload' => __('Assign/Upload Image','tcc-fluid'),
+			'assign' => __('Assign Image','tcc-plugin'),
+			'upload' => __('Assign/Upload Image','tcc-plugin'),
 		);
 	}
 
