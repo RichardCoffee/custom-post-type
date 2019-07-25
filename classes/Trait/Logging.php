@@ -207,7 +207,7 @@ trait TCC_Trait_Logging {
 			if ( $key[0] === "\0" ) {
 				$key = str_replace( "\0*\0", 'protected:', $key );
 				foreach( $classes as $class ) {
-					$key = str_replace( "\0$class\0", "private:$class", $key );
+					$key = str_replace( "\0$class\0", "private:$class:", $key );
 				}
 			}
 			if ( is_object( $value ) ) {
