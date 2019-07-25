@@ -198,14 +198,10 @@ trait TCC_Trait_Logging {
 	 * @return array
 	 */
 	public function logging_reduce_object( $object ) {
-		if ( ! is_object( $object ) ) {
-			return $object;
-		}
+		if ( ! is_object( $object ) ) return $object;
 		$classes = array( get_class( $object ) );
 		$parents = class_parents( $object, false );
-		if ( $parents ) {
-			$classes = array_merge( $classes, $parents );
-		}
+		if ( $parents ) $classes = array_merge( $classes, $parents );
 		$reduced = array( 'class:name' => $classes[0] );
 		foreach ( (array)$object as $key => $value ) {
 			if ( $key[0] === "\0" ) {
