@@ -201,18 +201,26 @@ trait TCC_Trait_Logging {
 		if ( ! is_object( $object ) ) {
 			return $object;
 		}
-		$class   = get_class( $object );
-		$reduced = array( 'class:name' => $class );
+		$classes = array( get_class( $object ) );
+		$parents = class_parents( $object, false );
+		if ( $parents ) {
+			$classes = array_merge( $classes, $parents );
+		}
+		$reduced = array( 'class:name' => $classes[0] );
 		foreach ( (array)$object as $key => $value ) {
-			$nkey = str_replace( "\0*\0", 'protected:', $key );
-			$nkey = str_replace( "\0$class\0", 'private:', $nkey );
+			if ( $key[0] === "\0" ) {
+				$key = str_replace( "\0*\0", 'protected:', $key );
+				foreach( $classes as $class ) {
+					$key = str_replace( "\0$class\0", 'private:', $key );
+				}
+			}
 			if ( is_object( $value ) ) {
-				$reduced[ $nkey ] = 'object ' . get_class( $value );
+				$reduced[ $key ] = 'object ' . get_class( $value );
 			} else {
 				if ( is_array( $value ) && is_callable( $value ) && is_object( $value[0] ) ) {
 					$value[0] = 'object ' . get_class( $value[0] );
 				}
-				$reduced[ $nkey ] = $value;
+				$reduced[ $key ] = $value;
 			}
 		}
 		return $reduced;
