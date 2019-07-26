@@ -31,7 +31,7 @@ abstract class TCC_Form_Field_Field {
 	 */
 	protected $id = '';
 	/**
-	 *  Element name attribute.
+	 *  Element name attribute, will be used for the element ID if the ID property is empty.
 	 *
 	 * @since 20170211
 	 * @var string
@@ -79,7 +79,7 @@ abstract class TCC_Form_Field_Field {
 	 *  Flag to indicate that bootstrap css classes are to be used.
 	 *
 	 * @since 20180413
-	 * @var boolean
+	 * @var bool
 	 */
 	protected $bootstrap = true;
 	/**
@@ -103,6 +103,13 @@ abstract class TCC_Form_Field_Field {
 	 * @var string
 	 */
 	protected $label_css = '';
+	/**
+	 *  Indicates this is a required field on the form.
+	 *
+	 * @since 20190726
+	 * @var bool
+	 */
+	protected $required = false;
 	/**
 	 *  Default sanitization method.
 	 *
@@ -157,11 +164,22 @@ abstract class TCC_Form_Field_Field {
 #		}
 		$args = $this->convert_args( $args );
 		$this->parse_args( $args );
-		if ( ( empty( $this->placeholder ) ) && ( ! empty( $this->description ) ) ) {
-			$this->placeholder = $this->description;
+		if ( empty( $this->placeholder ) ) {
+			if ( empty( $this->description ) ) {
+				$this->placeholder = ( $this->required ) ? __( 'Required Field', 'tcc-plugin' ) : '';
+			} else {
+				$this->placeholder = $this->description . ( ( $this->required ) ? ( ' ' . __( '(required field)', 'tcc-plugin' ) ) : '' );
+			}
 		}
 		if ( empty( $this->id ) ) {
 			$this->id = $this->name;
+		}
+		if ( $this->required ) {
+			if ( empty( $this->title ) ) {
+				$this->title = __( 'Required Field', 'tcc-plugin' );
+			} else {
+				$this->title .= ' ' . __( '(required field)', 'tcc-plugin' );
+			}
 		}
 		if ( $this->bootstrap ) {
 			$this->add_form_control_css();
@@ -238,6 +256,7 @@ abstract class TCC_Form_Field_Field {
 			'name'        => $this->name,
 			'value'       => $this->value,
 			'placeholder' => $this->placeholder,
+			'title'       => $this->title,
 			'onchange'    => $this->onchange,
 		);
 		return $attrs;
@@ -262,7 +281,7 @@ abstract class TCC_Form_Field_Field {
 	 * @since 20190726
 	 */
 	protected function label_tag() {
-		$this->tag( 'label', $this->get_label_attributes(), $this->description );
+		$this->tag( 'label', $this->get_label_attributes() );
 	}
 
 	/**
@@ -276,8 +295,10 @@ abstract class TCC_Form_Field_Field {
 		return $this->get_element( 'label', $this->get_label_attributes(), $this->description );
 	}
 
+#	 *  Builds and returns the label tag.  Calling code is responsible for closing the tag.
+#	 * @since 20190726
 	protected function get_label_tag() {
-		return $this->get_tag( 'label', $this->get_label_attributes(), $this->description );
+		return $this->get_tag( 'label', $this->get_label_attributes() );
 	}
 
 	/**
@@ -292,6 +313,7 @@ abstract class TCC_Form_Field_Field {
 			'id'    => $this->id . '_label',
 			'class' => $this->label_css . ( $this->see_label ) ? '' : " $srt",
 			'for'   => $this->id,
+			'title' => $this->title,
 		);
 		return $attrs;
 	}
