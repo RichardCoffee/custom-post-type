@@ -57,7 +57,7 @@ abstract class TCC_Form_Field_Field {
 	 * @since 20190726
 	 * @var integer
 	 */
-	protected tabindex = 0;
+	protected $tabindex = 0;
 	/**
 	 *  Element title attribute.
 	 *
