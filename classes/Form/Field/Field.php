@@ -59,6 +59,13 @@ abstract class TCC_Form_Field_Field {
 	 */
 	protected $tabindex = 0;
 	/**
+	 *  Element tag.
+	 *
+	 * @since 20190726
+	 * @var string
+	 */
+	protected $tag = 'input';
+	/**
 	 *  Element title attribute.
 	 *
 	 * @since 20170308
@@ -234,7 +241,7 @@ abstract class TCC_Form_Field_Field {
 	 * @since 20170211
 	 */
 	public function input() {
-		$this->element( 'input', $this->get_input_attributes() );
+		$this->element( $this->tag, $this->get_input_attributes() );
 	}
 
 	/**
@@ -244,7 +251,7 @@ abstract class TCC_Form_Field_Field {
 	 * @return string
 	 */
 	public function get_input() {
-		return $this->get_element( 'input', $this->get_input_attributes() );
+		return $this->get_element( $this->tag, $this->get_input_attributes() );
 	}
 
 	/**
