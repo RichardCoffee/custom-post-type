@@ -1,10 +1,12 @@
 <?php
 
+# class requires that the js function fix_jquery_datepicker() be available
 # sanitize will require a false timestamp attribute when checking strings
-class WMN_Form_Field_Date extends WMN_Form_Field_Field {
+class TCC_Form_Field_Date extends TCC_Form_Field_Field {
 
+	protected $class     = 'date';
+	protected $timestamp =  false;
 	protected $type      = 'date';
-	protected $field_css = 'date';
 
 	public function __construct( $args = array() ) {
 		$this->sanitize    = array( $this, 'sanitize_timestamp' );
@@ -27,56 +29,56 @@ class WMN_Form_Field_Date extends WMN_Form_Field_Field {
 	public function input() {
 		$visible = array(
 			'type'  => $this->type,
-			'id'    => 'visible_' . $this->field_id,
-			'name'  => 'visible_' . $this->field_name,
+			'id'    => 'visible_' . $this->id,
+			'name'  => 'visible_' . $this->name,
 			'size'  => 10,
-			'class' => $this->field_css,
+			'class' => $this->class,
 			'value' => $this->form_date(),
 			'placeholder'   => $this->placeholder,
-			'data-altfield' => $this->field_name,
+			'data-altfield' => $this->name,
 			'onchange'      => 'fix_jquery_datepicker(this);'
 		);
 		$hidden = array(
 			'type'  => 'hidden',
-			'id'    => $this->field_id,
-			'name'  => $this->field_name,
+			'id'    => $this->id,
+			'name'  => $this->name,
 			'value' => $this->deform_date()
 		);
-		$this->apply_attrs_element( 'input', $visible );
-		$this->apply_attrs_element( 'input', $hidden );
+		$this->element( 'input', $visible );
+		$this->element( 'input', $hidden );
 	}
 
 	# convert to unix timestamp
 	public function deform_date() {
-		if ( is_string( $this->field_value ) ) {
-			return strtotime( $this->field_value );
+		if ( is_string( $this->value ) ) {
+			return strtotime( $this->value );
 		}
-		return $this->field_value;
+		return $this->value;
 	}
 
 	# convert to formatted date
 	public function form_date() {
-		if ( is_string( $this->field_value ) ) {
-			return date( self::$date_format, strtotime( $this->field_value ) );
+		if ( is_string( $this->value ) ) {
+			return date( self::$date_format, strtotime( $this->value ) );
 		} else {
-			return date( self::$date_format, $this->field_value );
+			return date( self::$date_format, $this->value );
 		}
 	}
 
 	public function bare() {
 		$attrs = array(
 			'type'  => $this->type,
-			'id'    => $this->field_id,
-			'name'  => $this->field_name,
+			'id'    => $this->id,
+			'name'  => $this->name,
 			'size'  => 10,
-			'class' => $this->field_css,
+			'class' => $this->class,
 			'value' => $this->form_date(),
 			'placeholder' => $this->placeholder,
 		);
-		$this->apply_attrs_element( 'input', $attrs );
+		$this->element( 'input', $attrs );
 	}
 
-	public function sanitize( $date ) {
+	public function sanitize_timestamp( $date ) {
 		if ( is_string( $date ) ) {
 			return date( self::$date_format, strtotime( $date ) );
 		} else {

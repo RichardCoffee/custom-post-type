@@ -16,7 +16,7 @@ class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 	/**
 	 * field type
 	 */
-	protected $type    = 'select';
+	protected $type = 'select';
 
 	/**
 	 * initialize the class
@@ -61,15 +61,15 @@ class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 	public function select() {
 		if ( $this->choices ) {
 			$select = array(
-				'id'    => $this->field_id,
-				'name'  => $this->field_name,
-				'class' => $this->field_css,
+				'id'    => $this->id,
+				'name'  => $this->name,
+				'class' => $this->class,
 				'onchange' => $this->onchange,
 			);
 			if ( ! empty( $this->description ) ) {
-				$select['aria-labelledby'] = $this->field_id . '_label';
+				$select['aria-labelledby'] = $this->id . '_label';
 			}
-			if ( strpos( '[]', $this->field_name ) ) {
+			if ( strpos( '[]', $this->name ) ) {
 				$select['multiple'] = 'multiple';
 			}
 			$this->tag( 'select', $select );
@@ -81,7 +81,7 @@ class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 						$attrs = array(
 							'value' => ( $assoc ) ? $key : $text,
 						);
-						$attr = $this->selected( $attrs, $attrs['value'], $this->field_value );
+						$attr = $this->selected( $attrs, $attrs['value'], $this->value );
 						$this->element( 'option', $attr, ' ' . $text . ' ' );
 					}
 				} ?>
