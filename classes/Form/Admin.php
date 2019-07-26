@@ -817,7 +817,7 @@ abstract class TCC_Form_Admin {
 		$this->tag( 'select', $attrs );
 			foreach( $layout['source'] as $key => $text ) {
 				$attrs = [ 'value' => $key ];
-				$attrs = $this->selected( $attrs, $key, $value );
+				$this->selected( $attrs, $key, $value );
 				$this->element( 'option', $attrs, ' ' . $key . ' ' );
 			} ?>
 		</select><?php
@@ -987,7 +987,7 @@ abstract class TCC_Form_Admin {
 			if ( is_array( $source_func ) ) {
 				foreach( $source_func as $key => $text ) {
 					$attrs = [ 'value' => $key ];
-					$attrs = $this->selected( $attrs, $key, $value );
+					$this->selected( $attrs, $key, $value );
 					$this->element( 'option', $attrs, ' ' . $text . ' ' );
 				}
 			} elseif ( method_exists( $this, $source_func ) ) {

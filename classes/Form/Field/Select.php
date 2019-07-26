@@ -81,8 +81,8 @@ class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 						$attrs = array(
 							'value' => ( $assoc ) ? $key : $text,
 						);
-						$attr = $this->selected( $attrs, $attrs['value'], $this->value );
-						$this->element( 'option', $attr, ' ' . $text . ' ' );
+						$this->selected( $attrs, $attrs['value'], $this->value );
+						$this->element( 'option', $attrs, ' ' . $text . ' ' );
 					}
 				} ?>
 			</select><?php
