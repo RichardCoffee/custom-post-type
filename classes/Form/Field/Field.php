@@ -52,6 +52,13 @@ abstract class TCC_Form_Field_Field {
 	 */
 	protected $placeholder = '';
 	/**
+	 *  Indicates the tabindex attribute.
+	 *
+	 * @since 20190726
+	 * @var integer
+	 */
+	protected tabindex = 0;
+	/**
 	 *  Element title attribute.
 	 *
 	 * @since 20170308
@@ -243,22 +250,17 @@ abstract class TCC_Form_Field_Field {
 	/**
 	 *  Creates the array that controls the element's behavior.
 	 *
-	 *  Please note that any empty value will not get built into the element.
-	 *
 	 * @since 20180426
 	 * @return array
 	 */
 	protected function get_input_attributes() {
-		$attrs = array(
-			'id'          => $this->id,
-			'type'        => $this->type,
-			'class'       => $this->class,
-			'name'        => $this->name,
-			'value'       => $this->value,
-			'placeholder' => $this->placeholder,
-			'title'       => $this->title,
-			'onchange'    => $this->onchange,
-		);
+		$attrs    = array();
+		$possible = array( 'id', 'type', 'class', 'name', 'value', 'placeholder', 'title', 'onchange', 'tabindex' );
+		foreach( $possible as $attribute ) {
+			if ( ! empty( $this->$attribute ) ) {
+				$attrs[ $attribute ] = $this->$attribute;
+			}
+		}
 		return $attrs;
 	}
 
