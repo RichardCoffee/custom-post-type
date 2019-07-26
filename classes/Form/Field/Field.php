@@ -130,7 +130,7 @@ abstract class TCC_Form_Field_Field {
 	 * @since 20170211
 	 * @var string
 	 */
-	protected $sanitize = 'esc_html';
+	protected $sanitize = 'sanitize_text_field';
 	/**
 	 *  Whether or not to show the element label.
 	 *
