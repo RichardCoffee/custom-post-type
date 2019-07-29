@@ -4,7 +4,7 @@
  *
  * @package   Custom Post Type Plugin
  * @author    Author Name <author@email>
- * @copyright 2018 Author Name
+ * @copyright 2019 Author Name
  * @license   GPLv2  <need uri here>
  * @link      link
  *
@@ -12,10 +12,10 @@
  * Plugin Name:       Custom Post Type Plugin
  * Plugin URI:        pluginhome.com
  * Description:       Description for the plugin.
- * Version:           2.3.1
+ * Version:           0.1.0
  * Requires at least: 4.7.0
  * Requires WP:       4.7.0
- * Tested up to:      4.7.4
+ * Tested up to:      5.2.0
  * Requires PHP:      5.3.6
  * Author:            Author Name
  * Author URI:        author uri

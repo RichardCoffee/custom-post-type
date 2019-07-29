@@ -886,7 +886,7 @@ abstract class TCC_Form_Admin {
 				$this->checked( $radio_attrs, $value, $key ); ?>
 				<div>
 					<label><?php
-						$this->tag( 'input', $attrs );
+						$this->tag( 'input', $radio_attrs );
 						if ( isset( $layout['src-html'] ) ) {
 							echo wp_kses( $text, fluid()->kses() );
 						} else {
