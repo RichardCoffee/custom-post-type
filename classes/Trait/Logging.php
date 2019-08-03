@@ -212,10 +212,14 @@ trait TCC_Trait_Logging {
 			}
 			if ( is_object( $value ) ) {
 				$reduced[ $key ] = 'object ' . get_class( $value );
-			} else {
-				if ( is_array( $value ) && is_callable( $value ) && is_object( $value[0] ) ) {
-					$value[0] = 'object ' . get_class( $value[0] );
+			} else if ( is_array( $value ) ) {
+				foreach( $value as $vkey => $vvalue ) {
+					if ( is_object( $vvalue ) ) {
+						$value[ $vkey ] = 'object ' . get_class( $vvalue );
+					}
 				}
+				$reduced[ $key ] = $value;
+			} else {
 				$reduced[ $key ] = $value;
 			}
 		}
