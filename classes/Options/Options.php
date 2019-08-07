@@ -19,7 +19,7 @@ abstract class TCC_Options_Options {
 	}
 
 	public function form_layout( $form ) {
-		if ( ! isset( $form[ $this->base ] ) ) {
+		if ( ! array_key_exists( $this->base, $form ) ) {
 			$form[ $this->base ] = ( empty( $this->screen ) ) ? $this->default_form_layout() : $this->screen;
 		}
 		return $form;
@@ -46,12 +46,12 @@ abstract class TCC_Options_Options {
 	 * @return array
 	 */
 	public function options_localization( $data = array() ) {
-		if ( ! isset( $data['showhide'] ) ) {
+		if ( ! array_key_exists( 'showhide', $data ) ) {
 			$data['showhide'] = array();
 		}
 		$options = ( ! empty( $this->screen['layout'] ) ) ? $this->screen['layout'] : $this->options_layout();
 		foreach( $options as $key => $item ) {
-			if ( isset( $item['showhide'] ) ) {
+			if ( array_key_exists( 'showhide', $item ) ) {
 				$data['showhide'][] = $item['showhide'];
 			}
 		}
@@ -62,7 +62,7 @@ abstract class TCC_Options_Options {
 		$form = $this->options_layout( true );
 		$opts = array();
 		foreach( $form as $key => $option ) {
-			if ( isset( $option['default'] ) ) {
+			if ( array_key_exists( 'default', $option ) ) {
 				$opts[ $key ] = $option['default'];
 			}
 		}
@@ -71,7 +71,7 @@ abstract class TCC_Options_Options {
 
 	public function get_item( $item ) {
 		$layout = ( empty( $this->screen ) ) ? $this->options_layout() : $this->screen['layout'];
-		return ( isset( $layout[ $item ] ) ) ? $layout[ $item ] : array();
+		return ( array_key_exists( $item, $layout ) ) ? $layout[ $item ] : array();
 	}
 
 
