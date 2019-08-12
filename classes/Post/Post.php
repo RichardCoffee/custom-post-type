@@ -81,8 +81,8 @@ abstract class TCC_Post_Post {
 	use TCC_Trait_ParseArgs;
 
 	protected function __construct( $data ) {
-		if ( ( isset( $data['type'] ) && ( ! post_type_exists( $data['type'] ) ) ) || ( $this->type && ( ! post_type_exists( $this->type ) ) ) ) {
-			if ( isset( $data['nodelete'] ) ) {
+		if ( ( array_key_exists( 'type', $data ) && ( ! post_type_exists( $data['type'] ) ) ) || ( $this->type && ( ! post_type_exists( $this->type ) ) ) ) {
+			if ( array_key_exists( 'nodelete', $data ) ) {
 				$this->cpt_nodelete = true;  //  FIXME
 			}
 			unset( $data['cpt_nodelete'], $data['nodelete'] );  //  FIXME
@@ -159,7 +159,7 @@ abstract class TCC_Post_Post {
 				add_action( 'manage_users_columns',       array( $this, 'manage_users_columns' ) );
 				add_action( 'manage_users_custom_column', array( $this, 'manage_users_custom_column' ), 10, 3 );
 			}
-			if ( ! isset( static::$types[ $this->type ] ) ) {
+			if ( ! array_key_exists( $this->type, static::$types ) ) {
 				static::$types[ $this->type ] = $this;
 			}
 		}
@@ -340,7 +340,7 @@ abstract class TCC_Post_Post {
 			2  => $strings['custom_u'],
 			3  => $strings['custom_d'],
 			4  => sprintf( $strings['update'],   $this->label ),
-			5  => isset( $_GET['revision'] ) ? sprintf( $strings['revision'], $this->label, wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			5  => array_key_exists( 'revision', $_GET ) ? sprintf( $strings['revision'], $this->label, wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
 			6  => sprintf( $strings['publish'],  $this->label ) . $view_link,
 			7  => sprintf( $strings['saved'],    $this->label ),
 			8  => sprintf( $strings['submit'],   $this->label ) . $preview_link,
@@ -506,16 +506,16 @@ abstract class TCC_Post_Post {
 		if ( empty( $single ) && empty( $taxargs['labels']['singular_name'] ) ) {
 			return;
 		}
-		$single = ( isset( $taxargs['labels']['singular_name'] ) ) ? $taxargs['labels']['singular_name'] : $single;
+		$single = ( array_key_exists( 'singular_name', $taxargs['labels'] ) ) ? $taxargs['labels']['singular_name'] : $single;
 		if ( empty( $plural ) && empty( $taxargs['labels']['name'] ) && empty( $taxargs['label'] ) ) {
 			return;
 		}
-		$plural = ( isset( $taxargs['labels']['name'] ) ) ? $taxargs['labels']['name'] : ( isset( $taxargs['label'] ) ) ? $taxargs['label'] : $plural;
+		$plural = ( array_key_exists( 'name', $taxargs['labels'] ) ) ? $taxargs['labels']['name'] : ( array_key_exists( 'label', $taxargs ) ) ? $taxargs['label'] : $plural;
 		$labels = $this->taxonomy_labels( $single, $plural );
-		$labels = ( isset( $taxargs['labels'] ) ) ? array_merge( $labels, $taxargs['labels'] ) : $labels;
+		$labels = ( array_key_exists( 'labels', $taxargs ) ) ? array_merge( $labels, $taxargs['labels'] ) : $labels;
 		$taxargs['labels']  = apply_filters( "tcc_{$this->type}_{$tax}_labels", $labels );
-		$taxargs['show_admin_column'] = ( isset( $taxargs['show_admin_column'] ) ) ? $taxargs['show_admin_column'] : $admin;
-		$taxargs['rewrite'] = ( isset( $taxargs['rewrite'] ) ) ? $taxargs['rewrite'] : ( isset( $rewrite ) ) ? [ 'slug' => $rewrite ] : [ 'slug' => $tax ];
+		$taxargs['show_admin_column'] = ( array_key_exists( 'show_admin_column', $taxargs ) ) ? $taxargs['show_admin_column'] : $admin;
+		$taxargs['rewrite'] = ( array_key_exists( 'rewrite', $taxargs ) ) ? $taxargs['rewrite'] : ( array_key_exists( 'rewrite', $args ) ) ? [ 'slug' => $rewrite ] : [ 'slug' => $tax ];
 		$taxargs = apply_filters( 'tcc_register_taxonomy_' . $tax, $taxargs, $args );
 
 		register_taxonomy( $tax, $this->type, $taxargs );
@@ -688,7 +688,7 @@ abstract class TCC_Post_Post {
 
 	public function remove_custom_post_columns( $columns ) {
 		foreach( $this->columns['remove'] as $no_col ) {
-			if ( isset( $columns[ $no_col ] ) ) {
+			if ( array_key_exists( $no_col, $columns ) ) {
 				unset( $columns[ $no_col ] );
 			}
 		}
@@ -698,7 +698,7 @@ abstract class TCC_Post_Post {
 	public function add_custom_post_columns( $columns ) {
 		$place = 'title';
 		foreach( $this->columns['add'] as $key => $col ) {
-			if ( ! isset( $columns[ $key ] ) ) {
+			if ( ! array_key_exists( $key, $columns ) ) {
 				$columns = array_insert_after( $place, $columns, $key, $col );
 				$place   = $key;
 			}
@@ -712,7 +712,7 @@ abstract class TCC_Post_Post {
 			if ( ! in_array( $key, $this->columns['sort'] ) ) {
 				continue;
 			}
-			if ( ! isset( $columns[ $key ] ) ) {
+			if ( ! array_key_exists( $key, $columns ) ) {
 				$columns = array_insert_after( $place, $columns, $key, $key );
 				$place   = $key;
 			}
@@ -725,7 +725,7 @@ abstract class TCC_Post_Post {
 			$screen = get_current_screen();
 			if ( $screen && ( $screen->id === "edit-{$this->type}" ) ) {
 				$orderby = $query->get( 'orderby');
-				if ( isset( $this->columns['sort'] ) && in_array( $orderby, $this->columns['sort'] ) ) {
+				if ( array_key_exists( 'sort', $this->columns ) && in_array( $orderby, $this->columns['sort'] ) ) {
 					$query->set( 'meta_key', $orderby );
 					$query->set( 'orderby', 'meta_value' );
 				}
@@ -770,7 +770,7 @@ abstract class TCC_Post_Post {
 		$index = "{$this->type} num";  #  get WP to add the num css class
 		if ( $column_name === $index ) {
 			$counts = $this->get_author_post_type_counts();
-			if ( isset( $counts[ $user_id ] ) ) {
+			if ( array_key_exists( $user_id, $counts ) ) {
 				$link   = admin_url() . "edit.php?post_type={$this->type}&author=" . $user_id;
 				$column = $this->tag( 'a', [ 'href' => $link ] );
 				$column.= $this->element( 'span', [ 'aria-hidden' => 'true' ], $counts[$user_id] );
@@ -787,8 +787,8 @@ abstract class TCC_Post_Post {
 	}
 
 	private function get_author_post_type_counts() {
-		static $counts;
-		if ( ! isset( $counts ) ) {
+		static $counts = 0;
+		if ( ! $counts ) {
 			global $wpdb;
 			$sql = "SELECT post_author, COUNT(*) AS post_count FROM {$wpdb->posts}";
 			$sql.= " WHERE post_type='{$this->type}' AND post_status IN ('publish','pending', 'draft')";
@@ -824,9 +824,9 @@ abstract class TCC_Post_Post {
 
 	private function locate_template( $template, $slug ) {
 		$testable = $slug . '-' . $this->type . '.php';
-		if ( isset( $this->templates[ $slug ] ) ) {
+		if ( array_key_exists( $slug, $this->templates ) ) {
 			$template = $this->templates[ $slug ];
-		} elseif ( isset( $this->templates['folders'] ) ) {
+		} else if ( array_key_exists( 'folders', $this->templates ) ) {
 			foreach( (array)$this->templates['folders'] as $folder ) {
 				$test = $folder . '/' . $testable;
 				if ( is_readable( $test ) ) {
@@ -891,7 +891,7 @@ abstract class TCC_Post_Post {
 		$mytype = get_post_type( $post_id );
 		if ( $this->type === $mytype ) {
 			if ( is_singular( $mytype ) ) {
-				if ( ( isset( $this->comments ) ) && ( $this->comments ) ) {
+				if ( ( property_exists( $this, 'comments' ) ) && ( $this->comments ) ) {
 					if ( is_bool( $this->comments ) ) {
 						$open = $this->comments;
 					} else { // TODO:  support numeric values
