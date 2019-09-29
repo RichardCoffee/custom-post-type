@@ -249,7 +249,7 @@ class TCC_Microdata {
 	}
 
 	public function get_post_time( $time, $format, $gmt ) {
-		if ( strpos( $time, 'itemprop' ) === false ) {
+		if ( ( strpos( $time, 'itemprop' ) === false ) && ( ! ( $format === 'U' ) ) ) {
 			$date_time = DateTime::createFromFormat( $format, $time );
 			if ( $date_time ) {
 				$date = $date_time->format( 'Y-m-d H:i:s' );
@@ -365,6 +365,13 @@ class TCC_Microdata {
 	public function telephone( $phone ) {
 		if ( ! ( strpos( $phone, 'itemprop' ) === false ) ) { return $phone; }
 		return '<span itemprop="telephone">' . esc_html( $phone ). '</span>';
+	}
+
+	public function telephone_format( $phone ) {
+		if ( ! ( strpos( $phone, 'itemprop' ) === false ) ) { return $phone; }
+		$cleaned = preg_replace( "/[^0-9]/", "", $phone );
+		$string  = '<a href="telephone:%s" itemprop="telephone">%s</a>';
+		return sprintf( $string, $cleaned, $phone );
 	}
 
 	public function url_format( $url ) {

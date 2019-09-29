@@ -3,7 +3,12 @@
 abstract class TCC_MetaBox_MetaBox {
 
 	protected $add_meta  = null;
-	protected $callback  = null;
+	/**
+	 *  Callback arguments
+			'__block_editor_compatible_meta_box' (boolean) true indicates the metabox can be used with the block editor, default: true
+			'__back_compat_meta_box'             {boolean) true indicates the metabox should only be displayed when using the old editor, default: false
+	 */
+	protected $callback  = [ '__block_editor_compatible_meta_box' => true, '__back_compat_meta_box' => false ];  #  callback arguments - not the callback function!
 	protected $context   = 'normal';
 	protected $nonce     = 'meta_box_nonce';   # change this!
 	protected $priority  = 'high';
@@ -35,7 +40,7 @@ abstract class TCC_MetaBox_MetaBox {
 
 	protected function pre_save_meta_box( $postID, $file ) {
 		remove_action( $this->save_meta, [ $this, 'save_meta_box' ] ); # prevent recursion
-		if ( ! isset( $_POST[ $this->nonce ] ) )          return false;
+		if ( ! array_key_exists( $this->nonce, $_POST ) ) return false;
 		if ( ! wp_verify_nonce( sanitize_key( $_POST[ $this->nonce ] ), $file ) ) return false;
 		if ( ! current_user_can( 'edit_post', $postID ) ) return false;
 		if ( wp_is_post_autosave( $postID ) )             return false;

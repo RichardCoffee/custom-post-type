@@ -109,7 +109,7 @@ class TCC_Role_Agent {
 		if ( $user && in_array( 'agent', $user->roles ) ) {
 			$fields = array( 'telephone', 'facebook', 'twitter', 'linkedin' );
 			foreach( $fields as $field ) {
-				if ( ! isset( $profile_fields[ $field ] ) ) {
+				if ( ! array_key_exists( $field, $profile_fields ) ) {
 					$profile_fields[ $field ] = $this->fields[ $field ];
 				}
 			}
@@ -172,10 +172,10 @@ class TCC_Role_Agent {
   public function save_agent_information($user_id) {
     foreach($this->fields as $field=>$title) {
 #error_log("field: $field");
-      if (isset($_POST[$field])) {
+      if ( array_key_exists( $field, $_POST ) ) {
 #error_log($_POST[$field]);
         update_user_meta($user_id,$field,sanitize_text_field($_POST[$field])); } } /*
-    if (isset($_POST['website_image'])) {
+    if ( array_key_exists( 'website_image', $_POST ) ) {
       update_user_meta($user_id,'website_image',sanitize_text_field($_POST['website_image'])); } //*/
   }
 

@@ -218,7 +218,7 @@ abstract class TCC_Form_Field_Field {
 			'form_control' => 'bootstrap'
 		);
 		foreach( $check as $old => $new ) {
-			if ( isset( $args[ $old ] ) ) {
+			if ( array_key_exists( $old, $args ) ) {
 				$args[ $new ] = $args[ $old ];
 			}
 		}

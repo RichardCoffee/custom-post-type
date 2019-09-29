@@ -80,10 +80,10 @@ trait TCC_Trait_Logging {
 		$call_trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
 		$total_cnt  = count( $call_trace );
 		do {
-			$file = ( isset( $call_trace[ $depth ]['file'] ) )     ? $call_trace[ $depth ]['file']     : $default;
-			$line = ( isset( $call_trace[ $depth ]['line'] ) )     ? $call_trace[ $depth ]['line']     : $default;
+			$file = ( array_key_exists( 'file', $call_trace[ $depth ] ) )     ? $call_trace[ $depth ]['file']     : $default;
+			$line = ( array_key_exists( 'line', $call_trace[ $depth ] ) )     ? $call_trace[ $depth ]['line']     : $default;
 			$depth++;
-			$func = ( isset( $call_trace[ $depth ]['function'] ) ) ? $call_trace[ $depth ]['function'] : $default;
+			$func = ( array_key_exists( 'function', $call_trace[ $depth ] ) ) ? $call_trace[ $depth ]['function'] : $default;
 		} while( in_array( $func, $skip_list, true ) && ( $total_cnt > $depth ) );
 		return "$file, $func, $line : $total_cnt/$depth";
 	}
