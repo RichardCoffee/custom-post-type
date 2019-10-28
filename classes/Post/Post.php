@@ -76,6 +76,7 @@ abstract class TCC_Post_Post {
 	private $cpt_nodelete = false;       #    if true then implement no deletion policy on builtin taxonomies assigned to this cpt
 	private $nodelete     = array();     #    used in $this->taxonomy_registration($args)
 
+	use TCC_Trait_Attributes;
 	use TCC_Trait_Logging;
 	use TCC_Trait_Magic;
 	use TCC_Trait_ParseArgs;
@@ -329,7 +330,7 @@ abstract class TCC_Post_Post {
 		if ( $post = get_post() ) { #  get_post() call should always succeed when editing a post
 			$view_text      = sprintf( $phrases['view_s'], $this->label );
 			$preview_text   = sprintf( $strings['preview'], $this->label );
-			$link_tag_html  = '  <a href="%s" target="' . sanitize_title( $post->post_title ) . '">';
+			$link_tag_html  = '  ' . $this->tag( 'a', [ 'href' => '%s', 'target' => sanitize_title( $post->post_title ) ] );
 			$view_link      = sprintf( $link_tag_html, esc_url( get_permalink( $post->ID ) ) ) . $view_text . '</a>';
 			$preview_link   = sprintf( $link_tag_html, esc_url( add_query_arg( 'preview', 'true', get_permalink( $post->ID ) ) ) ) . $preview_text . '</a>';
 			$formed_date    = date_i18n( get_option( 'date_format' ), strtotime( $post->post_date ) );

@@ -216,7 +216,7 @@ class TCC_Microdata {
 
 	public function get_comment_author_link( $link ) {
 		if ( strpos( $link, 'target=' ) === false ) {
-			$link = preg_replace( '/(<a.*?)(>)/i', '$1 target="_blank" $2', $link );
+			$link = preg_replace( '/(<a.*?)(>)/i', '$1 target="_blank" rel="noopener noreferrer" $2', $link );
 		}
 		if ( strpos( $link, 'itemprop' ) === false ) {
 			$pats = array( '/(<a.*?)(>)/i',       '/(<a.*?>)(.*?)(<\/a>)/i' ); #<?
