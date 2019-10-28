@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 abstract class TCC_MetaBox_MetaBox {
 
 	protected $add_meta  = null;

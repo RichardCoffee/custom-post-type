@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 trait TCC_Trait_Taxonomy {
 
 	protected function get_taxonomy_label($tax,$label) {
@@ -12,5 +14,6 @@ trait TCC_Trait_Taxonomy {
 		}
 		return '';
 	}
+
 
 }

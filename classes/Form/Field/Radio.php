@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 class TCC_Form_Field_Radio extends TCC_Form_Field_Field {
 
 	public    $choices =  array();

@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 class TCC_Role_Agent {
 
 	private $fields = array();

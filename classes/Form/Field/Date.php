@@ -2,6 +2,9 @@
 
 # class requires that the js function fix_jquery_datepicker() be available
 # sanitize will require a false timestamp attribute when checking strings
+
+defined( 'ABSPATH' ) || exit;
+
 class TCC_Form_Field_Date extends TCC_Form_Field_Field {
 
 	protected $class     = 'date';

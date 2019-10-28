@@ -1,9 +1,9 @@
 <?php
-
 /*
  *  File:   classes/Form/Field/Admin.php
  *
  */
+defined( 'ABSPATH' ) || exit;
 
 class TCC_Form_Field_Admin extends TCC_Form_Field_Field {
 

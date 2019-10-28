@@ -1,26 +1,35 @@
 <?php
 /**
- * classes/Form/Field/Select.php
+ *  Form select field class
  *
+ * @package Plugin
+ * @subpackage Form
+ * @since 20190604
+ * @author Richard Coffee <richard.coffee@rtcenterprises.net>
+ * @copyright Copyright (c) 2019, Richard Coffee
+ * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Form/Field/Select.php
  */
+defined( 'ABSPATH' ) || exit;
 /**
- * display the select field
- *
+ *  Handles all tasks required for displaying and saving a select field on an admin form.
  */
 class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 
 	/**
-	 * array containing the options for the select element
+	 * @since 20190604
+	 * @var array Contains options for select field.
 	 */
 	protected $choices =  array();
 	/**
-	 * field type
+	 * @since 20190604
+	 * @var string Contains the form field type.
 	 */
 	protected $type = 'select';
 
 	/**
-	 * initialize the class
+	 *  Constructor function
 	 *
+	 * @since 20190604
 	 * @param array $args
 	 */
 	public function __construct( $args ) {
@@ -30,8 +39,9 @@ class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 	}
 
 	/**
-	 * display enclosing div and select element
+	 *  Display select element within enclosing div
 	 *
+	 * @since 20180701
 	 * @param string $css
 	 */
 	public function select_div( $css = 'undef-input-group') { ?>
@@ -42,7 +52,9 @@ class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 	}
 
 	/**
-	 * display select element as table row
+	 *  Display select element within table row
+	 *
+	 * @since 20180701
 	 */
 	public function select_table_row() { ?>
 		<tr>
@@ -56,37 +68,48 @@ class TCC_Form_Field_Select extends TCC_Form_Field_Field {
 	}
 
 	/**
-	 * core function - displays select element with options
+	 *  Render a select field.
+	 *
+	 * @since 20190605
+	 * @uses TCC_Trait_Attributes::tag()
+	 * @uses TCC_Trait_Attributes::element()
+	 * @uses TCC_Trait_Attributes::selected()
 	 */
 	public function select() {
 		if ( $this->choices ) {
-			$select = array(
-				'id'    => $this->id,
-				'name'  => $this->name,
-				'class' => $this->class,
-				'onchange' => $this->onchange,
-			);
-			if ( ! empty( $this->description ) ) {
-				$select['aria-labelledby'] = $this->id . '_label';
-			}
-			if ( strpos( '[]', $this->name ) ) {
-				$select['multiple'] = 'multiple';
-			}
-			$this->tag( 'select', $select );
+			$element = $this->get_select_element_attributes();
+			$this->tag( 'select', $element );
 				if ( is_callable( $this->choices ) ) {
 					call_user_func( $this->choices );
 				} else if ( is_array( $this->choices ) ) {
 					$assoc = is_assoc( $this->choices );
 					foreach( $this->choices as $key => $text ) {
-						$attrs = array(
-							'value' => ( $assoc ) ? $key : $text,
-						);
+						$attrs = [ 'value' => ( $assoc ) ? $key : $text ];
 						$this->selected( $attrs, $attrs['value'], $this->value );
 						$this->element( 'option', $attrs, ' ' . $text . ' ' );
 					}
 				} ?>
 			</select><?php
 		}
+	}
+
+	/**
+	 *  Determines attributes for select element.
+	 *
+	 * @since 20190605
+	 */
+	protected function get_select_element_attributes() {
+		if ( ! $this->class ) $this->class = 'components-select-control__input';
+		$attrs = array(
+			'id'    => $this->id,
+			'class' => $this->class,
+			'type'  => $this->type,
+			'name'  => $this->name,
+			'onchange' => $this->onchange,
+		);
+		if ( strpos( '[]', $this->name ) ) $attrs['multiple'] = 'multiple';
+		if ( $this->description ) $attrs['aria-labelledby'] = $this->id . '_label';
+		return $attrs;
 	}
 
 	/**

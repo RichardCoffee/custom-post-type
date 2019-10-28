@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 class TCC_Form_Field_CheckBox extends TCC_Form_Field_Field {
 
 	protected $type      = 'checkbox';

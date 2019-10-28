@@ -7,6 +7,7 @@
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2018, Richard Coffee
  */
+defined( 'ABSPATH' ) || exit;
 /**
  * A trait that provides methods to generate html for tag attributes
  *
