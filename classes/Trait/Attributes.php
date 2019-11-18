@@ -123,6 +123,7 @@ trait TCC_Trait_Attributes {
 				default:
 					$value = esc_attr( $value );
 			}
+			$value = str_replace( '"', "'", $value );
 			$html .= ' ' . $attr . '="' . $value . '"';
 		}
 		return $html;
@@ -239,7 +240,6 @@ trait TCC_Trait_Attributes {
 	public function filter_attributes_by_tag( $html_tag, $attrs ) {
 		if ( ( $html_tag === 'a' ) && array_key_exists( 'target', $attrs ) ) {
 			$attrs['rel'] = ( ( array_key_exists( 'rel', $attrs ) ) ? $attrs['rel'] : '' ) . ' nofollow noopener noreferrer';
-			$attrs['rel'] = $this->sanitize_html_class( $attrs['rel'] );
 		}
 		return $attrs;
 	}
