@@ -16,6 +16,20 @@ defined( 'ABSPATH' ) || exit;
  */
 trait TCC_Trait_Attributes {
 
+
+	/***  Properties  ***/
+
+	/**
+	 *  flag for double quote replacement in attribute values
+	 *
+	 * @since 20191118
+	 * @var boolean
+	 */
+	protected $attr_quote_replacement = true;
+
+
+	/***  Methods  ***/
+
 	/**
 	 *  alias for apply_attrs_element method
 	 *
@@ -123,7 +137,7 @@ trait TCC_Trait_Attributes {
 				default:
 					$value = esc_attr( $value );
 			}
-			$value = str_replace( '"', "'", $value );
+			if ( $this->attr_quote_replacement ) $value = str_replace( '"', "'", $value );
 			$html .= ' ' . $attr . '="' . $value . '"';
 		}
 		return $html;
@@ -313,6 +327,30 @@ trait TCC_Trait_Attributes {
 		if ( (string) $helper === (string) $current ) {
 			$attrs[ $type ] = $type;
 		}
+	}
+
+
+	/***  methods for controlling the attr_quote_replacement property  ***/
+
+	/**
+	 *  Get the property
+	 *
+	 * @since 20191118
+	 * @return boolean
+	 */
+	public function get_attr_quote_replacement() {
+		return $this->attr_quote_replacement;
+	}
+
+	/**
+	 *  Set the property
+	 *
+	 * @since 20191118
+	 * @param boolean
+	 */
+	public function set_attr_quote_replacement( $new = true ) {
+		$this->attr_quote_replacement = ( $new ) ? true : false;
+		return $this->attr_quote_replacement;
 	}
 
 
