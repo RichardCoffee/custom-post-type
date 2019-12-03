@@ -10,6 +10,11 @@ abstract class TCC_Enum_Enum {
 
 	protected $set = array();
 
+/*
+	protected function __construct( $args = array() ) {
+		$this->set = array();
+		if ( $args && is_array( $args ) ) $this->set = array_replace( $this->set, $args );
+	} //*/
 
 	public function get( $position ) {
 		if ( array_key_exists( $position, $this->set ) ) {
