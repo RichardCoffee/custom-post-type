@@ -25,7 +25,7 @@ trait TCC_Trait_Attributes {
 	 * @since 20191118
 	 * @var boolean
 	 */
-	protected $attr_quote_replacement = true;
+	protected $attr_quote_replacement = false;
 
 
 	/***  Methods  ***/
