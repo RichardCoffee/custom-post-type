@@ -20,12 +20,19 @@ trait TCC_Trait_Attributes {
 	/***  Properties  ***/
 
 	/**
+	 *  flag to force sandbox attribute for iframes tag
+	 *
+	 * @since 20191213
+	 * @var boolean
+	 */
+	protected static $attr_iframe_sandbox = false;
+	/**
 	 *  flag for double quote replacement in attribute values
 	 *
 	 * @since 20191118
 	 * @var boolean
 	 */
-	protected $attr_quote_replacement = false;
+	protected static $attr_quote_replacement = false;
 
 
 	/***  Methods  ***/
@@ -103,7 +110,7 @@ trait TCC_Trait_Attributes {
 		if ( empty( $is_allowed_no_value ) ) {
 			$is_allowed_no_value = apply_filters( 'fluid_attr_is_allowed_no_value', [ 'itemscope', 'value' ] );
 		} //*/
-		$is_allowed_no_value = array( 'itemscope', 'multiple', 'value', 'required' );
+		$is_allowed_no_value = array( 'itemscope', 'multiple', 'value', 'required', 'sandbox' );
 
 		$html = '';
 		foreach( $attrs as $key => $value ) {
@@ -137,7 +144,7 @@ trait TCC_Trait_Attributes {
 				default:
 					$value = esc_attr( $value );
 			}
-			if ( $this->attr_quote_replacement ) $value = str_replace( '"', "'", $value );
+			if ( static::$attr_quote_replacement ) $value = str_replace( '"', "'", $value );
 			$html .= ' ' . $attr . '="' . $value . '"';
 		}
 		return $html;
@@ -255,6 +262,11 @@ trait TCC_Trait_Attributes {
 		if ( ( $html_tag === 'a' ) && array_key_exists( 'target', $attrs ) ) {
 			$attrs['rel'] = ( ( array_key_exists( 'rel', $attrs ) ) ? $attrs['rel'] : '' ) . ' nofollow noopener noreferrer';
 		}
+		if ( ( $html_tag === 'iframe' ) && static::$attr_iframe_sandbox ) {
+			if ( ! array_key_exists( 'sandbox', $attrs ) ) {
+				$attrs['sandbox'] = '';
+			}
+		}
 		return $attrs;
 	}
 
@@ -333,24 +345,48 @@ trait TCC_Trait_Attributes {
 	/***  methods for controlling the attr_quote_replacement property  ***/
 
 	/**
-	 *  Get the property
+	 *  Get the attr_quote_replacement property
 	 *
 	 * @since 20191118
 	 * @return boolean
 	 */
 	public function get_attr_quote_replacement() {
-		return $this->attr_quote_replacement;
+		return static::$attr_quote_replacement;
 	}
 
 	/**
-	 *  Set the property
+	 *  Set the attr_quote_replacement property
 	 *
 	 * @since 20191118
 	 * @param boolean
 	 */
 	public function set_attr_quote_replacement( $new = true ) {
-		$this->attr_quote_replacement = ( $new ) ? true : false;
-		return $this->attr_quote_replacement;
+		static::$attr_quote_replacement = ( $new ) ? true : false;
+		return static::$attr_quote_replacement;
+	}
+
+
+	/***  methods for controlling the attr_iframe_sandbox property  ***/
+
+	/**
+	 *  Get the attr_iframe_sandbox property
+	 *
+	 * @since 20191213
+	 * @return boolean
+	 */
+	public function get_attr_iframe_sandbox() {
+		return static::$attr_iframe_sandbox;
+	}
+
+	/**
+	 *  Set the attr_iframe_sandbox property
+	 *
+	 * @since 20191213
+	 * @param boolean
+	 */
+	public function set_attr_iframe_sandbox( $new = true ) {
+		static::$attr_iframe_sandbox = ( $new ) ? true : false;
+		return static::$attr_iframe_sandbox;
 	}
 
 
