@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 20170506
  * @link 4.9.5:wp-includes/general-template.php:2949
+ * @link https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/HTML5_Security_Cheat_Sheet.md
  */
 trait TCC_Trait_Attributes {
 
@@ -339,6 +340,23 @@ trait TCC_Trait_Attributes {
 		if ( (string) $helper === (string) $current ) {
 			$attrs[ $type ] = $type;
 		}
+	}
+
+	/**
+	 *  Add attributes for Personal Identifiable Information input fields
+	 *
+	 * @since 20191213
+	 * @param array element/tag attributes
+	 * @return array
+	 */
+	public function add_pii_attributes( $attrs = array() ) {
+		$defaults = array(
+			'autocapitalize' => 'off',
+			'autocomplete'   => 'off',
+			'autocorrect'    => 'off',
+			'spellcheck'     => 'false',
+		);
+		return array_merge( $defaults, $attrs );
 	}
 
 
