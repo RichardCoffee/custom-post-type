@@ -5,7 +5,7 @@
  *
  */
 
-class TCC_Enum_English extends TC_Enum_Enum {
+class TCC_Enum_English extends TCC_Enum_Enum {
 
 
 	use DND_Trait_Singleton;
