@@ -18,9 +18,14 @@ trait TCC_Trait_Magic {
 
 	/**
 	 * @since 20170305
-	 * @var boolean toggles functionality of set method
+	 * @var bool toggles functionality of set method
 	 */
 	protected $set__callable = false;
+	/**
+	 * @since 20200114
+	 * @var bool controls access to private variables
+	 */
+	protected $magic__private = true;
 	/**
 	 * @since 20170202
 	 * @var array stores aliases for methods
@@ -56,6 +61,10 @@ trait TCC_Trait_Magic {
 	 */
 	public function __get( $name ) {
 		if ( property_exists( $this, $name ) ) {
+			if ( ! $this->magic__private ) {
+				$test = new ReflectionProperty( $this, $name );
+				if ( $test->isPrivate() ) return null;
+			}
 			return $this->$name;
 		}
 		return null;
