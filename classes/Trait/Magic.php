@@ -42,15 +42,19 @@ trait TCC_Trait_Magic {
 	 * @return mixed
 	 */
 	public function __call( $string, $args ) {
-		$return = "non-callable function '$string'";
 		if ( array_key_exists( $string, static::$magic__call ) ) {
-			$return = call_user_func_array( static::$magic__call[ $string ], $args );
+			return call_user_func_array( static::$magic__call[ $string ], $args );
 		} else if ( in_array( $string, static::$magic__call, true ) ) {
-			$return = call_user_func_array( $string, $args );
+			return call_user_func_array( $string, $args );
 		} else if ( property_exists( $this, $string ) ) {
-			$return = $this->$string;
+			return $this->$string;
 		}
-		return $return;
+		$message = "non-callable function '$string'";
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$caller = @next( debug_backtrace() ); // without '@', this line produces "PHP Notice:  Only variables should be passed by reference"
+			$message .= " called from {$caller['file']} on line {$caller['line']}";
+		}
+		trigger_error( $message, E_USER_ERROR );
 	}
 
 	/**
