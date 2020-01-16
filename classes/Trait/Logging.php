@@ -100,7 +100,7 @@ trait TCC_Trait_Logging {
 	public function logging_get_calling_function_name( $depth = 4 ) {
 		$result = $this->logging_calling_location( max( $depth, 4 ) );
 		$trace  = array_map( 'trim', explode( '/', $result ) );
-		$result = $this->logging_calling_location( $trace[1] );
+		$result = $this->logging_calling_location( end( $trace ) );
 		$trace  = array_map( 'trim', explode( ',', $result ) );
 		return $trace[1];
 	}
