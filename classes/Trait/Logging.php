@@ -206,7 +206,9 @@ trait TCC_Trait_Logging {
 		$current = $backtrace[0];
 		foreach( $backtrace as $key => $data ) {
 			if ( $key === 0 ) continue;
-			$backtrace[ $key ]['function'] .= " - {$current['line']}";
+			if ( array_key_exists( 'line', $current ) ) {
+				$backtrace[ $key ]['function'] .= " - {$current['line']}";
+			}
 			$current = $data;
 		}
 		return $backtrace;
