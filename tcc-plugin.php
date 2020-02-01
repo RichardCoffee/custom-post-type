@@ -48,6 +48,6 @@ function tcc_plugin_class_loader( $class ) {
 }
 spl_autoload_register( 'tcc_plugin_class_loader' );
 
-$plugin = TCC_Plugin_NameHere::get_instance( array( 'file' => __FILE__ ) );
+$plugin = TCC_Plugin_Base::get_instance( array( 'file' => __FILE__ ) );
 
 register_activation_hook( __FILE__, array( 'TCC_Register_Plugin', 'activate' ) );
