@@ -2,10 +2,16 @@
 /**
  * classes/Plugin/Base.php
  *
+ * @package Plugin
+ * @subpackage Plugin_Core
+ * @since 20170111
+ * @author Richard Coffee <richard.coffee@rtcenterprises.net>
+ * @copyright Copyright (c) 2017, Richard Coffee
+ * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Plugin/Base.php
  */
 defined( 'ABSPATH' ) || exit;
 /**
- * Main plugin class
+ *  Main plugin class
  *
  * @since 20180404
  */
