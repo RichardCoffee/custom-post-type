@@ -4,7 +4,7 @@
  *
  * @package   Custom Post Type Plugin
  * @author    Author Name <author@email>
- * @copyright 2019 Author Name
+ * @copyright 2020 Author Name
  * @license   GPLv2  <need uri here>
  * @link      link
  *
@@ -21,6 +21,7 @@
  * Author URI:        author uri
  * GitHub Plugin URI: github uri needed if using plugin-update-checker
  * License:           GPLv2
+ * License URI:       uri where license can be found and read
  * Text Domain:       plugin-domain
  * Domain Path:       /languages
  * Tags:              what, where, when, who, how, why
