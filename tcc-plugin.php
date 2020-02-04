@@ -26,7 +26,6 @@
  * Domain Path:       /languages
  * Tags:              what, where, when, who, how, why
  */
-
 defined( 'ABSPATH' ) || exit;
 /*
 # https://github.com/helgatheviking/Nav-Menu-Roles/blob/master/nav-menu-roles.php
@@ -38,16 +37,7 @@ if ( ! defined('ABSPATH') || ! function_exists( 'is_admin' ) ) {
 
 define( 'TCC_PLUGIN_DIR' , plugin_dir_path( __FILE__ ) );
 
-function tcc_plugin_class_loader( $class ) {
-   if ( substr( $class, 0, 4 ) === 'TCC_' ) {
-     $load = str_replace( '_', '/', substr( $class, ( strpos( $class, '_' ) + 1 ) ) );
-     $file = TCC_PLUGIN_DIR . "/classes/{$load}.php";
-     if ( is_readable( $file ) ) {
-       include $file;
-     }
-   }
-}
-spl_autoload_register( 'tcc_plugin_class_loader' );
+require_once( 'functions.php' );
 
 $plugin = TCC_Plugin_Base::get_instance( array( 'file' => __FILE__ ) );
 
