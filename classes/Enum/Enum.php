@@ -6,8 +6,8 @@
  * @subpackage Enum
  * @since 20191201
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
- * @copyright Copyright (c) 2017, Richard Coffee
- * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Plugin/Plugin.php
+ * @copyright Copyright (c) 2019, Richard Coffee
+ * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Enum/Enum.php
  */
 defined( 'ABSPATH' ) || exit;
 /**
@@ -27,7 +27,7 @@ abstract class TCC_Enum_Enum {
 	protected $set = array();
 
 	/**
-	 *  Example constructor method, designed to be used with the trait DND_Trait_Singleton
+	 *  Example constructor method, designed to be used with the trait TCC_Trait_Singleton
 	 *
 	 * @since 20191201
 	 * @param array Should contain changes for the enumeration set
@@ -79,7 +79,19 @@ abstract class TCC_Enum_Enum {
 	}
 
 	/**
-	 *  Compares two set items, and returns a numeric value indicator.
+	 *  Alias for the position method.
+	 *
+	 * @since 20200205
+	 * @param string|mixed Item to search for
+	 * @param bool Indicates a strict type comparison is desired
+	 * @return int|bool
+	 */
+	public function pos( $search, $strict = false ) {
+		return $this->position( $search, $strict );
+	}
+
+	/**
+	 *  Compares two set items, and returns a numeric value indicator.  Suitable for use in a sort function.
 	 *
 	 * @since 20191201
 	 * @param string|mixed First item to compare
@@ -90,9 +102,25 @@ abstract class TCC_Enum_Enum {
 	public function compare( $one, $two, $strict = false ) {
 		$p1 = $this->position( $one, $strict );
 		$p2 = $this->position( $two, $strict );
+		if ( ( $p1 === false ) && ( $p2 === false ) ) return 0;
+		if ( $p1 === false ) return -1;
+		if ( $p2 === false ) return 1;
 		if ( $p1 > $p2 ) return 1;
 		if ( $p2 > $p1 ) return -1;
 		return 0;
+	}
+
+	/**
+	 *  Alias for the compare method
+	 *
+	 * @since 20200205
+	 * @param string|mixed First item to compare
+	 * @param string|mixed Second item to compare
+	 * @param bool Indicates a strict type comparison is desired
+	 * @return int
+	 */
+	public function comp( $one, $two, $strict = false ) {
+		return $this->compare( $one, $two, $strict );
 	}
 
 
