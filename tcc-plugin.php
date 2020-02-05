@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name
+ *  Plugin Name
  *
  * @package   Custom Post Type Plugin
  * @author    Author Name <author@email>
@@ -10,19 +10,18 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Custom Post Type Plugin
- * Plugin URI:        pluginhome.com
+ * Plugin URI:        https://example.com/plugin-name
  * Description:       Description for the plugin.
  * Version:           0.1.0
  * Requires at least: 4.7.0
- * Requires WP:       4.7.0
  * Tested up to:      5.2.0
  * Requires PHP:      5.3.6
  * Author:            Author Name
- * Author URI:        author uri
- * GitHub Plugin URI: github uri needed if using plugin-update-checker
- * License:           GPLv2
- * License URI:       uri where license can be found and read
+ * Author URI:        https://example.com
+ * GitHub URI:        github uri needed if using plugin-update-checker
  * Text Domain:       plugin-domain
+ * License:           GPL v2 or later
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages
  * Tags:              what, where, when, who, how, why
  */
