@@ -1,6 +1,6 @@
 <?php
 /**
- *  classes/Enum/Enum.php
+ *  Provides base abstract class for enumeration capabilities.
  *
  * @package Plugin
  * @subpackage Enum
@@ -10,11 +10,8 @@
  * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Enum/Enum.php
  */
 defined( 'ABSPATH' ) || exit;
-/**
- *  Provides base abstract class for enumeration capabilities.
- *
- * @since 20191201
- */
+
+
 abstract class TCC_Enum_Enum {
 
 
@@ -35,7 +32,7 @@ abstract class TCC_Enum_Enum {
 	protected function __construct( $args = array() ) {
 		$this->set = array( /* Array values go here */ );
 		if ( $args && is_array( $args ) ) $this->set = array_replace( $this->set, $args );
-	} //*/
+	}
 
 	/**
 	 *  Get the indicated enumerated item.
@@ -48,7 +45,7 @@ abstract class TCC_Enum_Enum {
 		if ( array_key_exists( $position, $this->set ) ) {
 			return $this->set[ $position ];
 		}
-		return '-undefined-';
+		return null;
 	}
 
 	/**
