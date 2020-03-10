@@ -244,7 +244,9 @@ trait TCC_Trait_Logging {
 			$message = print_r( debug_backtrace(), true );
 		}
 		$message = date( '[d-M-Y H:i:s e] ' ) . $message . "\n";
-		error_log( $message, 3, $destination );
+		if ( is_writable( $destination ) ) {
+			error_log( $message, 3, $destination );
+		}
 	}
 
 	/**
