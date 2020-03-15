@@ -1,6 +1,6 @@
 <?php
 /**
- * Custom Post Types
+ * Custom Post Types - DEPRECATED - use classes/Post/Post.php instead
  *
  * @package     Fluidity/Post/Post
  * @author      Richard Coffee
