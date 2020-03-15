@@ -166,7 +166,7 @@ abstract class TCC_Form_Admin {
 			$this->form_text();
 			$this->form = $this->form_layout();
 			if ( ( $this->type === 'tabbed' ) && ! array_key_exists( $this->tab, $this->form ) ) {
-				$this->tab = 'about';
+				$this->tab = array_key_last( $this->form );
 			}
 			$this->determine_option();
 			$this->get_form_options();
@@ -524,8 +524,8 @@ abstract class TCC_Form_Admin {
 				$refer = "admin.php?page=$active_page";
 				foreach( $this->form as $key => $menu_item ) {
 					if ( is_string( $menu_item ) ) continue;
-					$tab_ref  = "$refer&tab=$key";
-					$tab_css  = 'nav-tab' . ( ( $this->tab === $key ) ? ' nav-tab-active' : '' ); ?>
+					$tab_ref = "$refer&tab=$key";
+					$tab_css = 'nav-tab' . ( ( $this->tab === $key ) ? ' nav-tab-active' : '' ); ?>
 					<a href='<?php e_esc_attr( $tab_ref ); ?>' class='<?php e_esc_attr( $tab_css ); ?>'><?php
 						if ( ! empty( $menu_item['icon'] ) ) { ?>
 							<i class="dashicons <?php e_esc_attr( $menu_item['icon'] ); ?>"></i><?php
@@ -709,7 +709,6 @@ abstract class TCC_Form_Admin {
 	 * @param array $data field information
 	 * @uses TCC_Trait_Attributes::checked()
 	 * @uses TCC_Trait_Attributes::tag()
-	 * @uses e_esc_html()
 	 */
 	private function render_checkbox( $data ) {
 		extract( $data );  #  associative array: keys are 'ID', 'value', 'layout', 'name'
@@ -732,7 +731,6 @@ abstract class TCC_Form_Admin {
 	 *
 	 * @since 20170202
 	 * @param array $data field information
-	 * @uses e_esc_html()
 	 * @uses TCC_Trait_Attributes::checked()
 	 * @uses TCC_Trait_Attributes::tag()
 	 */
@@ -767,7 +765,6 @@ abstract class TCC_Form_Admin {
 	 * @since 20150927
 	 * @param array $data field information
 	 * @uses TCC_Trait_Attributes::element()
-	 * @uses e_esc_html()
 	 */
 	private function render_colorpicker($data) {
 		extract( $data );  #  array( 'ID' => $item, 'value' => $data[ $item ], 'layout' => $layout[ $item ], 'name' => $name )
@@ -839,7 +836,6 @@ abstract class TCC_Form_Admin {
 	 * @since 20150925
 	 * @param array $data field information
 	 * @uses e_esc_attr()
-	 * @uses e_esc_html()
 	 */
 	private function render_image( $data ) {
 		extract( $data );  #  array( 'ID' => $item, 'value' => $data[ $item ], 'layout' => $layout[ $item ], 'name' => $name )
@@ -877,7 +873,6 @@ abstract class TCC_Form_Admin {
 	 * @uses TCC_Trait_Attributes::tag()
 	 * @see wp_kses()
 	 * @uses TCC_Theme_Library::kses()
-	 * @uses e_esc_html()
 	 */
 	private function render_radio( $data ) {
 		extract( $data );  #  associative array: keys are 'ID', 'value', 'layout', 'name'
@@ -926,7 +921,6 @@ abstract class TCC_Form_Admin {
 	 * @see checked()
 	 * @see wp_kses()
 	 * @uses TCC_Theme_Library::kses()
-	 * @uses e_esc_html()
 	 */
 	private function render_radio_multiple( $data ) {
 		extract( $data );   #   associative array: keys are 'ID', 'value', 'layout', 'name'
@@ -1035,7 +1029,6 @@ abstract class TCC_Form_Admin {
 	 * @since 20170126
 	 * @param array $data field information
 	 * @uses TCC_Trait_Attributes::element()
-	 * @uses e_esc_html()
 	 */
 	private function render_spinner( $data ) {
 		extract( $data );  #  array( 'ID' => $item, 'value' => $data[ $item ], 'layout' => $layout[ $item ], 'name' => $name )
@@ -1398,5 +1391,32 @@ if ( ! function_exists( 'e_esc_attr' ) ) {
 if ( ! function_exists( 'e_esc_html' ) ) {
 	function e_esc_html( $string ) {
 		echo esc_html( $string );
+	}
+}
+
+/**
+ *  array_key_first() introduced in PHP 7.3.0
+ *
+ * @since 20200315
+ * @param array $arr  Input array.
+ * @return string     First key of the array.
+ */
+if ( ! function_exists( 'array_key_first' ) ) {
+	function array_key_first( array $arr ) {
+		foreach( $arr as $key => $item ) return $key;
+		return null;
+	}
+}
+
+/**
+ *  array_key_last() introduced in PHP 7.3.0
+ *
+ * @since 20200315
+ * @param array $arr  Input array.
+ * @return string     Last key of the array.
+ */
+if ( ! function_exists( 'array_key_last' ) ) {
+	function array_key_last( array $arr ) {
+		return array_key_first( array_reverse( $arr, true ) );
 	}
 }
