@@ -1368,7 +1368,8 @@ abstract class TCC_Form_Admin {
 
 } # end of TCC_Form_Admin class
 
-#   These are just a shorthand functions
+
+/**  These are just shorthand functions  **/
 
 /**
  *  Echo an escaped attribute string
