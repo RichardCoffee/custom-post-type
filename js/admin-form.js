@@ -3,9 +3,15 @@
 jQuery( document ).ready( function() {
 	if ( tcc_admin_options.showhide ) {
 		jQuery.each( tcc_admin_options.showhide, function( counter, item ) {
-			targetableElements( item );
+			if ( targetableElement( item ) ) {
+				var origin = '.' + item.origin + ' input:radio';
+				jQuery( origin ).change( item, function( e ) {
+					targetableElement( e.data );
+				});
+			}
 		});
 	}
+//	showhideElements( jQuery( '.showhide' ) );
 	jQuery( '.form-colorpicker'  ).wpColorPicker();
 	jQuery( '.form-image'        ).click( function( e ) { imageUploader( this, e ); });
 	jQuery( '.form-image-delete' ).click( function( e ) { imageDelete( this ); });
@@ -47,14 +53,28 @@ function imageUploader( el, e ) {
 	custom_uploader.open();
 }
 
-function targetableElements( item ) {
-	showhideAdminElements( '.'+item.origin, '.'+item.target, item.show, item.hide );
+function showhideElements( els ) {
+	jQuery( els ).each( function( el ) {
+		var target = jQuery( el ).attr( 'data-item' );
+		var show   = jQuery( el ).attr( 'data-show' );
+		if ( show ) {
+			showhideAdminElement( el, target, show, null );
+		}
+		var hide = jQuery( el ).attr( 'data-hide' );
+		if ( hide ) {
+			showhideAdminElement( el, target, null, hide );
+		}
+	});
 }
 
-function showhideAdminElements( origin, target, show, hide ) {
+function targetableElement( item ) {
+	return showhideAdminElement( '.'+item.origin, '.'+item.target, item.show, item.hide );
+}
+
+function showhideAdminElement( origin, target, show, hide ) {
 	if ( origin && target ) {
 		var radio = jQuery( origin + ' input:radio:checked' );
-		if ( radio ) {
+		if ( radio.length ) {
 			var state = jQuery( radio ).val();
 			if ( state ) {
 				if ( show ) {
@@ -71,6 +91,8 @@ function showhideAdminElements( origin, target, show, hide ) {
 					}
 				}
 			}
+			return true;
 		}
 	}
+	return false;
 }
