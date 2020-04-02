@@ -1,11 +1,11 @@
 <?php
 /**
- *  Plugin Name
+ *  Plugin Description?
  *
  * @package   Custom Post Type Plugin
  * @author    Author Name <author@email>
  * @copyright 2020 Author Name
- * @license   GPLv2  <need uri here>
+ * @license   GPLv2  <https://www.gnu.org/licenses/gpl-2.0.html>
  * @link      link
  *
  * @wordpress-plugin
@@ -21,7 +21,7 @@
  * GitHub URI:        github uri needed if using plugin-update-checker
  * Text Domain:       plugin-domain
  * License:           GPL v2 or later
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Domain Path:       /languages
  * Tags:              what, where, when, who, how, why
  */
