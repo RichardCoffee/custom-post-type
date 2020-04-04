@@ -22,7 +22,7 @@ trait TCC_Trait_Singleton {
 
 	/**
 	 * @since 20170323
-	 * @var bool  Flag to indicate that construction has been aborted.
+	 * @var bool|mixed  Flag to indicate that construction has been aborted.
 	 */
 	public  static $abort__construct = false;
 	/**
@@ -51,10 +51,10 @@ trait TCC_Trait_Singleton {
 	 */
 	public static function get_instance( $args = array() ) {
 		if ( ! ( self::$instance instanceof self ) ) {
+			static::$abort__construct = false;
 			$instance = new self( $args );
 			if ( static::$abort__construct ) {
-				# TODO:  return a WP_Error object
-				static::$abort__construct = false;
+				return static::$abort__construct;
 			} else {
 				self::$instance = $instance;
 			}
