@@ -53,7 +53,6 @@ trait TCC_Trait_Attributes {
 	 * @param string $text   Text to appear between the opening and closing tags.
 	 * @param bool   $raw    Set this to true to prevent $text from being escaped when displayed.  Use this at your own risk.
 	 * @return string        An HTML element in string form.
-	 * @used-by TCC_Form_Admin::field_label()
 	 */
 	public function get_element( $tag, $attrs, $text = '', $raw = false ) {
 		$tag   = $this->sanitize_tag( $tag );
