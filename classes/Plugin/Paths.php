@@ -3,7 +3,7 @@
  *   Supplies plugin pathing functions and serves as an informational clearing house.
  *
  * @package Plugin
- * @subpackage Plugin_Core
+ * @subpackage Core
  * @since 20170113
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2017, Richard Coffee
@@ -11,7 +11,9 @@
  */
 defined( 'ABSPATH' ) || exit;
 
+
 class TCC_Plugin_Paths {
+
 
 	/**
 	 * @since 20170113
@@ -115,7 +117,8 @@ class TCC_Plugin_Paths {
 		$theme_check = get_theme_file_path( $file );
 		if ( ( ! $force ) && $theme_check && is_readable( $theme_check ) ) {
 			return $theme_check;
-		} else if ( is_readable( $this->dir . $file ) ) {
+		}
+		if ( is_readable( $this->dir . $file ) ) {
 			return $this->dir . $file;
 		}
 		return false;
@@ -133,7 +136,8 @@ class TCC_Plugin_Paths {
 		$theme_check = get_theme_file_path( $file );
 		if ( ( ! $force ) && $theme_check && is_readable( $theme_check ) ) {
 			return get_theme_file_uri( $file );
-		} else if ( is_readable( $this->dir . $file ) ) {
+		}
+		if ( is_readable( $this->dir . $file ) ) {
 			return plugins_url( $file, $this->file );
 		}
 		return false;
