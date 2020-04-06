@@ -4,7 +4,7 @@
  *
  * @package Plugin
  * @subpackage Register
- * @since 20170214
+ * @since 20170111
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2017, Richard Coffee
  * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Register/Register.php
@@ -274,7 +274,7 @@ class TCC_Register_Register {
 	/**
 	 *  Removes plugin options from database on plugin deactivation.
 	 *
-	 * @since 20170214
+	 * @since 20170111
 	 * @param string  Option slug.
 	 */
 	public static function deactivate( $option = '' ) {
@@ -293,7 +293,7 @@ class TCC_Register_Register {
 	/**
 	 *  Removes plugin options from the wp database when uninstalling plugin.
 	 *
-	 * @since 20170214
+	 * @since 20170111
 	 * @param string  Option slug.
 	 */
 	public static function uninstall( $option = '' ) {
