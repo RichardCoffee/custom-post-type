@@ -3,6 +3,7 @@
 class TCC_Register_Plugin extends TCC_Register_Register {
 
 	public    static $option      = 'plugin';
+	protected static $register    = 'TCC_Register_Plugin';
 	private   static $versions    =  array();
 	protected static $plugin_file = 'tcc-plugin/tcc-plugin.php';
 

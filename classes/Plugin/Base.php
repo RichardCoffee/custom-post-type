@@ -24,11 +24,11 @@ class TCC_Plugin_Base extends TCC_Plugin_Plugin {
 
 #	 * @since 20180404
 	public function initialize() {
-		if ( ( ! TCC_Register_Register::php_version_check() ) || ( ! TCC_Register_Register::wp_version_check() ) ) {
+		if ( ( ! TCC_Register_Plugin::php_version_check() ) || ( ! TCC_Register_Plugin::wp_version_check() ) ) {
 			return;
 		}
-		register_deactivation_hook( $this->paths->file, [ 'TCC_Register_Register', 'deactivate' ] );
-		register_uninstall_hook(    $this->paths->file, [ 'TCC_Register_Register', 'uninstall'  ] );
+		register_deactivation_hook( $this->paths->file, [ 'TCC_Register_Plugin', 'deactivate' ] );
+		register_uninstall_hook(    $this->paths->file, [ 'TCC_Register_Plugin', 'uninstall'  ] );
 		$this->add_actions();
 		$this->add_filters();
 	}
