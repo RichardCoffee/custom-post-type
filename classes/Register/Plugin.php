@@ -2,11 +2,13 @@
 
 class TCC_Register_Plugin extends TCC_Register_Register {
 
-	public    static $option      = 'plugin';
-	protected static $register    = 'TCC_Register_Plugin';
-	private   static $versions    =  array();
+	public    static $option   = 'plugin_option_slug';
+	protected static $register = 'TCC_Register_Plugin';
+	protected static $title    = 'Plugin Title';
+	private   static $versions =  array();
 
 	protected static function activate_tasks() {
+		self::$title = self::get_required_version( 'Name' );
 		//  Example setup tasks
 		self::initialize_options();
 		self::remove_update_transients();
@@ -31,8 +33,9 @@ class TCC_Register_Plugin extends TCC_Register_Register {
 			static::$title = __( 'Plugin Name', 'tcc-plugin' );
 			$file = trailingslashit( $info->dir ) . $info->file;
 			$need = array(
-				'PHP' => 'Required PHP',
-				'WP'  => 'Requires at least',
+				'Name' => 'Plugin Name',
+				'PHP'  => 'Required PHP',
+				'WP'   => 'Requires at least',
 			);
 			self::$versions = get_file_data( $file, $need );
 		}
