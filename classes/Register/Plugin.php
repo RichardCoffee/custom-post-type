@@ -5,7 +5,6 @@ class TCC_Register_Plugin extends TCC_Register_Register {
 	public    static $option      = 'plugin';
 	protected static $register    = 'TCC_Register_Plugin';
 	private   static $versions    =  array();
-	protected static $plugin_file = 'tcc-plugin/tcc-plugin.php';
 
 	protected static function activate_tasks() {
 		//  Example setup tasks
@@ -28,8 +27,9 @@ class TCC_Register_Plugin extends TCC_Register_Register {
 
 	private static function get_required_version( $request ) {
 		if ( empty( self::$versions ) ) {
+			$info = TCC_Plugin_Paths::instance();
 			static::$title = __( 'Plugin Name', 'tcc-plugin' );
-			$file = WP_PLUGIN_DIR . '/' . self::$plugin_file;
+			$file = trailingslashit( $info->dir ) . $info->file;
 			$need = array(
 				'PHP' => 'Required PHP',
 				'WP'  => 'Requires at least',
