@@ -171,7 +171,11 @@ abstract class TCC_Plugin_Plugin {
 		return $state;
 	}
 
-#	 * @since 20170227
+	/**
+	 *  Decides when to initialize plugin.
+	 *
+	 * @since 20170227
+	 */
 	protected function schedule_initialize() {
 		switch ( $this->state ) {
 			case 'plugin':
@@ -248,9 +252,9 @@ abstract class TCC_Plugin_Plugin {
 	 * @return array
 	 */
 	public function settings_link( $links, $file, $data, $context ) {
-		if ( strpos( $file, $this->plugin ) !== false ) {
+		if ( ! in_array( strpos( $file, $this->plugin ), [ false ] ) ) {
 			if ( array_key_exists( 'edit', $links ) ) unset( $links['edit'] );
-			if ( is_plugin_active( $file ) && ! ( $this->tab === 'about' ) ) {
+			if ( is_plugin_active( $file ) ) {
 				$url = ( $this->setting ) ? $this->setting : admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab );
 				$links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'tcc-plugin' ) );
 			}

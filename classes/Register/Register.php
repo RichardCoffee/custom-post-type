@@ -26,6 +26,11 @@ class TCC_Register_Register {
 	 */
 	protected static $php_vers = '5.3.6';
 	/**
+	 * @since 20170227
+	 * @var string  Option slug prefix.
+	 */
+	protected static $prefix = 'option_prefix_';
+	/**
 	 * @since 20200406
 	 * @var string  Name of class.
 	 */
@@ -41,13 +46,16 @@ class TCC_Register_Register {
 	 */
 	protected static $wp_vers  = '4.7.0';
 
-/*
+	/**
+	 *  Provide an email address.
+	 *
 	 * @since 20170214
+	 */
 	private static $our_site = '<a href="rtcenterprises.net" target="rtc">%s</a>';
 	private static $rc_email = '<a href="mailto:richard.coffee@rtcenterprises.net">%s</a>';
-	private static $jg_email = '<a href="mailto:cableman371@gmail.com">%s</a>';
-	private static function our_email() { return ( ( mt_rand( 1, 10 ) > 5 ) ? self::$rc_email : self::$jg_email ); }
-*/
+//	private static $jg_email = '<a href="mailto:cableman371@gmail.com">%s</a>';
+//	private static function our_email() { return ( ( mt_rand( 1, 10 ) > 5 ) ? self::$rc_email : self::$jg_email ); }
+	public static function our_email() { return self::$rc_email; }
 
 	/**
 	 *  Preforms preliminary version checks.

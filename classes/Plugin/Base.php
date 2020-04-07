@@ -1,6 +1,6 @@
 <?php
 /**
- * classes/Plugin/Base.php
+ *  Main plugin class file.
  *
  * @package Plugin
  * @subpackage Plugin_Core
@@ -11,18 +11,23 @@
  */
 defined( 'ABSPATH' ) || exit;
 /**
- *  Main plugin class
- *
  * @since 20180404
  */
 class TCC_Plugin_Base extends TCC_Plugin_Plugin {
 
 
-#	 * @since 20200201
+	/**
+	 * @since 20200201
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Singleton.php
+	 */
 	use TCC_Trait_Singleton;
 
 
-#	 * @since 20180404
+	/**
+	 *  Initialize the plugin.
+	 *
+	 * @since 20180404
+	 */
 	public function initialize() {
 		if ( ( ! TCC_Register_Plugin::php_version_check() ) || ( ! TCC_Register_Plugin::wp_version_check() ) ) {
 			return;
@@ -33,12 +38,20 @@ class TCC_Plugin_Base extends TCC_Plugin_Plugin {
 		$this->add_filters();
 	}
 
-#	 * @since 20180404
+	/**
+	 *  Establish actions.
+	 *
+	 * @since 20180404
+	 */
 	public function add_actions() {
 		parent::add_actions();
 	}
 
-#	 * @since 20180404
+	/**
+	 *  Establish filters.
+	 *
+	 * @since 20180404
+	 */
 	public function add_filters() {
 		parent::add_filters();
 	}
