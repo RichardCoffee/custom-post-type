@@ -77,11 +77,13 @@ abstract class TCC_Plugin_Plugin {
 
 
 	/**
-	 *  Trait that provides default magic methods, see classes/Trait/Magic.php for more details
+	 * @since 20170214
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Magic.php
 	 */
 	use TCC_Trait_Magic;
 	/**
-	 *  Trait that provides methods used in autoloading plugin properties.
+	 * @since 20170214
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/ParseArgs.php
 	 */
 	use TCC_Trait_ParseArgs;
 
@@ -115,8 +117,8 @@ abstract class TCC_Plugin_Plugin {
 				'url'     => plugin_dir_url( $args['file'] ),
 				'version' => $data['ver'],
 			);
-			if ( is_url( $data['github'] ) ) $defaults['github'] = $data['github'];
-			if ( $this->tab === 'about' )    $this->tab = $defaults['plugin'];
+			if ( is_url( $data['github'] ) )           $defaults['github'] = $data['github'];
+			if ( in_array( $this->tab, [ 'about' ] ) ) $this->tab = $defaults['plugin'];
 			$args = array_merge( $defaults, $args );
 			$this->parse_args( $args );
 			$this->paths = TCC_Plugin_Paths::get_instance( $args );
@@ -307,6 +309,13 @@ abstract class TCC_Plugin_Plugin {
 
 }
 
+/**
+ *  Test for a valid url.
+ *
+ * @since 20200227
+ * @param string $url  URL to check.
+ * @return bool        True for a valid url, false otherwise.
+ */
 if ( ! function_exists( 'is_url' ) ) {
 	function is_url( $url ) {
 		return filter_var( $url, FILTER_VALIDATE_URL );
