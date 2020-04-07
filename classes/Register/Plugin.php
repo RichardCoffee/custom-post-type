@@ -91,13 +91,12 @@ class TCC_Register_Plugin extends TCC_Register_Register {
 		if ( empty( self::$versions ) ) {
 			$info = TCC_Plugin_Paths::instance();
 			static::$title = __( 'Plugin Name', 'tcc-plugin' );
-			$file = trailingslashit( $info->dir ) . $info->file;
 			$need = array(
 				'Name' => 'Plugin Name',
 				'PHP'  => 'Required PHP',
 				'WP'   => 'Requires at least',
 			);
-			self::$versions = get_file_data( $file, $need );
+			self::$versions = get_file_data( $info->file, $need );
 		}
 		if ( array_key_exists( $request, self::$versions ) ) {
 			return self::$versions[ $request ];
