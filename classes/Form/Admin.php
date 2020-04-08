@@ -51,7 +51,7 @@ abstract class TCC_Form_Admin {
 	protected $prefix = 'tcc_options_';
 	/**
 	 * @since 20150323
-	 * @var string  Name of function that registers the form
+	 * @var string  Name of function that registers the form.
 	 */
 	protected $register;
 	/**
@@ -71,13 +71,13 @@ abstract class TCC_Form_Admin {
 	public $tab = 'about';
 	/**
 	 * @since 20150323
-	 * @var string  Form type: 'single','tabbed'
+	 * @var string  Form type: 'single','tabbed'.
 	 * @todo add 'multi'
 	 */
 	protected $type = 'single';
 	/**
 	 * @since 20150323
-	 * @var string  Callback function for field validation
+	 * @var string  Callback function for field validation.
 	 */
 	protected $validate;
 
@@ -117,7 +117,7 @@ abstract class TCC_Form_Admin {
 		 *  Using a filter to whitelist the options doesn't work because there is no way to load the filter call, AFAIK.
 		 *  TODO:  Find out why this doesn't work like I thought it would.
 		 *
-		//  Child class should get the hook_suffix property during 'admin_menu' hook.
+		//  Child class gets the hook_suffix property during 'admin_menu' hook.
 		add_action( 'admin_init', [ $this, 'load_check' ] );
 		 */
 		add_action( 'admin_init', [ $this, 'load_form_page' ] );
@@ -232,9 +232,6 @@ abstract class TCC_Form_Admin {
 	 *  Assigns translated text to object array
 	 *
 	 * @since 20150323
-	 * @see _x()
-	 * @see apply_filters()
-	 * @used-by TCC_Form_Admin::load_form_page()
 	 */
 	private function form_text() {
 		$text = array(
@@ -265,7 +262,6 @@ abstract class TCC_Form_Admin {
 	 *  Assign default values for callback functions.
 	 *
 	 * @since 20150323
-	 * @used-by TCC_Form_Admin::__constructor()
 	 */
 	private function screen_type() {
 		$this->register = 'register_' . $this->type . '_form';
@@ -278,8 +274,6 @@ abstract class TCC_Form_Admin {
 	 *  Setup for single form fields
 	 *
 	 * @since 20150323
-	 * @see register_setting()
-	 * @see add_settings_section()
 	 */
 	public function register_single_form() {
 		register_setting( $this->current, $this->current, [ $this, $this->validate ] );
@@ -297,8 +291,6 @@ abstract class TCC_Form_Admin {
 	 *  Setup for tabbed form fields
 	 *
 	 * @since 20150323
-	 * @see register_setting()
-	 * @see add_settings_section()
 	 */
 	public function register_tabbed_form() {
 		$validater = ( array_key_exists( 'validate', $this->form ) ) ? $this->form['validate'] : $this->validate;
@@ -324,7 +316,6 @@ abstract class TCC_Form_Admin {
 	 *  Register fields with the WP Settings API
 	 *
 	 * @since 20150323
-	 * @see add_settings_field()
 	 */
 	private function register_field( $option, $key, $itemID, $data ) {
 		if ( ! is_array( $data ) )                     return; // skip string variables
@@ -352,7 +343,6 @@ abstract class TCC_Form_Admin {
 	 * @since 20150930
 	 * @param string $ID    Field ID
 	 * @param array  $data  Field data
-	 * @uses TCC_Trait_Attributes::get_element()
 	 * @return string       HTML element as a string.
 	 */
 	private function field_label( $ID, $data ) {
@@ -394,7 +384,6 @@ abstract class TCC_Form_Admin {
 	 *  Determine 'current' property value
 	 *
 	 * @since 20150323
-	 * @used-by TCC_Form_Admin::load_form_page()
 	 */
 	private function determine_option() {
 		if ( in_array( $this->type, [ 'tabbed', 'multi' ] ) ) {
@@ -415,7 +404,6 @@ abstract class TCC_Form_Admin {
 	 * @param string $option  Tabbed page option
 	 * @param string $option  Name of tab to retrieve defaults for.
 	 * @return array          Default options.
-	 * @uses TCC_Trait_Logging::logg()
 	 */
 	protected function get_defaults( $option = '' ) {
 		if ( empty( $this->form ) ) {
@@ -448,8 +436,6 @@ abstract class TCC_Form_Admin {
 	 *  Retrieve theme/plugin option values
 	 *
 	 * @since 20150323
-	 * @see get_option()
-	 * @used-by TCC_Form_Admin::load_form_page()
 	 */
 	private function get_form_options() {
 		$this->form_opts = get_option( $this->current );
@@ -467,10 +453,6 @@ abstract class TCC_Form_Admin {
 	 *  Render a non-tabbed screen
 	 *
 	 * @since 20150323
-	 * @see settings_errors()
-	 * @see do_action()
-	 * @see settings_fields()
-	 * @see do_settings_section()
 	 */
 	public function render_single_form() { ?>
 		<div class="wrap">
@@ -489,13 +471,6 @@ abstract class TCC_Form_Admin {
 	 *  Render a tabbed screen
 	 *
 	 * @since 20150323
-	 * @see sanitize_key()
-	 * @uses e_esc_html()
-	 * @see settings_errors()
-	 * @uses e_esc_attr()
-	 * @see do_action()
-	 * @see settings_fields()
-	 * @see do_settings_section()
 	 */
 	public function render_tabbed_form() {
 		$active_page = sanitize_key( $_GET['page'] ); ?>
@@ -534,7 +509,6 @@ abstract class TCC_Form_Admin {
 	 *
 	 * @since 20150323
 	 * @param string $title  Text for reset button.
-	 * @see submit_button()
 	 */
 	private function submit_buttons( $title = '' ) {
 		$buttons = $this->form_text['submit']; ?>
@@ -553,9 +527,6 @@ abstract class TCC_Form_Admin {
 	 *
 	 * @since 20150323
 	 * @param array $args
-	 * @uses TCC_Trait_Attributes::tag()
-	 * @uses e_esc_html()
-	 * @uses TCC_Trait_Logging::logg()
 	 */
 	public function render_single_options( $args ) {
 		extract( $args );  #  array( 'key' => $key, 'item' => $item, 'num' => $i );
@@ -596,9 +567,6 @@ abstract class TCC_Form_Admin {
 	 *
 	 * @since 20150323
 	 * @param array $args  Field identificatin information
-	 * @uses TCC_Trait_Attributes::tag()
-	 * @uses e_esc_html()
-	 * @uses TCC_Trait_Logging::log()
 	 */
 	public function render_tabbed_options( $args ) {
 		extract( $args );  #  $args = array( 'key' => {group-slug}, 'item' => {item-slug} )
