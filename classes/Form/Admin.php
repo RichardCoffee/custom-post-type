@@ -964,6 +964,9 @@ abstract class TCC_Form_Admin {
 			'step'  => '1',
 			'value' => $value,
 		);
+		if ( array_key_exists( 'attrs', $layout ) ) {
+			$attrs = array_merge( $attrs, array_intersect_key( $layout['attrs'], $attrs ) );
+		}
 		$this->element( 'input', $attrs );
 		if ( ! empty( $layout['stext'] ) ) e_esc_attr( $layout['stext'] );
 	}
