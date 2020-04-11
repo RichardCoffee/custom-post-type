@@ -959,19 +959,33 @@ abstract class TCC_Form_Admin {
 			$this->element( 'div', [], $layout['text'] );
 		}
 		$attrs = array(
-			'type'  => 'number',
-			'class' => 'small-text',
 			'id'    => $ID,
 			'name'  => $name,
+			'value' => $value,
+		);
+		$attrs = array_merge( $attrs, $this->attributes_spinner( $layout ) );
+		$this->element( 'input', $attrs );
+		if ( ! empty( $layout['stext'] ) ) e_esc_attr( $layout['stext'] );
+	}
+
+	/**
+	 *  Provide spinner defaults.
+	 *
+	 * @since 20200411
+	 * @param array $layout  The item to provide defaults for.
+	 * @return array         Attributes for the spinner input element.
+	 */
+	private function attributes_spinner( $layout ) {
+		$attrs = array(
+			'type'  => 'number',
+			'class' => 'small-text',
 			'min'   => '1',
 			'step'  => '1',
-			'value' => $value,
 		);
 		if ( array_key_exists( 'attrs', $layout ) ) {
 			$attrs = array_merge( $attrs, array_intersect_key( $layout['attrs'], $attrs ) );
 		}
-		$this->element( 'input', $attrs );
-		if ( ! empty( $layout['stext'] ) ) e_esc_attr( $layout['stext'] );
+		return $attrs;
 	}
 
 	/**
@@ -1248,7 +1262,15 @@ abstract class TCC_Form_Admin {
 	 * @return string
 	 */
 	private function validate_spinner( $input, $item ) {
-		return $this->validate_text( $input );
+		$attrs = $this->attributes_spinner( $item );
+		if ( array_key_exists( 'step', $attrs ) && ( $attrs['step'] % 1 ) ) {
+			$input = floatval( $input );
+		} else {
+			$input = intval( $input );
+		}
+		if ( array_key_exists( 'min', $attrs ) ) $input = max( $input, $attrs['min'] );
+		if ( array_key_exists( 'max'. $attrs ) ) $input = min( $input, $attrs['max'] );
+		return "$input";
 	}
 
 	/**
