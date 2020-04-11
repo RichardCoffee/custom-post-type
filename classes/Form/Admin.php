@@ -1,6 +1,6 @@
 <?php
 /**
- *  Abstract class to provide basic functionality for displaying admin option screens
+ *  Abstract class to provide basic functionality for displaying admin option screens.
  *
  * @package Plugin
  * @subpackage Forms
@@ -185,7 +185,7 @@ abstract class TCC_Form_Admin {
 	 * @since 20200324
 	 * @param string $slug    Slug of script to add object to.
 	 * @param string $object  Name of object to add.
-	 * @param string $filter  Filter to used for the object.
+	 * @param string $filter  Filter to be used for the object.
 	 */
 	protected function add_localization_object( $slug, $object = 'tcc_admin_options', $filter = 'tcc_form_admin_options_localization' ) {
 		$options = apply_filters( $filter, array() );
@@ -488,7 +488,7 @@ abstract class TCC_Form_Admin {
 						if ( ! empty( $menu_item['icon'] ) ) {
 							$this->element( 'i', [ 'class' => [ 'dashicons', $menu_item['icon'] ] ] );
 						}
-						e_esc_html( $menu_item['title'] );
+						echo esc_html( $menu_item['title'] );
 					echo '</a>';
 				} ?>
 			</h2>
@@ -534,7 +534,7 @@ abstract class TCC_Form_Admin {
 		$layout = $this->form['layout'];
 		$this->tag( 'div', $this->render_attributes( $layout[ $item ] ) );
 			if ( empty( $layout[ $item ]['render'] ) ) {
-				e_esc_html( $data[ $item ] );
+				echo esc_html( $data[ $item ] );
 			} else {
 				$func  = 'render_' . $layout[ $item ]['render'];
 				$name  = $this->current . '[' . $item . ']';
@@ -574,7 +574,7 @@ abstract class TCC_Form_Admin {
 		$layout = $this->form[ $key ]['layout'];
 		$this->tag( 'div', $this->render_attributes( $layout[ $item ] ) );
 		if ( empty( $layout[ $item ]['render'] ) ) {
-			e_esc_html( $data[$item] );
+			echo esc_html( $data[ $item ] );
 		} else {
 			$func = "render_{$layout[$item]['render']}";
 			$name = $this->current . "[$item]";
@@ -663,10 +663,10 @@ abstract class TCC_Form_Admin {
 			'type' => 'checkbox',
 			'id'   => $ID,
 			'name' => $name,
-			'value' => 'yes',
+			'value' => $value,
 			'onchange' => ( array_key_exists( 'change', $layout ) ) ? $layout['change'] : '',
 		);
-		$this->checked( $attrs, $value, 'yes' );
+		$this->checked( $attrs, $value, true );
 		$html  = $this->get_tag( 'input', $attrs );
 		$html .= '&nbsp;';
 		$html .= $this->get_element( 'span', [ ], $layout['text'] );
@@ -736,7 +736,7 @@ abstract class TCC_Form_Admin {
 	private function render_display( $data ) {
 		extract( $data );  //  Extracts 'ID', 'value', 'layout', 'name'
 		if ( array_key_exists( 'default', $layout ) && ! empty( $value ) ) {
-			e_esc_html( $value );
+			echo esc_html( $value );
 		}
 		if ( ! empty( $layout['text'] ) ) {
 			$this->element( 'span', [ ], ' ' . $layout['text'] );
@@ -965,7 +965,9 @@ abstract class TCC_Form_Admin {
 		);
 		$attrs = array_merge( $attrs, $this->attributes_spinner( $layout ) );
 		$this->element( 'input', $attrs );
-		if ( ! empty( $layout['stext'] ) ) e_esc_attr( $layout['stext'] );
+		if ( array_key_exists( 'postext', $layout ) ) {
+			$this->element( 'div', [], $layout['postext'] );
+		}
 	}
 
 	/**
@@ -979,7 +981,7 @@ abstract class TCC_Form_Admin {
 		$attrs = array(
 			'type'  => 'number',
 			'class' => 'small-text',
-			'min'   => '1',
+#			'min'   => '1',
 			'step'  => '1',
 		);
 		if ( array_key_exists( 'attrs', $layout ) ) {
@@ -1010,11 +1012,11 @@ abstract class TCC_Form_Admin {
 			'onchange'    => ( array_key_exists( 'change', $layout ) ) ? $layout['change']  : '',
 		);
 		$this->element( 'input', $attrs );
-		if ( ! empty( $layout['stext'] ) ) {
-			e_esc_html( ' ' . $layout['stext'] );
+		if ( array_key_exists( 'stext', $layout ) ) {
+			$this->element( 'span', [], ' ' . $layout['stext'] );
 		}
-		if ( ! empty( $layout['etext'] ) ) {
-			$this->element( 'p', [ ], ' ' . $layout['etext'] );
+		if ( array_key_exists( 'postext', $layout ) ) {
+			$this->element( 'p', [ ], $layout['postext'] );
 		}
 	}
 
@@ -1147,8 +1149,8 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_checkbox( $input, $item ) {
-		return sanitize_key( $input );
+	private function validate_checkbox( $input, $item = array() ) {
+		return ( $input ) ? true : false;
 	}
 
 	/**
@@ -1159,7 +1161,7 @@ abstract class TCC_Form_Admin {
 	 * @return string
 	 */
 	private function validate_checkbox_multiple( $input, $item ) {
-		return sanitize_key( $input );
+		return array_map( array( $this, 'validate_checkbox' ), $input );
 	}
 
 	/**
@@ -1251,7 +1253,7 @@ abstract class TCC_Form_Admin {
 	 * @return string
 	 */
 	private function validate_select_multiple( $input, $item ) {
-		return array_map( array( $this, 'validate_select' ), $input ); // FIXME
+		return array_map( array( $this, 'validate_select' ), $input );
 	}
 
 	/**
@@ -1280,7 +1282,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	protected function validate_text( $input, $item ) {
+	protected function validate_text( $input, $item = array() ) {
 		return wp_kses_data( $input );
 	}
 
@@ -1311,30 +1313,6 @@ abstract class TCC_Form_Admin {
 
 
 /**  These are just shorthand functions  **/
-
-/**
- *  Echo an escaped attribute string
- *
- * @param string $string
- * @see esc_attr()
- */
-if ( ! function_exists( 'e_esc_attr' ) ) {
-	function e_esc_attr( $string ) {
-		echo esc_attr( $string );
-	}
-}
-
-/**
- *  Echo an escaped HTML string
- *
- * @param string $string
- * @see esc_html()
- */
-if ( ! function_exists( 'e_esc_html' ) ) {
-	function e_esc_html( $string ) {
-		echo esc_html( $string );
-	}
-}
 
 /**
  *  array_key_first() introduced in PHP 7.3.0
