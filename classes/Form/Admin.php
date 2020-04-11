@@ -441,7 +441,7 @@ abstract class TCC_Form_Admin {
 		$this->form_opts = get_option( $this->current );
 		if ( empty( $this->form_opts ) ) {
 			$option = explode( '_', $this->current );
-			$this->form_opts = $this->get_defaults( $option[2] );
+			$this->form_opts = $this->get_defaults( array_pop( $option ) );
 			add_option( $this->current, $this->form_opts );
 		}
 	}
