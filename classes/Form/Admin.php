@@ -907,7 +907,7 @@ abstract class TCC_Form_Admin {
 		if ( empty( $layout['source'] ) ) {
 			return;
 		}
-		if ( ! empty( $layout['text'] ) ) {
+		if ( array_key_exists( 'text', $layout ) ) {
 			$this->element( 'div', [ 'class' => 'form-select-text' ], $layout['text'] );
 		}
 		$attrs = array(
@@ -955,6 +955,9 @@ abstract class TCC_Form_Admin {
 	 */
 	private function render_spinner( $data ) {
 		extract( $data );  //  Extracts 'ID', 'value', 'layout', 'name'
+		if ( array_key_exists( 'text', $layout ) ) {
+			$this->element( 'div', [], $layout['text'] );
+		}
 		$attrs = array(
 			'type'  => 'number',
 			'class' => 'small-text',
