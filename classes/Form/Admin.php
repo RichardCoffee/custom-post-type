@@ -1269,7 +1269,7 @@ abstract class TCC_Form_Admin {
 			$input = intval( $input );
 		}
 		if ( array_key_exists( 'min', $attrs ) ) $input = max( $input, $attrs['min'] );
-		if ( array_key_exists( 'max'. $attrs ) ) $input = min( $input, $attrs['max'] );
+		if ( array_key_exists( 'max', $attrs ) ) $input = min( $input, $attrs['max'] );
 		return "$input";
 	}
 
