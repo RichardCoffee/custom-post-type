@@ -1110,11 +1110,11 @@ abstract class TCC_Form_Admin {
 		}
 		$func = ( array_key_exists( 'validate', $item ) ) ? $item['validate'] : 'validate_' . $item['render'];
 		if ( method_exists( $this, $func ) ) {
-			$output = $this->$func( $input );
+			$output = $this->$func( $input, $item );
 		} else if ( function_exists( $func ) ) {
-			$output = $func( $input );
+			$output = $func( $input, $item );
 		} else { // FIXME:  test for data type?
-			$output = $this->validate_text( $input );
+			$output = $this->validate_text( $input, $item );
 			$this->logg( 'missing validation function: ' . $func, $item, $input );
 		}
 		return $output;
@@ -1127,7 +1127,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_checkbox( $input ) {
+	private function validate_checkbox( $input, $item ) {
 		return sanitize_key( $input );
 	}
 
@@ -1138,7 +1138,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_checkbox_multiple( $input ) {
+	private function validate_checkbox_multiple( $input, $item ) {
 		return sanitize_key( $input );
 	}
 
@@ -1149,7 +1149,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_colorpicker( $input ) {
+	private function validate_colorpicker( $input, $item ) {
 		return ( preg_match( '|^#([A-Fa-f0-9]{3}){1,2}$|', $input ) ) ? $input : '';
 	}
 
@@ -1160,7 +1160,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_font( $input ) {
+	private function validate_font( $input, $item ) {
 		$this->logging_force = true;
 		$this->logg( $input ); // TODO: compare value to available fonts
 		return $input; // FIXME NOW!
@@ -1173,7 +1173,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_image( $input ) {
+	private function validate_image( $input, $item ) {
 		return apply_filters( 'pre_link_image', $input );
 	}
 
@@ -1184,7 +1184,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_post_content( $input ) {
+	private function validate_post_content( $input, $item ) {
 		return wp_kses_post( $input );
 	}
 
@@ -1195,8 +1195,9 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_radio( $input ) {
-		return sanitize_key( $input );
+	private function validate_radio( $input, $item ) {
+		$input = sanitize_key( $input );
+		return ( array_key_exists( $input, $item['source'] ) ? $input : $item['source'] );
 	}
 
 	/**
@@ -1206,7 +1207,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_radio_multiple( $input ) {
+	private function validate_radio_multiple( $input, $item ) {
 		return $this->validate_radio( $input );
 	}
 
@@ -1217,8 +1218,9 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_select( $input ) {
-		return sanitize_file_name( $input );
+	private function validate_select( $input, $item ) {
+		$input = sanitize_text_field( $input );
+		return ( in_array( $input, $item['source'] ) || array_key_exists( $input, $item['source'] ) ) ? $input : $item['default'];
 	}
 
 	/**
@@ -1228,7 +1230,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_select_multiple( $input ) {
+	private function validate_select_multiple( $input, $item ) {
 		return array_map( array( $this, 'validate_select' ), $input ); // FIXME
 	}
 
@@ -1239,7 +1241,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_spinner( $input ) {
+	private function validate_spinner( $input, $item ) {
 		return $this->validate_text( $input );
 	}
 
@@ -1250,7 +1252,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	protected function validate_text( $input ) {
+	protected function validate_text( $input, $item ) {
 		return wp_kses_data( $input );
 	}
 
@@ -1261,7 +1263,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_text_color( $input ) {
+	private function validate_text_color( $input, $item ) {
 		return $this->validate_text( $input );
 	}
 
@@ -1272,7 +1274,7 @@ abstract class TCC_Form_Admin {
 	 * @param string $input
 	 * @return string
 	 */
-	private function validate_url( $input ) {
+	private function validate_url( $input, $item ) {
 		return apply_filters( 'pre_link_url', $input );
 	}
 
