@@ -444,12 +444,10 @@ abstract class TCC_Form_Admin {
 	 * @since 20150323
 	 */
 	private function get_form_options() {
-		$this->form_opts = get_option( $this->current );
-		if ( empty( $this->form_opts ) ) {
-			$option = explode( '_', $this->current );
-			$this->form_opts = $this->get_defaults( array_pop( $option ) );
-			add_option( $this->current, $this->form_opts );
-		}
+		$database = get_option( $this->current, array() );
+		$option   = explode( '_', $this->current );
+		$defaults = $this->get_defaults( array_pop( $option ) );
+		$this->form_opts = array_merge( $defaults, $database );
 	}
 
 
