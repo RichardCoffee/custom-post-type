@@ -409,28 +409,34 @@ abstract class TCC_Form_Admin {
 		if ( empty( $this->form ) ) {
 			$this->form = $this->form_layout();
 		}
-		$defaults = array();
 		if ( in_array( $this->type, [ 'single' ] ) ) {
-			foreach( $this->form['layout'] as $ID => $item ) {
-				if ( is_string( $item ) || empty( $item['default'] ) ) {
-					continue;
-				}
-				$defaults[ $ID ] = $item['default'];
-			}
+			return $this->get_defaults_loop( $this->form['layout'] );
 		} else {  //  tabbed page
 			if ( array_key_exists( $option, $this->form ) ) {
-				foreach( $this->form[ $option ]['layout'] as $key => $item ) {
-					if ( empty( $item['default'] ) ) {
-						continue;
-					}
-					$defaults[ $key ] = $item['default'];
-				}
+				return $this->get_defaults_loop( $this->form[ $option ]['layout'] );
 			} else {
 				$this->logg( sprintf( $this->form_text['error']['subscript'], $option ), 'stack' );
 			}
 		}
-		return $defaults;
+		return [];
 	} //*/
+
+	/**
+	 *  Loop through the layout array for the default values.
+	 *
+	 * @since 20200413
+	 * @param  array $layout  The layout to search.
+	 * @return array          Default values for the layout.
+	 */
+	private function get_defaults_loop( $layout ) {
+		$default = array();
+		foreach( $layout as $key => $item ) {
+			if ( ! is_array( $item ) ) continue;
+			if ( ! array_key_exists( 'default', $item ) ) continue;
+			$defaults[ $key ] = $item['default'];
+		}
+		return $defaults;
+	}
 
 	/**
 	 *  Retrieve theme/plugin option values
