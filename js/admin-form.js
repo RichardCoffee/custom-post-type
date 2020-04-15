@@ -4,7 +4,7 @@ jQuery( document ).ready( function() {
 	if ( tcc_admin_options.showhide ) {
 		jQuery.each( tcc_admin_options.showhide, function( counter, item ) {
 			if ( targetableElement( item ) ) {
-				let origin = '.' + item.origin + ' input:radio';
+				let origin = '.' + item.origin + ( ( item.render === 'select' ) ? ' select' : ' input:radio' );
 				jQuery( origin ).change( item, function( e ) {
 					targetableElement( e.data );
 				});
@@ -18,7 +18,7 @@ jQuery( document ).ready( function() {
 });
 
 function imageDelete( el ) {
-	let ans = confirm( 'Remove this image?' ); // FIXME: localize this
+	let ans = confirm( tcc_admin_options.media['delete'] );
 	if ( ans ) {
 		let iuField = jQuery( el.parentNode ).data( 'field' );
 		let iuInput = document.getElementById( iuField + '_input' );
@@ -52,7 +52,7 @@ function imageUploader( el, e ) {
 	});
 	custom_uploader.open();
 }
-
+/*
 function showhideElements( els ) {
 	jQuery( els ).each( function( el ) {
 		let target = jQuery( el ).attr( 'data-item' );
@@ -65,33 +65,31 @@ function showhideElements( els ) {
 			showhideAdminElement( el, target, null, hide );
 		}
 	});
-}
+} //*/
 
 function targetableElement( item ) {
-	return showhideAdminElement( '.'+item.origin, '.'+item.target, item.show, item.hide );
-}
-
-function showhideAdminElement( origin, target, show, hide ) {
-	if ( origin && target ) {
-		let radio = jQuery( origin + ' input:radio:checked' );
-		if ( radio.length ) {
-			let state = jQuery( radio ).val();
+	if ( item.origin && item.target ) {
+		let query  = '.' + item.origin + ( ( item.render === 'select' ) ? ' select option:selected' : ' input:radio:checked' );
+		let result = jQuery( query );
+		if ( result.length ) {
+			let state = jQuery( result ).val();
 			if ( state ) {
-				if ( show ) {
-					if ( state === show ) {
+				let target = '.' + item.target;
+				if ( item.show ) {
+					if ( state === item.show ) {
 						jQuery( target ).parent().parent().show( 2000 ); //removeClass('hidden');
 					} else {
 						jQuery( target ).parent().parent().hide( 2000 ); //addClass('hidden');
 					}
-				} else if ( hide ) {
-					if ( state === hide ) {
+				} else if ( item.hide ) {
+					if ( state === item.hide ) {
 						jQuery( target ).parent().parent().hide( 2000 ); //addClass('hidden');
 					} else {
 						jQuery( target ).parent().parent().show( 2000 ); //removeClass('hidden');
 					}
 				}
 			}
-			return true;
+			return query;
 		}
 	}
 	return false;

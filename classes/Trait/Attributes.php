@@ -315,6 +315,20 @@ trait TCC_Trait_Attributes {
 	}
 
 	/**
+	 *  Add the selected attribute on a multiple select input.
+	 *
+	 * @since 20200415
+	 * @param array $attrs     Accepted as reference.
+	 * @param mixed $selected  Value to check.
+	 * @param mixed $current   Base value to check against.
+	 */
+	public function selected_m( &$attrs, $selected, $current = array() ) {
+		foreach( $current as $value ) {
+			$this->checked_selected_helper( $attrs, $selected, $value, 'selected' );
+		}
+	}
+
+	/**
 	 *  Workhorse of the checked, disabled, readonly, and selected methods.
 	 *
 	 * @since 20180424

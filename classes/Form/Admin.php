@@ -252,7 +252,13 @@ abstract class TCC_Form_Admin {
 				'delete'    => __( 'Unassign Image', 'tcc-plugin' )
 			)
 		);
-		$this->form_text = apply_filters( 'form_text_' . $this->slug, $text, $text );
+		$this->form_text = apply_filters( "form_text_{$this->slug}", $text, $text );
+		add_filter(
+			'tcc_form_admin_options_localization',
+			function( $options ) {
+				return array_merge( $this->form_text, $options );
+			}
+		);
 	}
 
 
@@ -918,8 +924,10 @@ abstract class TCC_Form_Admin {
 			'id'   => $ID,
 			'name' => $name
 		);
-		if ( strpos( '[]', $name ) ) {
+		$helper = 'selected';
+		if ( strpos( $name, '[]' ) ) {
 			$attrs['multiple'] = 'multiple';
+			$helper = 'selected_m';
 		}
 		if ( array_key_exists( 'change', $layout ) ) {
 			$attrs['onchange'] = $layout['change'];
@@ -929,7 +937,7 @@ abstract class TCC_Form_Admin {
 			if ( is_array( $source_func ) ) {
 				foreach( $source_func as $key => $text ) {
 					$attrs = [ 'value' => $key ];
-					$this->selected( $attrs, $key, $value );
+					$this->$helper( $attrs, $key, $value );
 					$this->element( 'option', $attrs, ' ' . $text . ' ' );
 				}
 			} else if ( method_exists( $this, $source_func ) ) {
@@ -1257,7 +1265,10 @@ abstract class TCC_Form_Admin {
 	 * @return string
 	 */
 	private function validate_select_multiple( $input, $item ) {
-		return array_map( array( $this, 'validate_select' ), $input );
+		foreach( $input as $key => $choice ) {
+			$input[ $key ] = $this->validate_select( $choice, $item );
+		}
+		return array_unique( $input );
 	}
 
 	/**
