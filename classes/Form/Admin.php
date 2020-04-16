@@ -549,7 +549,7 @@ abstract class TCC_Form_Admin {
 				$func  = 'render_' . $layout[ $item ]['render'];
 				$name  = $this->current . '[' . $item . ']';
 				$value = ( array_key_exists( $item, $data ) ) ? $data[ $item ] : '';
-				if ( $layout[ $item ]['render'] === 'array' ) {
+				if ( in_array( $layout[ $item ]['render'], [ 'array' ] ) ) {
 					$name .= '[' . $num . ']';
 					#if ( isset( $add ) && $add ) { $layout[ $item ]['add'] = true; }
 					$value = ( array_key_exists( $num, $data[ $item ] ) ) ? $data[ $item ][ $num ] : '';
@@ -654,7 +654,7 @@ abstract class TCC_Form_Admin {
 	private function render_array( $data ) {
 		extract( $data );  //  Extracts 'ID', 'value', 'layout', and 'name'.
 		if ( ! array_key_exists( 'type', $layout ) ) $layout['type'] = 'text';
-		if ( $layout['type'] === 'image' ) {
+		if ( in_array( $layout['type'], [ 'image' ] ) ) {
 			$this->render_image( $data );
 		} else {
 			$this->render_text( $data );
