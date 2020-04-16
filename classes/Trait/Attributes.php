@@ -1,16 +1,18 @@
 <?php
 /**
- *  A trait that provides methods to generate sanitized HTML elements.
+ *  A trait that provides methods to generate HTML elements with sanitized attributes.
  *
  * @package Plugin
  * @subpackage Traits
  * @since 20170506
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2017, Richard Coffee
+ * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Attributes.php
  * @link 4.9.5:wp-includes/general-template.php:2949
  * @link https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/HTML5_Security_Cheat_Sheet.md
  */
 defined( 'ABSPATH' ) || exit;
+
 
 trait TCC_Trait_Attributes {
 
@@ -109,9 +111,9 @@ trait TCC_Trait_Attributes {
 	 *  Generates the HTML for the tag attributes
 	 *
 	 * @since 20170506
-	 * @link https://konstantin.blog/2012/esc_url-vs-esc_url_raw/
 	 * @param  array  $attrs  Contains attribute/value pairs.
 	 * @return string         Generated HTML attributes.
+	 * @link https://konstantin.blog/2012/esc_url-vs-esc_url_raw/
 	 */
 	public function get_apply_attrs( $attrs ) {
 		//  Array for attributes that do not require a value.
@@ -120,6 +122,7 @@ trait TCC_Trait_Attributes {
 			$is_allowed_no_value = apply_filters( 'fluid_attr_is_allowed_no_value', [ 'itemscope', 'multiple', 'required', 'sandbox', 'value' ] );
 		} //*/
 		$is_allowed_no_value = array( 'itemscope', 'multiple', 'value', 'required', 'sandbox' );
+		//  Check if nonce is needed
 		if ( ! empty( static::$attr_javascript_nonce ) ) {
 			$attrs = $this->attr_nonce_check( $attrs );
 		}
@@ -193,7 +196,7 @@ trait TCC_Trait_Attributes {
 	 */
 	public function sanitize_html_class( $classes ) {
 		if ( is_array( $classes ) ) {
-			//  Pack it down then blow it up - insure each item is a single class.
+			//  Pack it down then blow it up - insure each item is a single css class.
 			$classes = explode( ' ', implode( ' ', $classes ) );
 		} else {
 			//  Convert string to an array.
@@ -203,7 +206,7 @@ trait TCC_Trait_Attributes {
 	}
 
 	/**
-	 *  Sanitize the element tag.
+	 *  Sanitize the element tag, only allows numbers and lower case letters in the tag.  Don't need the numbers I think, but...
 	 *
 	 * @since 20180829
 	 * @param  string $tag  Tag for the HTML element.
@@ -235,11 +238,11 @@ trait TCC_Trait_Attributes {
 	 *  Filter the attribute array by the HTML tag and the attribute.
 	 *
 	 * @since 20180425
-	 * @link https://www.hongkiat.com/blog/wordpress-rel-noopener/
-	 * @link https://support.performancefoundry.com/article/186-noopener-noreferrer-on-my-links
 	 * @param string $tag    Tag for the HTML element.
 	 * @param array  $attrs  Attributes to be applied to element.
 	 * @return array
+	 * @link https://www.hongkiat.com/blog/wordpress-rel-noopener/
+	 * @link https://support.performancefoundry.com/article/186-noopener-noreferrer-on-my-links
 	 */
 	public function filter_attributes_by_tag( $tag, $attrs ) {
 		if ( in_array( $tag, [ 'a' ] ) && array_key_exists( 'target', $attrs ) ) {
@@ -266,10 +269,10 @@ trait TCC_Trait_Attributes {
 	 *  Add the checked attribute to the attributes array.
 	 *
 	 * @since 20180424
-	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 * @param array $attrs    Accepted as reference.
 	 * @param mixed $checked  value to check
 	 * @param mixed $current  base value to check against
+	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 */
 	public function checked( &$attrs, $checked, $current = true ) {
 		$this->checked_selected_helper( $attrs, $checked, $current, 'checked' );
@@ -292,10 +295,10 @@ trait TCC_Trait_Attributes {
 	 *  Add the readonly attribute to the attributes array.
 	 *
 	 * @since 20180424
-	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 * @param array $attrs     Accepted as reference.
 	 * @param mixed $readonly  Value to check.
 	 * @param mixed $current   Base value to check against.
+	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 */
 	public function readonly( &$attrs, $readonly, $current = true ) {
 		$this->checked_selected_helper( $attrs, $readonly, $current, 'readonly' );
@@ -305,10 +308,10 @@ trait TCC_Trait_Attributes {
 	 *  Add the selected attribute to the attributes array.
 	 *
 	 * @since 20180424
-	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 * @param array $attrs     Accepted as reference.
 	 * @param mixed $selected  Value to check.
 	 * @param mixed $current   Base value to check against.
+	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 */
 	public function selected( &$attrs, $selected, $current = true ) {
 		$this->checked_selected_helper( $attrs, $selected, $current, 'selected' );
@@ -332,11 +335,11 @@ trait TCC_Trait_Attributes {
 	 *  Workhorse of the checked, disabled, readonly, and selected methods.
 	 *
 	 * @since 20180424
-	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 * @param array  $attrs    Accepted as reference.
 	 * @param mixed  $checked  Value to check.
 	 * @param mixed  $current  Base value to check against.
 	 * @param string $type     Attribute to add.
+	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
 	 */
 	protected function checked_selected_helper( &$attrs, $helper, $current, $type ) {
 		if ( (string) $helper === (string) $current ) {
