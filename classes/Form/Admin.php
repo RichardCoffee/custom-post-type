@@ -1231,7 +1231,7 @@ abstract class TCC_Form_Admin {
 	 */
 	private function validate_radio( $input, $item ) {
 		$input = sanitize_key( $input );
-		return ( array_key_exists( $input, $item['source'] ) ? $input : $item['source'] );
+		return ( array_key_exists( $input, $item['source'] ) ? $input : $item['default'] );
 	}
 
 	/**
