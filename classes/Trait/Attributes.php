@@ -89,9 +89,9 @@ trait TCC_Trait_Attributes {
 	 * @return string         An HTML tag element in string form.
 	 */
 	public function get_tag( $tag, $attrs ) {
+		$tag   = $this->sanitize_tag( $tag );
 		$attrs = $this->filter_attributes_by_tag( $tag, $attrs );
-		$html  = '<' . $this->sanitize_tag( $tag );
-		$html .= $this->get_apply_attrs( $attrs );
+		$html  = "<$tag" . $this->get_apply_attrs( $attrs );
 		$html .= ( $this->is_tag_self_closing( $tag ) ) ? ' />' : '>';
 		return $html;
 	}
@@ -117,11 +117,18 @@ trait TCC_Trait_Attributes {
 	 */
 	public function get_apply_attrs( $attrs ) {
 		//  Array for attributes that do not require a value.
-/*		static $is_allowed_no_value = null;
+		static $is_allowed_no_value = null;
 		if ( empty( $is_allowed_no_value ) ) {
-			$is_allowed_no_value = apply_filters( 'fluid_attr_is_allowed_no_value', [ 'itemscope', 'multiple', 'required', 'sandbox', 'value' ] );
-		} //*/
-		$is_allowed_no_value = array( 'itemscope', 'multiple', 'value', 'required', 'sandbox' );
+			$is_allowed_no_value = array(
+				'itemscope',
+				'multiple',
+				'novalidate',
+				'required',
+				'sandbox',
+				'value',
+			);
+			$is_allowed_no_value = apply_filters( 'fluid_attr_is_allowed_no_value', $is_allowed_no_value );
+		}
 		//  Check if nonce is needed
 		if ( ! empty( static::$attr_javascript_nonce ) ) {
 			$attrs = $this->attr_nonce_check( $attrs );
@@ -262,18 +269,40 @@ trait TCC_Trait_Attributes {
 	 * @link https://support.performancefoundry.com/article/186-noopener-noreferrer-on-my-links
 	 */
 	public function filter_attributes_by_tag( $tag, $attrs ) {
-		if ( in_array( $tag, [ 'a' ] ) && array_key_exists( 'target', $attrs ) ) {
-			$attrs['rel'] = ( ( array_key_exists( 'rel', $attrs ) ) ? $attrs['rel'] : '' ) . ' nofollow noopener noreferrer ugc';
-		}
-		if ( in_array( $tag, [ 'iframe' ] ) && static::$attr_iframe_sandbox ) {
-			if ( ! array_key_exists( 'sandbox', $attrs ) ) {
-				$attrs['sandbox'] = '';
-			}
-		}
-		if ( in_array( $tag, [ 'script' ] ) && ! empty( static::$attr_javascript_nonce ) ) {
-			if ( ! array_key_exists( 'nonce', $attrs ) ) {
-				$attrs['nonce'] = static::$attr_javascript_nonce;
-			}
+		switch( $tag ) {
+			case 'a':
+				if ( array_key_exists( 'target', $attrs ) ) {
+					$attrs['rel'] = ( ( array_key_exists( 'rel', $attrs ) ) ? $attrs['rel'] : '' ) . ' nofollow noopener noreferrer ugc';
+				}
+				break;
+			case 'iframe':
+				if ( static::$attr_iframe_sandbox ) {
+					if ( ! array_key_exists( 'sandbox', $attrs ) ) {
+						$attrs['sandbox'] = '';
+					}
+				}
+				break;
+			case 'input':
+				if ( apply_filters( 'fluid_filter_input_attributes', true, $attrs ) ) {
+					if ( array_key_exists( 'type', $attrs ) ) {
+						//  Effects keyboard shown on mobile platforms
+						if ( in_array( $attrs['type'], [ 'number' ] ) ) {
+							$attrs['type'] = 'text';
+							$attrs['inputmode'] = 'decimal';
+						}
+						//  iOS Safari
+						if ( in_array( $attrs['type'], [ 'tel' ] ) && ! array_key_exists( 'autocomplete', $attrs ) ) {
+							$attrs['autocomplete'] = 'tel';
+						}
+					}
+				}
+				break;
+			case 'script':
+				if ( static::$attr_javascript_nonce && ! array_key_exists( 'nonce', $attrs ) ) {
+					$attrs['nonce'] = static::$attr_javascript_nonce;
+				}
+				break;
+			default:
 		}
 		// return apply_filters( 'fluid_filter_attributes_by_tag', $attrs, $tag );
 		return $attrs;
