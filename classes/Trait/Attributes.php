@@ -156,6 +156,14 @@ trait TCC_Trait_Attributes {
 				case 'title':
 					$value = esc_attr( wp_strip_all_tags( $value ) );
 					break;
+				case 'onblur':
+				case 'onchange':
+				case 'onclick':
+				case 'onfocus':
+				case 'onkeydown':
+				case 'onkeyup':
+					$value = esc_js( $value );
+					break;
 				default:
 					$value = esc_attr( $value );
 			}
@@ -174,7 +182,16 @@ trait TCC_Trait_Attributes {
 	private function attr_nonce_check( $attrs ) {
 		static $nonce_required = array();
 		if ( empty( $nonce_required ) ) {
-			$nonce_required = apply_filters( 'fluid_attr_nonce_required', [ 'onchange', 'onclick' ] );
+			//  List of javascript DOM events
+			$nonce_required = array(
+				'onblur',
+				'onchange',
+				'onclick',
+				'onfocus',
+				'onkeydown',
+				'onkeyup'
+			);
+			$nonce_required = apply_filters( 'fluid_attr_nonce_required', $nonce_required );
 		}
 		if ( ! array_key_exists( 'nonce', $attrs ) ) {
 			foreach( $nonce_required as $required ) {
