@@ -82,10 +82,12 @@ abstract class TCC_Form_Admin {
 	protected $validate;
 
 	/**
+	 * @since 20170507
 	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Attributes.php
 	 */
 	use TCC_Trait_Attributes;
 	/**
+	 * @since 20170330
 	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Logging.php
 	 */
 	use TCC_Trait_Logging;
@@ -94,7 +96,6 @@ abstract class TCC_Form_Admin {
 	 *  Abstract method declaration for child classes.  Function should return an array.
 	 *
 	 * @since 20150323
-	 * @used-by TCC_Form_Admin::load_form_page()
 	 */
 	abstract protected function form_layout( $option );
 	/**
@@ -167,7 +168,7 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Load required style and script files.  Provides filter 'tcc_form_admin_options_localization' to allow child classes to add javascript variables.
+	 *  Load required style and script files.
 	 *
 	 * @since 20150925
 	 * @param string $hook_suffix  Admin page menu option suffix - passed by WP but not used
@@ -203,7 +204,7 @@ abstract class TCC_Form_Admin {
 	 * @param  array $old  Old and busted options.
 	 * @return array       New and improved versions of old and busted options.
 	 */
-	protected function normalize_options( $new, $old ) {
+	protected function normalize_options( array $new, array $old ) {
 		if ( array_key_exists( 'showhide', $old ) ) {
 			$new['showhide'] = array_map( [ $this, 'normalize_showhide' ], $old['showhide'] );
 		}
@@ -217,7 +218,7 @@ abstract class TCC_Form_Admin {
 	 * @param  array $item  Item to normalize.
 	 * @return array        Normalized item.
 	 */
-	public function normalize_showhide( $item ) {
+	public function normalize_showhide( array $item ) {
 		$default = array(
 			'origin' => null,
 			'target' => null,
@@ -253,12 +254,18 @@ abstract class TCC_Form_Admin {
 			)
 		);
 		$this->form_text = apply_filters( "form_text_{$this->slug}", $text, $text );
-		add_filter(
-			'tcc_form_admin_options_localization',
-			function( $options ) {
-				return array_merge( $this->form_text, $options );
-			}
-		);
+		add_filter( 'tcc_form_admin_options_localization', [ $this, 'add_form_text_localization' ] );
+	}
+
+	/**
+	 *  Send form text to javascript.
+	 *
+	 * @since 20200420
+	 * @param  array $options  Incoming localization data.
+	 * @return array           Data to be passed to javascript.
+	 */
+	public function add_form_text_localization( array $options ) {
+		return array_merge( $this->form_text, $options );
 	}
 
 
@@ -319,32 +326,37 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Register fields with the WP Settings API
+	 *  Register fields with the WP Settings API.
 	 *
 	 * @since 20150323
+	 * @param string $option
+	 * @param string $key
+	 * @param string $item_id
+	 * @param array  $data
 	 */
-	private function register_field( $option, $key, $itemID, $data ) {
+	private function register_field( $option, $key, $item_id, $data ) {
 		if ( ! is_array( $data ) )                     return; // skip string variables
 		if ( ! array_key_exists( 'render', $data ) )   return; // skip variables without render data
-		if ( in_array( $data['render'], [ 'skip' ] ) ) return; // skip variables when needed
+		if ( in_array( $data['render'], [ 'skip' ] ) ) return; // skip variables when requested
 		if ( in_array( $data['render'], [ 'array' ] ) ) {
-/*			$count = max( count( $data['default'] ), count( $this->form_opts[ $key ][ $itemID ] ) );
+/*			$count = max( count( $data['default'] ), count( $this->form_opts[ $key ][ $item_id ] ) );
 			for ( $i = 0; $i < $count; $i++ ) {
-				$label  = "<label for='$itemID'>{$data['label']} ".($i+1)."</label>";
-				$args   = array( 'key' => $key, 'item' => $itemID, 'num' => $i );
-#				if ( $i + 1 === $count ) { $args['add'] = true; }
+				$text  = $data['label'] . ' ' . ($i+1);
+				$label = $this->element( 'label', [ 'for' => $item_id ], $text );
+				$args  = array( 'key' => $key, 'item' => $item_id, 'num' => $i );
+//				if ( $i + 1 === $count ) { $args['add'] = true; }
 				add_settings_field( "{$item}_$i", $label, array( $this, $this->options ), $this->slug, $current, $args );
 			} //*/
-			$this->log( 'ALERT: data[render] = array', $data );
+			$this->logg( 'ALERT: data[render] = array', $data );
 		} else {
-			$label = $this->field_label( $itemID, $data );
-			$args  = [ 'key' => $key, 'item' => $itemID ];
-			add_settings_field( $itemID, $label, [ $this, $this->options ], $option, $option, $args );
+			$label = $this->field_label( $item_id, $data );
+			$args  = [ 'key' => $key, 'item' => $item_id ];
+			add_settings_field( $item_id, $label, [ $this, $this->options ], $option, $option, $args );
 		}
 	}
 
 	/**
-	 *  Display label for field
+	 *  Display label for field.
 	 *
 	 * @since 20150930
 	 * @param string $ID    Field ID
@@ -372,8 +384,8 @@ abstract class TCC_Form_Admin {
 	 *  Checks to make sure that field's validation callback function is callable.
 	 *
 	 * @since 20160228
-	 * @param  array  $data  Data to sterilize.
-	 * @return string        Squeaky clean data.
+	 * @param  array  $data  Data for item to be sterilized.
+	 * @return array|string  Callback for squeaky clean data.
 	 */
 	private function sanitize_callback( $data ) {
 		$valid_func = "validate_{$data['render']}";
@@ -387,7 +399,7 @@ abstract class TCC_Form_Admin {
   /**  Data functions  **/
 
 	/**
-	 *  Determine 'current' property value
+	 *  Determine 'current' property value.
 	 *
 	 * @since 20150323
 	 */
@@ -445,7 +457,7 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Retrieve theme/plugin option values
+	 *  Retrieve theme/plugin option values, with default value backup.
 	 *
 	 * @since 20150323
 	 */
@@ -464,17 +476,25 @@ abstract class TCC_Form_Admin {
 	 *
 	 * @since 20150323
 	 */
-	public function render_single_form() { ?>
-		<div class="wrap">
-			<?php settings_errors(); ?>
-			<form method="post" action="options.php"><?php
-				do_action( 'form_admin_pre_display_' . $this->current );
+	public function render_single_form() {
+		//  Wrap the form in a div.
+		$this->tag( 'div', [ 'class' => 'wrap' ] );
+			//  Show any errors.
+			settings_errors();
+			//  Start the form
+			$this->tag( 'form', [ 'method' => 'post', 'action' => 'options.php' ] );
+				//  Do actions at start of form.
+				do_action( "fluid_admin_pre_display_{$this->current}" );
+				//  Establish the form section.
 				settings_fields( $this->current );
+				//  Show the form section.
 				do_settings_sections( $this->current );
-				do_action( 'form_admin_post_display_' . $this->current );
-				$this->submit_buttons(); ?>
-			</form>
-		</div><?php //*/
+				//  Do actions at end of form.
+				do_action( "fluid_admin_post_display_{$this->current}" );
+				//  Show the form buttons.
+				$this->submit_buttons();
+		//  Close the form and wrapping div.
+		echo '</form></div>';
 	}
 
 	/**
@@ -483,35 +503,52 @@ abstract class TCC_Form_Admin {
 	 * @since 20150323
 	 */
 	public function render_tabbed_form() {
-		$active_page = sanitize_key( $_GET['page'] ); ?>
-		<div class="wrap"><?php
+		//  Get the active tab.
+		$active_page = sanitize_key( $_GET['page'] );
+		//  Wrap the form in a div.
+		$this->tag( 'div', [ 'class' => 'wrap' ] );
+			//  Insert div for screen icon.
 			$this->element( 'div', [ 'id' => 'icon-themes', 'class' => 'icon32' ] );
+			//  Show the screen title.
 			$this->element( 'h1', [ 'class' => 'centered' ], $this->form['title'] );
-			settings_errors(); ?>
-			<h2 class="nav-tab-wrapper"><?php
+			//  Show any error messages.
+			settings_errors();
+			//  Show the tab header
+			$this->tag( 'h2', [ 'class' => 'nav-tab-wrapper' ] );
+				//  Set the referer.
 				$refer = "admin.php?page=$active_page";
+				//  Loop to display tabs.
 				foreach( $this->form as $key => $menu_item ) {
 					if ( is_string( $menu_item ) ) continue;
 					$tab_ref = "$refer&tab=$key";
 					$tab_css = 'nav-tab' . ( ( $this->tab === $key ) ? ' nav-tab-active' : '' );
 					$this->tag( 'a', [ 'href' => $tab_ref, 'class' => $tab_css ] );
-						if ( ! empty( $menu_item['icon'] ) ) {
-							$this->element( 'i', [ 'class' => [ 'dashicons', $menu_item['icon'] ] ] );
-						}
-						echo esc_html( $menu_item['title'] );
+					if ( ! empty( $menu_item['icon'] ) ) {
+						$this->element( 'i', [ 'class' => [ 'dashicons', $menu_item['icon'] ] ] );
+					}
+					echo esc_html( $menu_item['title'] );
 					echo '</a>';
-				} ?>
-			</h2>
-			<form method="post" action="options.php"><?php
+				}
+			//  Close tab header
+			echo '</h2>';
+			//  Show the form.
+			$this->tag( 'form', [ 'method' => 'post', 'action' => 'options.php' ] );
+				//  Insert current tab value into the form.
 				$this->tag( 'input', [ 'type' => 'hidden', 'name' => 'tab', 'value' => $this->tab ] );
+				//  Derive the current section.
 				$current = ( array_key_exists( 'option', $this->form[ $this->tab ] ) ) ? $this->form[ $this->tab ]['option'] : $this->prefix . $this->tab;
+				//  Do actions at start of form.
 				do_action( "form_admin_pre_display_{$this->tab}" );
+				//  Establish the form section.
 				settings_fields( $current );
+				//  Show the form section.
 				do_settings_sections( $current );
+				//  Do actions at end of form.
 				do_action( "form_admin_post_display_{$this->tab}" );
-				$this->submit_buttons( $this->form[ $this->tab ]['title'] ); ?>
-			</form>
-		<div><?php //*/
+				//  Show the form buttons.
+				$this->submit_buttons( $this->form[ $this->tab ]['title'] );
+		//  Close the form and wrapping div.
+		echo '</form><div>';
 	}
 
 	/**
@@ -521,15 +558,14 @@ abstract class TCC_Form_Admin {
 	 * @param string $title  Text for reset button.
 	 */
 	private function submit_buttons( $title = '' ) {
-		$buttons = $this->form_text['submit']; ?>
-		<p><?php
-			submit_button( $buttons['save'], 'primary', 'submit', false ); ?>
-			<span style='float:right;'><?php
+		$buttons = $this->form_text['submit'];
+		$this->tag( 'p' );
+			submit_button( $buttons['save'], 'primary', 'submit', false );
+			$this->tag( 'span', [ 'style' => 'float:right;' ] );
 				$object = ( empty( $title ) ) ? $buttons['object'] : $title;
 				$reset  = sprintf( $buttons['reset'], $object );
-				submit_button( $reset, 'secondary', 'reset', false ); ?>
-			</span>
-		</p><?php
+				submit_button( $reset, 'secondary', 'reset', false );
+		echo '</span></p>';
 	}
 
 	/**
@@ -568,8 +604,8 @@ abstract class TCC_Form_Admin {
 				} else {
 					$this->logg( sprintf( $this->form_text['error']['render'], $func ) );
 				}
-			} ?>
-		</div><?php
+			}
+		echo '</div>';
 	}
 
 	/**
@@ -579,7 +615,7 @@ abstract class TCC_Form_Admin {
 	 * @param array $args  Field identificatin information
 	 */
 	public function render_tabbed_options( $args ) {
-		extract( $args );  #  $args = array( 'key' => {group-slug}, 'item' => {item-slug} )
+		extract( $args );  //  $args array( 'key' => {group-slug}, 'item' => {item-slug} )
 		$data   = $this->form_opts;
 		$layout = $this->form[ $key ]['layout'];
 		$this->tag( 'div', $this->render_attributes( $layout[ $item ] ) );
@@ -591,21 +627,21 @@ abstract class TCC_Form_Admin {
 			if ( ! array_key_exists( $item, $data ) ) {
 				$data[ $item ] = ( empty( $layout[ $item ]['default'])) ? '' : $layout[ $item ]['default'];
 			}
-			$fargs = array(
+			$args = array(
 				'ID'     => $item,
 				'value'  => $data[ $item ],
 				'layout' => $layout[ $item ],
 				'name'   => $name
 			);
 			if ( method_exists( $this, $func ) ) {
-				$this->$func( $fargs );
+				$this->$func( $args );
 			} elseif ( function_exists( $func ) ) {
-				$func( $fargs );
+				$func( $args );
 			} else {
-				$this->log( sprintf( $this->form_text['error']['render'], $func ) );
+				$this->logg( sprintf( $this->form_text['error']['render'], $func ) );
 			}
 		}
-		echo "</div>"; //*/
+		echo '</div>'; //*/
 	}
 
 	/**
@@ -662,7 +698,7 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Render a checkbox field
+	 *  Render a checkbox field.
 	 *
 	 * @since 20150323
 	 * @param array $data field information
@@ -684,7 +720,7 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Render a multiple checkbox field
+	 *  Render multiple checkbox fields.
 	 *
 	 * @since 20170202
 	 * @param array $data field information
@@ -732,7 +768,7 @@ abstract class TCC_Form_Admin {
 		$this->element( 'input', $attrs );
 		$text = ( ! empty( $layout['text'] ) ) ? $layout['text'] : '';
 		if ( ! empty( $text ) ) {
-			?>&nbsp;<?php
+			echo '&nbsp;';
 			$this->element( 'span', [ 'class' => 'form-colorpicker-text' ], $text );
 		}
 	}
@@ -795,7 +831,7 @@ abstract class TCC_Form_Admin {
 			'data-field'  => $ID,
 		);
 		$img_css = 'form-image-container' . ( ( empty( $value ) ) ? ' hidden' : '');
-		$btn_css = 'form-image-delete' . ( ( empty( $value ) ) ? ' hidden' : '');
+		$btn_css = 'form-image-delete'    . ( ( empty( $value ) ) ? ' hidden' : '');
 		$attrs = array(
 			'id'    => $ID . '_input',
 			'type'  => 'text',
@@ -907,10 +943,10 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Render a select field
+	 *  Render a select field.
 	 *
 	 * @since 20150323
-	 * @param array $data field information
+	 * @param array $data  Field information.
 	 */
 	private function render_select( $data ) {
 		extract( $data );  //  Extracts 'ID', 'value', 'layout', 'name'
@@ -944,8 +980,8 @@ abstract class TCC_Form_Admin {
 				$this->$source_func( $value );
 			} else if ( function_exists( $source_func ) ) {
 				$source_func( $value );
-			} ?>
-		</select><?php
+			}
+		echo '</select>';
 	}
 
 	/**
@@ -1009,7 +1045,7 @@ abstract class TCC_Form_Admin {
 	 * @param array $data  Field information.
 	 */
 	private function render_text( $data ) {
-		extract( $data );  #  array( 'ID' => $item, 'value' => $data[ $item ], 'layout' => $layout[ $item ], 'name' => $name )
+		extract( $data );  //  array( 'ID' => $item, 'value' => $data[ $item ], 'layout' => $layout[ $item ], 'name' => $name )
 		if ( ! empty( $layout['text'] ) ) {
 			$this->element( 'p', [ ], ' ' . $layout['text'] );
 		}
@@ -1291,7 +1327,7 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Validate text field value
+	 *  Validate text field value.
 	 *
 	 * @since 20170305
 	 * @param string $input
@@ -1302,7 +1338,7 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Validate text color field value
+	 *  Validate text color field value.  Allows color text string, ie 'red', 'blue', 'black', etc.
 	 *
 	 * @since 20160910
 	 * @param string $input
@@ -1313,7 +1349,7 @@ abstract class TCC_Form_Admin {
 	}
 
 	/**
-	 *  Validate url field value
+	 *  Validate url field value.
 	 *
 	 * @since 20150323
 	 * @param string $input
@@ -1327,7 +1363,7 @@ abstract class TCC_Form_Admin {
 } # end of TCC_Form_Admin class
 
 
-/**  These are just shorthand functions  **/
+/**  These are compatibility functions  **/
 
 /**
  *  array_key_first() introduced in PHP 7.3.0
