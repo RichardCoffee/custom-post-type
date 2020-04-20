@@ -484,13 +484,13 @@ abstract class TCC_Form_Admin {
 			//  Start the form
 			$this->tag( 'form', [ 'method' => 'post', 'action' => 'options.php' ] );
 				//  Do actions at start of form.
-				do_action( "fluid_admin_pre_display_{$this->current}" );
+				do_action( "fluid_form_admin_pre_display_{$this->current}" );
 				//  Establish the form section.
 				settings_fields( $this->current );
 				//  Show the form section.
 				do_settings_sections( $this->current );
 				//  Do actions at end of form.
-				do_action( "fluid_admin_post_display_{$this->current}" );
+				do_action( "fluid_form_admin_post_display_{$this->current}" );
 				//  Show the form buttons.
 				$this->submit_buttons();
 		//  Close the form and wrapping div.
@@ -538,13 +538,13 @@ abstract class TCC_Form_Admin {
 				//  Derive the current section.
 				$current = ( array_key_exists( 'option', $this->form[ $this->tab ] ) ) ? $this->form[ $this->tab ]['option'] : $this->prefix . $this->tab;
 				//  Do actions at start of form.
-				do_action( "form_admin_pre_display_{$this->tab}" );
+				do_action( "fluid_form_admin_pre_display_{$this->tab}" );
 				//  Establish the form section.
 				settings_fields( $current );
 				//  Show the form section.
 				do_settings_sections( $current );
 				//  Do actions at end of form.
-				do_action( "form_admin_post_display_{$this->tab}" );
+				do_action( "fluid_form_admin_post_display_{$this->tab}" );
 				//  Show the form buttons.
 				$this->submit_buttons( $this->form[ $this->tab ]['title'] );
 		//  Close the form and wrapping div.
