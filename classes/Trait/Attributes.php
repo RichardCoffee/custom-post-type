@@ -196,7 +196,7 @@ trait TCC_Trait_Attributes {
 				'onclick',
 				'onfocus',
 				'onkeydown',
-				'onkeyup'
+				'onkeyup',
 			);
 			$nonce_required = apply_filters( 'fluid_attr_nonce_required', $nonce_required );
 		}
@@ -442,7 +442,7 @@ trait TCC_Trait_Attributes {
 	 * @param  string $nonce  New value to set.
 	 * @return string         Current value of the nonce.
 	 */
-	public function set_attr_javascript_nonce( $nonce  = '' ) {
+	public function set_attr_javascript_nonce( $nonce = '' ) {
 		if ( empty( static::$attr_javascript_nonce ) ) {
 			if ( $nonce && is_string( $nonce ) ) {
 				static::$attr_javascript_nonce = $nonce;
