@@ -567,7 +567,7 @@ abstract class TCC_Form_Admin {
 	 */
 	private function submit_buttons( $title = '' ) {
 		$buttons = $this->form_text['submit'];
-		$this->tag( 'p' );
+		$this->tag( 'p', [] );
 			submit_button( $buttons['save'], 'primary', 'submit', false );
 			$this->tag( 'span', [ 'style' => 'float:right;' ] );
 				$object = ( empty( $title ) ) ? $buttons['object'] : $title;
