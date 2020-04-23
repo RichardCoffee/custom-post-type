@@ -30,6 +30,32 @@ if ( ! function_exists( 'array_column' ) ) {
 }
 
 /**
+ * insert a key/value pair into an array after a specific key
+ *
+ * @param  array  $array      Array to act upon.
+ * @param  string $key        Key to search for.
+ * @param  string $new_key    Key to insert.
+ * @param  mixed  $new_value  Value to insert.
+ * @return array              Modified array.
+ * @link http://eosrei.net/comment/287
+ */
+if ( ! function_exists( 'array_insert_after' ) ) {
+	function array_insert_after( array $array, $key, $new_key, $new_value ) {
+		if ( array_key_exists( $key, $array ) ) {
+			$new = array();
+			foreach ( $array as $k => $value ) {
+				$new[ $k ] = $value;
+				if ( $k === $key ) {
+					$new[ $new_key ] = $new_value;
+				}
+			}
+			return $new;
+		}
+		return $array;
+	}
+}
+
+/**
  *  array_key_first() introduced in PHP 7.3.0
  *
  * @since 20200315
@@ -114,5 +140,19 @@ if ( ! function_exists( 'array_key_replace' ) ) {
 		if ( $pos === false ) return $arr;
 		$keys[ $pos ] = $new;
 		return array_combine( $keys, $arr );
+	}
+}
+
+/**
+ *  Provides escaping of a translated string with comment and count, use ONLY with suitable MakePOT class - which is not the one WP provides.
+ *
+ * @since 20170202
+ * @link wp_includes/i10n.php#_nx
+ */
+if ( ! function_exists( 'esc_html_nx' ) ) {
+	function esc_html_nx( $single, $plural, $number, $context, $domain = 'default' ) {
+		$translations = get_translations_for_domain( $domain );
+		$translation  = $translations->translate_plural( $single, $plural, $number, $context );
+		return esc_html( apply_filters( 'ngettext_with_context', $translation, $single, $plural, $number, $context, $domain ) );
 	}
 }
