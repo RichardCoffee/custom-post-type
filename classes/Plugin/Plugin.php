@@ -3,7 +3,7 @@
  *   Abstract class that contains helper functions for a plugin.
  *
  * @package Plugin
- * @subpackage Plugin_Core
+ * @subpackage Core
  * @since 20170111
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2017, Richard Coffee

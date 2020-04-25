@@ -3,7 +3,7 @@
  *  Main plugin class file.
  *
  * @package Plugin
- * @subpackage Plugin_Core
+ * @subpackage Core
  * @since 20170111
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2017, Richard Coffee
