@@ -135,7 +135,7 @@ abstract class TCC_Plugin_Plugin {
 			$this->schedule_initialize();
 			$this->load_textdomain();
 			$this->load_update_checker();
-			$this->perform_update();
+			$this->check_update();
 		} else {
 			static::$abort__construct = true;
 		}
