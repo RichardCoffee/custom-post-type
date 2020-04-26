@@ -258,7 +258,10 @@ abstract class TCC_Form_Admin {
 				'delete'    => __( 'Unassign Image', 'tcc-plugin' ),
 			),
 		);
+		// Changes based on page slug.
 		$this->form_text = apply_filters( "form_text_{$this->slug}", $text, $text );
+		// Changes based on the tab.
+		$this->form_text = apply_filters( "fluidity_text_filter_{$this->tab}", $this->form_text, $text );
 		add_filter( 'tcc_form_admin_options_localization', [ $this, 'add_form_text_localization' ] );
 	}
 
