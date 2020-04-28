@@ -585,8 +585,8 @@ abstract class TCC_Form_Admin {
 	 * @since 20150323
 	 * @param array $args
 	 */
-	public function render_single_options( $args ) {
-		extract( $args );  #  array( 'key' => $key, 'item' => $item, 'num' => $i );
+	public function render_single_options( $data ) {
+		extract( $data );  //  $data array( 'key' => $key, 'item' => $item, 'num' => $i );
 		$data   = $this->form_opts;
 		$layout = $this->form['layout'];
 		$this->tag( 'div', $this->render_attributes( $layout[ $item ] ) );
@@ -602,18 +602,19 @@ abstract class TCC_Form_Admin {
 					$value = ( array_key_exists( $num, $data[ $item ] ) ) ? $data[ $item ][ $num ] : '';
 				}
 				$field = str_replace( array( '[', ']' ), array( '_', '' ), $name );
-				$fargs = array(
+				$args = array(
 					'ID'     => $field,
 					'value'  => $value,
 					'layout' => $layout[ $item ],
 					'name'   => $name,
 				);
+				add_filter( "fluid_form_layout_attributes_$item", [ $this, 'render_layout_attributes' ], 5, 2 );
 				if ( method_exists( $this, $func ) ) {
-					$this->$func( $fargs );
+					$this->$func( $args );
 				} else if ( function_exists( $func ) ) {
-					$func( $fargs );
+					$func( $args );
 				} else {
-					$this->logg( sprintf( $this->form_text['error']['render'], $func ) );
+					$this->logg( sprintf( $this->form_text['error']['render'], $func ), $args );
 				}
 			}
 		echo '</div>';
@@ -625,8 +626,8 @@ abstract class TCC_Form_Admin {
 	 * @since 20150323
 	 * @param array $args  Field identificatin information
 	 */
-	public function render_tabbed_options( $args ) {
-		extract( $args );  //  $args array( 'key' => {group-slug}, 'item' => {item-slug} )
+	public function render_tabbed_options( $data ) {
+		extract( $data );  //  $data array( 'key' => {group-slug}, 'item' => {item-slug} )
 		$data   = $this->form_opts;
 		$layout = $this->form[ $key ]['layout'];
 		$this->tag( 'div', $this->render_attributes( $layout[ $item ] ) );
@@ -644,6 +645,7 @@ abstract class TCC_Form_Admin {
 				'layout' => $layout[ $item ],
 				'name'   => $name,
 			);
+			add_filter( "fluid_form_layout_attributes_$item", [ $this, 'render_layout_attributes' ], 5, 2 );
 			if ( method_exists( $this, $func ) ) {
 				$this->$func( $args );
 			} elseif ( function_exists( $func ) ) {
@@ -680,6 +682,13 @@ abstract class TCC_Form_Admin {
 			$attrs['data-item'] = ( array_key_exists( 'item', $state ) ) ? $state['item'] : $state['target'];
 			$attrs['data-show'] = $state['show'];
 			$attrs['data-hide'] = $state['hide'];
+		}
+		return $attrs;
+	}
+
+	public function render_layout_attributes( $attrs, $layout ) {
+		if ( array_key_exists( 'attrs', $layout ) ) {
+			$attrs = array_merge( $attrs, array_intersect_key( $layout['attrs'], $attrs ) );
 		}
 		return $attrs;
 	}
@@ -976,6 +985,7 @@ abstract class TCC_Form_Admin {
 		if ( array_key_exists( 'change', $layout ) ) {
 			$attrs['onchange'] = $layout['change'];
 		}
+		$attrs = apply_filters( "fluid_form_layout_attributes_$ID", $attrs, $layout );
 		$this->tag( 'select', $attrs );
 			$source_func = $layout['source'];
 			if ( is_array( $source_func ) ) {
@@ -1020,6 +1030,7 @@ abstract class TCC_Form_Admin {
 			'value' => $value,
 		);
 		$attrs = array_merge( $attrs, $this->attributes_spinner( $layout ) );
+		$attrs = apply_filters( "fluid_form_layout_attributes_$ID", $attrs, $layout );
 		$this->element( 'input', $attrs );
 		if ( array_key_exists( 'postext', $layout ) ) {
 			$this->element( 'div', [], $layout['postext'] );
@@ -1040,9 +1051,6 @@ abstract class TCC_Form_Admin {
 #			'min'   => '1',
 			'step'  => '1',
 		);
-		if ( array_key_exists( 'attrs', $layout ) ) {
-			$attrs = array_merge( $attrs, array_intersect_key( $layout['attrs'], $attrs ) );
-		}
 		return $attrs;
 	}
 
