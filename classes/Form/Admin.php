@@ -1168,19 +1168,24 @@ abstract class TCC_Form_Admin {
 			$object = ( array_key_exists( 'title', $this->form[ $option ] ) ) ? $this->form[ $option ]['title'] : $this->form_test['submit']['object'];
 			$string = sprintf( $this->form_text['submit']['restore'], $object );
 			add_settings_error( $this->slug, 'restore_defaults', $string, 'updated fade' );
-			return $output;
-		}
-		foreach( $input as $key => $data ) {
-			$item = ( array_key_exists( $key, $this->form[ $option ]['layout'] ) ) ? $this->form[ $option ]['layout'][ $key ] : array();
-			if ( (array) $data === $data ) {
-				foreach( $data as $ID => $subdata ) {
-					$output[ $key ][ $ID ] = $this->do_validate_function( $subdata, $item );
+		} else {
+			foreach( $input as $key => $data ) {
+				$item = ( array_key_exists( $key, $this->form[ $option ]['layout'] ) ) ? $this->form[ $option ]['layout'][ $key ] : array();
+				if ( array_key_exists( 'render', $item ) && in_array( $item['render'], [ 'checkbox' ] ) ) {
+					$output[ $key ] = true;
+				} else {
+					$output[ $key ] = $this->do_validate_function( $data, $item );
 				}
-			} else {
-				$output[ $key ] = $this->do_validate_function( $data, $item );
+			}
+			$diff = array_diff_key( $output, $input );
+			foreach( $diff as $key => $data ) {
+				$item = ( array_key_exists( $key, $this->form[ $option ]['layout'] ) ) ? $this->form[ $option ]['layout'][ $key ] : array();
+				if ( array_key_exists( 'render', $item ) && in_array( $item['render'], [ 'checkbox' ] ) ) {
+					$output[ $key ] = false;
+				}
 			}
 		}
-		return apply_filters( $this->current . '_validate_settings', $output, $input );
+		return apply_filters( "{$this->current}_validate_settings", $output, $input );
 	}
 
 	/**
