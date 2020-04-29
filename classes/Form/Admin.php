@@ -688,7 +688,7 @@ abstract class TCC_Form_Admin {
 
 	public function render_layout_attributes( $attrs, $layout ) {
 		if ( array_key_exists( 'attrs', $layout ) ) {
-			$attrs = array_merge( $attrs, array_intersect_key( $layout['attrs'], $attrs ) );
+			$attrs = array_merge( $attrs, $layout['attrs'] );
 		}
 		return $attrs;
 	}
