@@ -472,7 +472,7 @@ abstract class TCC_Form_Admin {
 	 *
 	 * @since 20150323
 	 */
-	private function get_form_options() {
+	protected function get_form_options() {
 		$database = get_option( $this->current, array() );
 		$option   = explode( '_', $this->current );
 		$defaults = $this->get_defaults( array_pop( $option ) );
