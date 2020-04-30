@@ -624,10 +624,10 @@ abstract class TCC_Form_Admin {
 	 *  Display fields on tabbed screens
 	 *
 	 * @since 20150323
-	 * @param array $args  Field identificatin information
+	 * @param array $args  Field identificatin information.
 	 */
-	public function render_tabbed_options( $data ) {
-		extract( $data );  //  $data array( 'key' => {group-slug}, 'item' => {item-slug} )
+	public function render_tabbed_options( $in ) {
+		extract( $in );  //  $in array( 'key' => {group-slug}, 'item' => {item-slug} )
 		$data   = $this->form_opts;
 		$layout = $this->form[ $key ]['layout'];
 		$this->tag( 'div', $this->render_attributes( $layout[ $item ] ) );
