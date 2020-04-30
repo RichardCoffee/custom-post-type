@@ -585,8 +585,8 @@ abstract class TCC_Form_Admin {
 	 * @since 20150323
 	 * @param array $args
 	 */
-	public function render_single_options( $data ) {
-		extract( $data );  //  $data array( 'key' => $key, 'item' => $item, 'num' => $i );
+	public function render_single_options( $in ) {
+		extract( $in );  //  $data array( 'key' => $key, 'item' => $item, 'num' => $i );
 		$data   = $this->form_opts;
 		$layout = $this->form['layout'];
 		$this->tag( 'div', $this->render_attributes( $layout[ $item ] ) );
