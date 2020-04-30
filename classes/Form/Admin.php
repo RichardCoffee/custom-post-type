@@ -654,7 +654,7 @@ abstract class TCC_Form_Admin {
 				$this->logg( sprintf( $this->form_text['error']['render'], $func ) );
 			}
 		}
-		echo '</div>'; //*/
+		echo '</div>';
 	}
 
 	/**
@@ -708,7 +708,7 @@ abstract class TCC_Form_Admin {
 	 * @todo needs add/delete/sort
 	 */
 	private function render_array( $data ) {
-		extract( $data );  //  Extracts 'ID', 'value', 'layout', and 'name'.
+		$layout = $data['layout'];
 		if ( ! array_key_exists( 'type', $layout ) ) $layout['type'] = 'text';
 		if ( in_array( $layout['type'], [ 'image' ] ) ) {
 			$this->render_image( $data );
@@ -726,9 +726,9 @@ abstract class TCC_Form_Admin {
 	private function render_checkbox( $data ) {
 		extract( $data );  //  Keys are 'ID', 'value', 'layout', 'name'
 		$attrs = array(
-			'type' => 'checkbox',
-			'id'   => $ID,
-			'name' => $name,
+			'type'  => 'checkbox',
+			'id'    => $ID,
+			'name'  => $name,
 			'value' => $value,
 			'onchange' => ( array_key_exists( 'change', $layout ) ) ? $layout['change'] : '',
 		);
