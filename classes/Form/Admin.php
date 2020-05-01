@@ -1006,10 +1006,20 @@ abstract class TCC_Form_Admin {
 	 *  Render a field with multiple selects
 	 *
 	 * @since 20170228
-	 * @param array $data field information
+	 * @param array $data  Field information.
 	 */
 	private function render_select_multiple( $data ) {
-		$data['name'] .= '[]';
+		//  Insure the name has brackets for array values.
+		if ( ! strpos( $data['name'], '[]' ) ) $data['name'] .= '[]';
+		//  Add directions if none are provided
+		if ( ! array_key_exists( 'help', $data['layout'] ) ) {
+			//  Check for the attributes array.
+			if ( ! array_key_exists( 'attrs', $data['layout'] ) ) $data['layout']['attrs'] = array();
+			//  Add the directions unless something is already there.
+			if ( ! array_key_exists( 'title', $data['layout']['attrs'] ) ) {
+				$data['layout']['attrs']['title'] = __( "Utilize the 'ctrl+click' combo to choose multiple items.", 'tcc-plugin' );
+			}
+		}
 		$this->render_select( $data );
 	}
 
