@@ -11,7 +11,6 @@ jQuery( document ).ready( function() {
 			}
 		});
 	}
-//	showhideElements( jQuery( '.showhide' ) );
 	jQuery( '.form-colorpicker'  ).wpColorPicker();
 	jQuery( '.form-image'        ).click( function( e ) { imageUploader( this, e ); });
 	jQuery( '.form-image-delete' ).click( function( e ) { imageDelete( this ); });
@@ -52,20 +51,6 @@ function imageUploader( el, e ) {
 	});
 	custom_uploader.open();
 }
-/*
-function showhideElements( els ) {
-	jQuery( els ).each( function( el ) {
-		let target = jQuery( el ).attr( 'data-item' );
-		let show   = jQuery( el ).attr( 'data-show' );
-		if ( show ) {
-			showhideAdminElement( el, target, show, null );
-		}
-		let hide = jQuery( el ).attr( 'data-hide' );
-		if ( hide ) {
-			showhideAdminElement( el, target, null, hide );
-		}
-	});
-} //*/
 
 function targetableElement( item ) {
 	if ( item.origin && item.target ) {
