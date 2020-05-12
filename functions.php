@@ -144,6 +144,24 @@ if ( ! function_exists( 'array_key_replace' ) ) {
 }
 
 /**
+ *  Provide multi-byte version of ucfirst.
+ *
+ * @since 20200511
+ * @param  string $string    String to be converted.
+ * @param  string $encoding  Encoding to use for conversion.
+ * @return string            Converted string.
+ * @link https://www.brainbell.com/tutorials/php/change-string-case.html
+ */
+if ( ! function_exists( 'mb_ucfirst' ) ) {
+	function mb_ucfirst( $string, $encoding = null ) {
+		if ( empty( $string ) ) return $string;
+		$encoding = is_null( $encoding ) ? mb_internal_encoding() : $encoding;
+		$firstChr = mb_strtoupper( mb_substr( $string, 0, 1, $encoding ), $encoding );
+		return $firstChr . mb_substr( $string, 1, null, $encoding );
+	}
+}
+
+/**
  *  Provides escaping of a translated string with comment and count, use ONLY with suitable MakePOT class - which is not the one WP provides.
  *
  * @since 20170202
