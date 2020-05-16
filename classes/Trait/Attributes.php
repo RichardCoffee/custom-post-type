@@ -201,11 +201,8 @@ trait TCC_Trait_Attributes {
 			$nonce_required = apply_filters( 'fluid_attr_nonce_required', $nonce_required );
 		}
 		if ( ! array_key_exists( 'nonce', $attrs ) ) {
-			foreach( $nonce_required as $required ) {
-				if ( array_key_exists( $required, $attrs ) ) {
-					$attrs['nonce'] = static::$attr_javascript_nonce;
-					return $attrs;
-				}
+			if ( array_intersect_key( $attrs, $nonce_required ) ) {
+				$attrs['nonce'] = static::$attr_javascript_nonce;
 			}
 		}
 		return $attrs;
