@@ -198,7 +198,7 @@ trait TCC_Trait_Attributes {
 				'onkeydown',
 				'onkeyup',
 			);
-			$nonce_required = apply_filters( 'fluid_attr_nonce_required', $nonce_required );
+			$nonce_required = apply_filters( 'element_attribute_nonce_required', $nonce_required );
 		}
 		if ( ! array_key_exists( 'nonce', $attrs ) ) {
 			$keys = array_keys( $attrs );
